@@ -1,0 +1,40 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class NPCController : MonoBehaviour
+{
+    public Animator animator;
+    public NavMeshAgent agent;
+    public List<Waypoint> waypoints = new List<Waypoint>();
+
+    public Ward wardComponent;
+    public int ward;
+
+    public bool isWaiting = false;
+
+    public Person personComponent;
+
+    public int num;
+
+    private void Awake()
+    {
+        // 컴포넌트 초기화
+        animator = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.avoidancePriority = Random.Range(0, 100);
+        agent.speed = Random.Range(3.0f, 5.0f);
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+}
