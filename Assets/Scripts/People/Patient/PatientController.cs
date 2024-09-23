@@ -226,7 +226,7 @@ public class PatientController : NPCController
         }
 
         isWaiting = true;
-        yield return new WaitForSeconds(Random.Range(1.5f, 2.5f));
+        yield return new WaitForSeconds(Random.Range(6, 10));
         if (isQuarantined)
         {
             yield return new WaitForSeconds(2.0f);
@@ -240,7 +240,7 @@ public class PatientController : NPCController
         {
             if (prevWaypointIndex == 0)
             {
-                yield return new WaitForSeconds(Random.Range(4.5f,5.5f));
+                yield return new WaitForSeconds(Random.Range(4.5f, 5.5f));
                 isWaiting = false;
                 yield break;
             }
@@ -249,10 +249,19 @@ public class PatientController : NPCController
 
             yield return new WaitForSeconds(2.0f);
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+            if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 0, 0))
+            {
+                transform.eulerAngles = new Vector3(0, -180, 0);
+            }
+            else
+            {
+                transform.eulerAngles = Vector3.zero;
+            }
             Managers.NPCManager.PlaySittingAnimation(animator);
+
             yield return new WaitForSeconds(0.5f);
 
-            
+
             Managers.NPCManager.PlayLayDownAnimation(animator);
 
             yield return new WaitForSeconds(2.0f);
@@ -349,11 +358,11 @@ public class PatientController : NPCController
             AddWaypoint(Managers.NPCManager.gatewayTransform, $"Gateway ({Random.Range(0, 2)})");
             int stayDuration = Random.Range(5, 10);
             yield return new WaitForSeconds(stayDuration);
-            
+
             Managers.NPCManager.PlayWakeUpAnimation(animator);
             yield return new WaitForSeconds(5.0f);
             isLayingDown = false;
-            
+
             agent.SetDestination(waypoints[1].GetRandomPointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             yield return new WaitForSeconds(2.0f);

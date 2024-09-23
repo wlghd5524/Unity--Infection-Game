@@ -48,7 +48,9 @@ public class NurseController : NPCController
 
                 if (!isWorking)
                 {
+
                     StartCoroutine(WardNurseMove()); // 다음 작업을 위해 대기 후 이동
+
 
                 }
 
@@ -156,17 +158,27 @@ public class NurseController : NPCController
             int roleNum = num % 16;
             if (8 <= roleNum && roleNum <= 13)  //진료실 앞 대기 간호사들
             {
-                for (int i = 4; i <= 14; i++)
+                for (int i = 4; i <= 13; i++)
                 {
                     if (waypoints[i] is NurseWaitingPoint nurseWaitingPoint)
                     {
-                        if (nurseWaitingPoint.isEmpty && !nurseWaitingPoint.doctorOffice.doctor.GetComponent<DoctorController>().isResting && isWaitingAtDoctorOffice == false)
+                        DoctorController doctorController = nurseWaitingPoint.doctorOffice.doctor.GetComponent<DoctorController>();
+                        if (nurseWaitingPoint.isEmpty && !doctorController.isResting && isWaitingAtDoctorOffice == false)
                         {
+                            doctorController.nurse = gameObject;
                             nurseWaitingPoint.isEmpty = false;
                             isWaitingAtDoctorOffice = true;
                             agent.SetDestination(waypoints[i].GetMiddlePointInRange());
                             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                             transform.eulerAngles = nurseWaitingPoint.doctorOffice.doctor.transform.eulerAngles;
+                        }
+                        if (!doctorController.waypoints[1].isEmpty)
+                        {
+                            yield return new WaitForSeconds(3);
+                            doctorController.nurse.GetComponent<NurseController>().agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i + 10].GetMiddlePointInRange());
+                        }
+                        else {
+                            doctorController.nurse.GetComponent<NurseController>().agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i].GetMiddlePointInRange());
                         }
                     }
                 }
@@ -200,7 +212,7 @@ public class NurseController : NPCController
 
             else
             {
-                agent.SetDestination(waypoints[Random.Range(14, 17)].GetRandomPointInRange()); // 랜덤 웨이포인트로 이동
+                agent.SetDestination(waypoints[Random.Range(24, 27)].GetRandomPointInRange()); // 랜덤 웨이포인트로 이동
             }
         }
         isWaiting = false; // 기다리는 중 해제
@@ -329,7 +341,8 @@ public class NurseController : NPCController
                 {
                     agent.SetDestination(waypoints[random].GetMiddlePointInRange());
                 }
-                else {
+                else
+                {
                     agent.SetDestination(waypoints[0].GetRandomPointInRange());
                 }
                 if (doctor.isWorking)

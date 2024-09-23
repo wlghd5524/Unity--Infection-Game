@@ -91,9 +91,6 @@ public class ProfileWindow : MonoBehaviour
             gridLayoutGroup.spacing = new Vector2(10, 10); // 프로필 간의 간격
             gridLayoutGroup.padding = new RectOffset(10, 10, 10, 10); // 스크롤 뷰와의 간격
         }
-
-        // 초기화할 때 캐릭터 목록을 채우지 않음
-        UpdateButtonTexts(); // 초기 텍스트 업데이트
     }
 
     public void AddDoctorProfile(GameObject doctorObject)
