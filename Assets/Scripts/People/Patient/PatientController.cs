@@ -56,6 +56,7 @@ public class PatientController : NPCController
         if (personComponent.role == Role.Inpatient)
         {
             AddInpatientWaypoints();
+            StartCoroutine(StayDurationCounter());
         }
         if (personComponent.role == Role.EmergencyPatient)
         {
@@ -86,7 +87,7 @@ public class PatientController : NPCController
                     transform.eulerAngles = Vector3.zero;
                 }
             }
-            if (isWaiting || isWaitingForNurse || isQuarantined)
+            if (isWaiting || isWaitingForNurse || isQuarantined || isExiting)
             {
                 return;
             }
@@ -149,6 +150,8 @@ public class PatientController : NPCController
     // 다음 웨이포인트로 이동하는 코루틴
     public IEnumerator OutpatientMove()
     {
+        isWaiting = true;
+        yield return new WaitForSeconds(1.5f);
         if (waypointIndex > 0 && waypoints[waypointIndex - 1] is DoctorOffice docOffice)
         {
             DoctorController targetDoctor = docOffice.doctor.GetComponent<DoctorController>();
@@ -157,10 +160,12 @@ public class PatientController : NPCController
             yield return new WaitForSeconds(1.0f);
             yield return new WaitUntil(() => doctorSignal);
             Managers.NPCManager.FaceEachOther(docOffice.doctor, gameObject);
+            yield return new WaitForSeconds(1.5f);
+            
         }
-        isWaiting = true;
-        yield return new WaitForSeconds(1.5f);
-        isWaiting = false;
+        
+        
+        
         if (isQuarantined)
         {
             agent.SetDestination(nPRoom.GetMiddlePointInRange());
@@ -200,7 +205,52 @@ public class PatientController : NPCController
                 // 현재 웨이포인트가 DoctorOffice일 경우 아이콘을 표시
                 if (waypointIndex > 0 && waypoints[waypointIndex - 1] is DoctorOffice)
                 {
-                    iconManager.IsIcon();
+                    bool isFound = false;
+                    BedWaypoint nextBed = null;
+                    foreach (Ward ward in Ward.wards)
+                    {
+                        foreach (BedWaypoint bed in ward.beds)
+                        {
+                            if (bed.patient == null && 4 <= ward.num && ward.num <= 7)
+                            {
+                                nextBed = bed;
+                                nextBed.patient = gameObject;
+                                isFound = true;
+                                break;
+                            }
+                        }
+                        if (isFound)
+                        {
+                            break;
+                        }
+                    }
+                    
+                    // 랜덤으로 입원 혹은 퇴원
+                    int random = Random.Range(0, 101);
+                    //입원 환자로 전환
+                    if (random >= 30 && isFound)
+                    {
+                        Debug.Log("외래 환자 -> 입원 환자");
+                        bedWaypoint = nextBed;
+                        isLayingDown = false;
+                        waypoints.Clear();
+                        waypointIndex = 0;
+                        officeSignal = false;
+                        doctorSignal = false;
+                        ward = bedWaypoint.ward;
+                        waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
+                        doctorSignal = false;
+                        AddInpatientWaypoints();
+                        personComponent.role = Role.Inpatient;
+                        agent.SetDestination(bedWaypoint.GetBedPoint());
+                        isWaiting = false;
+                        yield break;
+                    }
+                    else
+                    {
+                        nextBed.patient = null;
+                        iconManager.IsIcon();
+                    }
                 }
 
                 if (waypoints[waypointIndex] is DoctorOffice DO)
@@ -215,6 +265,7 @@ public class PatientController : NPCController
             }
 
         }
+        isWaiting = false;
     }
 
     private IEnumerator InpatientMove()
@@ -226,7 +277,7 @@ public class PatientController : NPCController
         }
 
         isWaiting = true;
-        yield return new WaitForSeconds(Random.Range(6, 10));
+        
         if (isQuarantined)
         {
             yield return new WaitForSeconds(2.0f);
@@ -246,7 +297,7 @@ public class PatientController : NPCController
             }
 
             agent.SetDestination(bedWaypoint.GetBedPoint());
-
+            yield return new WaitUntil(() => !agent.pathPending);
             yield return new WaitForSeconds(2.0f);
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 0, 0))
@@ -282,6 +333,7 @@ public class PatientController : NPCController
             waypoints[1].isEmpty = false;
 
             agent.SetDestination(waypoints[1].GetRandomPointInRange());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             prevWaypointIndex = 1;
         }
         else if (random <= 90)
@@ -295,6 +347,7 @@ public class PatientController : NPCController
             }
 
             agent.SetDestination(waypoints[2].GetRandomPointInRange());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             prevWaypointIndex = 2;
         }
         else
@@ -308,8 +361,11 @@ public class PatientController : NPCController
             }
 
             agent.SetDestination(waypoints[Random.Range(3, 5)].GetRandomPointInRange());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
             prevWaypointIndex = 3;
         }
+        yield return new WaitForSeconds(Random.Range(6f, 10f));
         isWaiting = false;
     }
 
@@ -329,6 +385,8 @@ public class PatientController : NPCController
         yield return new WaitForSeconds(5.0f);
 
         yield return new WaitUntil(() => doctorSignal);
+
+
         bool isFound = false;
         BedWaypoint nextBed = null;
         foreach (Ward ward in Ward.wards)
@@ -337,8 +395,8 @@ public class PatientController : NPCController
             {
                 if (bed.patient == null && 4 <= ward.num && ward.num <= 7)
                 {
-
                     nextBed = bed;
+                    nextBed.patient = gameObject;
                     isFound = true;
                     break;
                 }
@@ -354,6 +412,7 @@ public class PatientController : NPCController
         // 퇴원
         if (random <= 30 || !isFound)
         {
+            nextBed.patient = null;
             AddWaypoint(waypointsTransform, $"Counter");
             AddWaypoint(Managers.NPCManager.gatewayTransform, $"Gateway ({Random.Range(0, 2)})");
             int stayDuration = Random.Range(5, 10);
@@ -364,10 +423,13 @@ public class PatientController : NPCController
             isLayingDown = false;
 
             agent.SetDestination(waypoints[1].GetRandomPointInRange());
+            yield return new WaitForSeconds(2.0f);
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             yield return new WaitForSeconds(2.0f);
 
+
             agent.SetDestination(waypoints[2].GetRandomPointInRange());
+            yield return new WaitForSeconds(2.0f);
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             Managers.ObjectPooling.DeactivatePatient(gameObject);
 
@@ -377,18 +439,14 @@ public class PatientController : NPCController
         {
             Managers.NPCManager.PlayWakeUpAnimation(animator);
             yield return new WaitForSeconds(5.0f);
-
+            bedWaypoint = nextBed;
             agent.SetDestination(bedWaypoint.GetBedPoint());
             isLayingDown = false;
-            nextBed.patient = gameObject;
-            bedWaypoint = nextBed;
             waypoints.Clear();
             ward = bedWaypoint.ward;
             waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
             doctorSignal = false;
             AddInpatientWaypoints();
-
-
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             yield return new WaitForSeconds(2.0f);
@@ -533,7 +591,11 @@ public class PatientController : NPCController
     {
         isExiting = true;
         agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetRandomPointInRange());
+        Managers.NPCManager.PlayWakeUpAnimation(animator);
+        yield return new WaitUntil(() => !agent.pathPending);
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        //yield return new WaitForSeconds(5.0f);
+        bedWaypoint.patient = null;
         Managers.ObjectPooling.DeactivatePatient(gameObject);
         Managers.PatientCreator.numberOfOutpatient--;
     }
@@ -546,5 +608,11 @@ public class PatientController : NPCController
         waypoints.Add(waypointsTransform.Find("SofaWaypoint").gameObject.GetComponent<Waypoint>());
         waypoints.Add(waypointsTransform.Find("CounterWaypoint (0)").gameObject.GetComponent<Waypoint>());
         waypoints.Add(waypointsTransform.Find("CounterWaypoint (1)").gameObject.GetComponent<Waypoint>());
+    }
+    public IEnumerator StayDurationCounter()
+    {
+        yield return new WaitForSeconds(Random.Range(20f, 100f));
+        
+        StartCoroutine(ExitHospital());
     }
 }

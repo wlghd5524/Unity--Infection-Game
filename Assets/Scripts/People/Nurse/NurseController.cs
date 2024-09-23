@@ -92,37 +92,35 @@ public class NurseController : NPCController
 
         targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
         //targetPatientController.nurse = gameObject; // 간호사 설정
-        targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
-        agent.speed = targetPatientController.agent.speed - 0.5f;
-        yield return StartCoroutine(GoToNegativePressureRoom(targetPatientController)); // 격리된 환자라면 음압실로 이동
-        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        targetPatientController.StartCoroutine(targetPatientController.WaitForQuarantine());
-        Managers.NPCManager.FaceEachOther(gameObject, patientGameObject);
-        yield return new WaitForSeconds(3);
-        agent.speed += 0.5f;
-        isWorking = false;
-        targetPatientController.isFollowingNurse = false;
-        targetPatientController.isQuarantined = true;
-        targetPatientController.ward = -1;
-        targetPatientController.wardComponent = null;
+        
     }
-
-
 
     // 음압실로 이동
-    public void GoToNegativePressureRoom(GameObject patientGameObject)
+    public IEnumerator GoToNegativePressureRoom(GameObject patientGameObject)
     {
-        StartCoroutine(GoToPatient(patientGameObject)); // 환자에게 이동
-    }
+        PatientController targetPatientController = patientGameObject.GetComponent<PatientController>();
+        isWorking = true; // 일하는 중으로 설정
+        Managers.NPCManager.PlayWakeUpAnimation(animator);
+        yield return new WaitForSeconds(1.0f);
+        Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patientGameObject.transform, 0.5f); // 환자 앞의 임의 위치 계산
+        agent.SetDestination(targetPatientPosition); // 에이전트 목적지 설정
+        //targetPatient = patientGameObject; // 타겟 환자 설정
 
-    // 음압실로 이동을 위한 대기 후 이동 코루틴
-    IEnumerator GoToNegativePressureRoom(PatientController targetPatientController)
-    {
-        //agent.isStopped = true; // 에이전트 정지
-        //yield return new WaitForSeconds(1); // 1초 대기
-        //agent.isStopped = false; // 에이전트 재개
+        yield return new WaitUntil(() => !agent.pathPending);
+        yield return new WaitUntil(() => agent.remainingDistance == 0 && agent.speed == 0);
 
+        if (targetPatientController.animator.GetBool("Sleeping"))
+        {
+            Managers.NPCManager.PlayWakeUpAnimation(targetPatientController.animator);
+            yield return new WaitForSeconds(5.0f);
+        }
 
+        Managers.NPCManager.FaceEachOther(gameObject, patientGameObject); // 간호사와 환자가 서로를 바라보게 설정
+
+        targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
+        //targetPatientController.nurse = gameObject; // 간호사 설정
+        agent.speed = targetPatientController.agent.speed - 0.5f;
+        targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
         Transform parentTransform = GameObject.Find("Waypoints").transform;
 
         for (int i = 0; i < 4; i++)
@@ -136,12 +134,26 @@ public class NurseController : NPCController
                 break;
             }
         }
-
-
-
-
-        yield return new WaitUntil(() => !agent.pathPending);
+        // 격리실이 남아있지 않을 때
+        if(targetPatientController.nPRoom == null)
+        {
+            targetPatientController.StartCoroutine(targetPatientController.ExitHospital());
+        }
+        else
+        {
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+            targetPatientController.StartCoroutine(targetPatientController.WaitForQuarantine());
+            Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
+            yield return new WaitForSeconds(3);
+            agent.speed += 0.5f;
+            isWorking = false;
+            targetPatientController.isFollowingNurse = false;
+            targetPatientController.isQuarantined = true;
+            targetPatientController.ward = -1;
+            targetPatientController.wardComponent = null;
+        }
     }
+
 
     // 대기 후 랜덤 웨이포인트로 이동 코루틴
     public IEnumerator WardNurseMove()
@@ -172,14 +184,24 @@ public class NurseController : NPCController
                             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                             transform.eulerAngles = nurseWaitingPoint.doctorOffice.doctor.transform.eulerAngles;
                         }
-                        if (!doctorController.waypoints[1].isEmpty)
+                        if (doctorController.nurse != null)
                         {
-                            yield return new WaitForSeconds(3);
-                            doctorController.nurse.GetComponent<NurseController>().agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i + 10].GetMiddlePointInRange());
+                            NurseController nurseController = doctorController.nurse.GetComponent<NurseController>();
+                            if (!doctorController.waypoints[1].isEmpty)
+                            {
+                                yield return new WaitForSeconds(3);
+                                nurseController.agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i + 10].GetMiddlePointInRange());
+                                yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+                                nurseController.gameObject.transform.LookAt(doctorController.gameObject.transform);
+                            }
+                            else
+                            {
+                                nurseController.agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i].GetMiddlePointInRange());
+                                nurseController.gameObject.transform.eulerAngles = nurseWaitingPoint.doctorOffice.doctor.GetComponent<DoctorController>().chair.transform.eulerAngles;
+
+                            }
                         }
-                        else {
-                            doctorController.nurse.GetComponent<NurseController>().agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i].GetMiddlePointInRange());
-                        }
+                        
                     }
                 }
             }
