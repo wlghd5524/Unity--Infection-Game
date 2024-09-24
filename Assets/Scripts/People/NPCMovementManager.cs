@@ -128,7 +128,7 @@ public class NPCMovementManager
 
     public bool isArrived(NavMeshAgent agent)
     {
-        if (!agent.pathPending && agent.remainingDistance < 0.5f && agent.velocity.sqrMagnitude == 0f)
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && !agent.hasPath)
             return true;
         return false;
     }

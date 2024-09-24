@@ -47,7 +47,6 @@ public class NewsController : MonoBehaviour
 
         CheckFirstInfectionNews(allWards);
         CheckInfectionNews(allWards, GetInfectionThreshold());
-        CheckWardStressNews(allWards);
         CheckWardClosedNews(allWards);
     }
 
@@ -68,23 +67,6 @@ public class NewsController : MonoBehaviour
 
             UpdateNewsTrigger(ward.num, wardInfectionNewsTriggered, infectionRate >= threshold,
                 $"<color=#FF0000>경고!!</color> {ward.WardName} 내 감염률이 <color=#FF0000>{infectionRate}%</color>에 도달했습니다!"
-            );
-        }
-    }
-
-    private void CheckWardStressNews(List<Ward> wards)
-    {
-        foreach (Ward ward in wards)
-        {
-            float doctorStress = StressManager.Instance.GetAverageDoctorStressByWard(ward);
-            float nurseStress = StressManager.Instance.GetAverageNurseStressByWard(ward);
-
-            UpdateNewsTrigger(ward.num, wardDoctorStressNewsTriggered, doctorStress >= 80,
-                $"<color=#FF0000>경고!!</color> {ward.WardName} 내 의사 평균 스트레스가 80%입니다!"
-            );
-
-            UpdateNewsTrigger(ward.num, wardNurseStressNewsTriggered, nurseStress >= 80,
-                $"<color=#FF0000>경고!!</color> {ward.WardName} 내 간호사 평균 스트레스가 80%입니다!"
             );
         }
     }

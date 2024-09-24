@@ -327,9 +327,6 @@ PrefabInstance:
       addedObject: {fileID: 860518717093704006}
     - targetCorrespondingSourceObject: {fileID: 7006905325773244016, guid: 81197458f9625584b9003dbc6dd222d2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -103132536845563094}
-    - targetCorrespondingSourceObject: {fileID: 7006905325773244016, guid: 81197458f9625584b9003dbc6dd222d2, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 173065538601316836}
     - targetCorrespondingSourceObject: {fileID: 7006905325773244016, guid: 81197458f9625584b9003dbc6dd222d2, type: 3}
       insertIndex: -1
@@ -667,21 +664,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   createVirusManager: {fileID: 0}
---- !u!114 &-103132536845563094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4418382920810481429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a58caa08a3aac4d478fe6f5c67241311, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stressLevel: 0
-  stressIncreaseRate: 2
-  stressDecreaseRate: 2
 --- !u!114 &173065538601316836
 MonoBehaviour:
   m_ObjectHideFlags: 0

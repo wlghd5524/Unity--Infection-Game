@@ -24,8 +24,6 @@ public class ProfileClickHandler : MonoBehaviour, IPointerClickHandler, IPointer
         {
             Person person = PersonManager.Instance.GetPerson(personID);
 
-            // 개별 스트레스 패널 보여주기
-            StressUIManager.Instance.ShowStressUI(personID);
             if (person != null && !person.IsResting)
             {
                 // 인벤토리 표시

@@ -86,7 +86,6 @@ public class GoToGame : MonoBehaviour
         researchCanvas.SetActive(true);
         disinfectionCanvas.SetActive(true);
         newsTickerCanvas.SetActive(true);
-        StressManager.Instance.StartStressForAll();
         calendarManager.StartCalendar();
         Managers.PatientCreator.startSignal = true; // => 게임 시작 전에 환자 생성 막는 코드입니다 patient 코드가 사라져서 오류가 뜹니다
         isStart = true;

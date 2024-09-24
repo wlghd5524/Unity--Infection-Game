@@ -336,9 +336,6 @@ PrefabInstance:
       addedObject: {fileID: 5133978001713025133}
     - targetCorrespondingSourceObject: {fileID: 2447134101546499686, guid: 6f8ed25ac77d29f459dc60a62e526e3a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1550186086882483049}
-    - targetCorrespondingSourceObject: {fileID: 2447134101546499686, guid: 6f8ed25ac77d29f459dc60a62e526e3a, type: 3}
-      insertIndex: -1
       addedObject: {fileID: -5048051613343108611}
     - targetCorrespondingSourceObject: {fileID: 2447134101546499686, guid: 6f8ed25ac77d29f459dc60a62e526e3a, type: 3}
       insertIndex: -1
@@ -576,8 +573,8 @@ MonoBehaviour:
   status: 0
   infectionResistance: 0
   role: 0
-  outpatientController: {fileID: 0}
-  wardComponent: {fileID: 0}
+  isImmune: 0
+  patientController: {fileID: 0}
 --- !u!114 &-9052099237422774563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -590,9 +587,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab1b0ebc0a55dd40a1e450be33d99d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 0
   createVirusManager: {fileID: 0}
 --- !u!195 &5133978001713025133
 NavMeshAgent:
@@ -616,21 +610,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1550186086882483049
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3439263749878929878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a58caa08a3aac4d478fe6f5c67241311, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stressLevel: 0
-  stressIncreaseRate: 2
-  stressDecreaseRate: 2
 --- !u!114 &-5048051613343108611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -645,7 +624,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boxCastDistance: 100
   boxCastSize: {x: 100, y: 1, z: 100}
-  npcTag: Nurse
 --- !u!114 &-4041656310700625101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -683,11 +661,11 @@ MonoBehaviour:
   animator: {fileID: 0}
   agent: {fileID: 0}
   waypoints: []
-  waypointsTransform: {fileID: 0}
   wardComponent: {fileID: 0}
   ward: 0
   isWaiting: 0
   personComponent: {fileID: 0}
+  num: 0
   waypointIndex: 0
   isQuarantined: 0
   isFollowingNurse: 0
@@ -700,10 +678,10 @@ MonoBehaviour:
   nurse: {fileID: 0}
   nPRoom: {fileID: 0}
   monthlyReportUI: {fileID: 0}
-  num: 0
   bedWaypoint: {fileID: 0}
   prevWaypointIndex: -1
   isLayingDown: 0
+  waypointsTransform: {fileID: 0}
 --- !u!4 &3619387768868632679 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4356646224909819863, guid: 6f8ed25ac77d29f459dc60a62e526e3a, type: 3}

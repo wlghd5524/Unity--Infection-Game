@@ -50,7 +50,7 @@ public class LayerChangeManager : MonoBehaviour
             {
                 SetLayerRecursively(npc, layers[0]);
             }
-            else if (waypointIndex == 4)
+            else if (waypointIndex == 4 || npc.GetComponent<PatientController>().isExiting)
             {
                 SetLayerRecursively(npc, layers[1]);
             }

@@ -71,6 +71,10 @@ public class PatientController : NPCController
 
         if (personComponent.role == Role.Inpatient)
         {
+            if(isExiting)
+            {
+                return;
+            }
             if (!isLayingDown)
             {
                 agent.radius = 0.175f;
@@ -87,7 +91,7 @@ public class PatientController : NPCController
                     transform.eulerAngles = Vector3.zero;
                 }
             }
-            if (isWaiting || isWaitingForNurse || isQuarantined || isExiting)
+            if (isWaiting || isWaitingForNurse || isQuarantined)
             {
                 return;
             }
@@ -187,7 +191,6 @@ public class PatientController : NPCController
             {
                 DoctorController doctorController = doc.doctor.GetComponent<DoctorController>();
                 doc.isEmpty = true;
-                doc.doctor.GetComponent<StressController>().stressLevel += (++doctorController.patientCount / 10) + 1;
 
                 // 진료비 수입 증가 임시 위치
                 // 진료비 : 10000
@@ -590,12 +593,18 @@ public class PatientController : NPCController
     public IEnumerator ExitHospital()
     {
         isExiting = true;
+        if (bedWaypoint != null)
+        {
+            bedWaypoint.isEmpty = true;
+            bedWaypoint.patient = null;
+        }
+        bedWaypoint = null;
         agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetRandomPointInRange());
         Managers.NPCManager.PlayWakeUpAnimation(animator);
         yield return new WaitUntil(() => !agent.pathPending);
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         //yield return new WaitForSeconds(5.0f);
-        bedWaypoint.patient = null;
+        
         Managers.ObjectPooling.DeactivatePatient(gameObject);
         Managers.PatientCreator.numberOfOutpatient--;
     }

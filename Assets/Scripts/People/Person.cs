@@ -44,7 +44,6 @@ public class Person : MonoBehaviour
 
     public bool isImmune;
     private CapsuleCollider coll;
-    private StressController stressController;
     private bool isWaiting;
 
     public PatientController patientController;
@@ -95,7 +94,6 @@ public class Person : MonoBehaviour
         coll = GetComponent<CapsuleCollider>();
 
         patientController = GetComponent<PatientController>();
-        stressController = GetComponent<StressController>();
 
         // Renderer 컴포넌트 얻기
         Renderer renderer = GetComponent<Renderer>();
@@ -104,12 +102,6 @@ public class Person : MonoBehaviour
             // NPCManager에 NPC 등록
             NPCManager.Instance.RegisterNPC(gameObject, this, renderer);
         }
-
-        if (stressController == null)
-        {
-            stressController = gameObject.AddComponent<StressController>();
-        }
-        StressManager.Instance.RegisterPerson(this);    // NPC 등록
     }
     void Update()
     {
@@ -164,12 +156,6 @@ public class Person : MonoBehaviour
             ResetInventory();
         }
     }
-
-    public float GetStressLevel()
-    {
-        return stressController != null ? stressController.stressLevel : 0f;
-    }
-
     public void ResetPerson()
     {
         role = Role.Outpatient;

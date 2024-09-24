@@ -327,9 +327,6 @@ PrefabInstance:
       addedObject: {fileID: -9075711822786738826}
     - targetCorrespondingSourceObject: {fileID: 8851905633807522744, guid: fbe50d8ae829e1b4bbc8fedccf15ba74, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -5594797515972210014}
-    - targetCorrespondingSourceObject: {fileID: 8851905633807522744, guid: fbe50d8ae829e1b4bbc8fedccf15ba74, type: 3}
-      insertIndex: -1
       addedObject: {fileID: -3702286895138453458}
     - targetCorrespondingSourceObject: {fileID: 8851905633807522744, guid: fbe50d8ae829e1b4bbc8fedccf15ba74, type: 3}
       insertIndex: -1
@@ -499,16 +496,20 @@ MonoBehaviour:
   animator: {fileID: 0}
   agent: {fileID: 0}
   waypoints: []
-  waypointsTransform: {fileID: 0}
   wardComponent: {fileID: 0}
   ward: 0
   isWaiting: 0
+  personComponent: {fileID: 0}
+  num: 0
+  role: 0
   patientCount: 0
   isResting: 0
   changeSignal: 0
   outpatientSignal: 0
   chair: {fileID: 0}
-  outpatient: {fileID: 0}
+  patient: {fileID: 0}
+  nurse: {fileID: 0}
+  isWorking: 0
 --- !u!114 &-9075711822786738826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,25 +522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab1b0ebc0a55dd40a1e450be33d99d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 64
   createVirusManager: {fileID: 0}
---- !u!114 &-5594797515972210014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6278662261844816342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a58caa08a3aac4d478fe6f5c67241311, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stressLevel: 0
-  stressIncreaseRate: 2
-  stressDecreaseRate: 2
 --- !u!114 &-3702286895138453458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -555,8 +538,8 @@ MonoBehaviour:
   status: 0
   infectionResistance: 0
   role: 0
-  outpatientController: {fileID: 0}
-  wardComponent: {fileID: 0}
+  isImmune: 0
+  patientController: {fileID: 0}
 --- !u!195 &5874281004290059295
 NavMeshAgent:
   m_ObjectHideFlags: 0

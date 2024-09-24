@@ -65,8 +65,5 @@ public class RadialProgressbars : MonoBehaviour
         hospitalInfectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);
         hospitalInfectionRateText.text = $"{hospitalInfectionRate:F1}%";
         hospitalInfectionRateBar.fillAmount = hospitalInfectionRate / 100;
-
-        hospitalStressAverageRateText.text = $"{StressManager.Instance.GetAverageStress():F1}%";
-        hospitalStressAverageRateBar.fillAmount = StressManager.Instance.GetAverageStress() / 100;
     }
 }

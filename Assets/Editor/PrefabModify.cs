@@ -1,63 +1,60 @@
+ï»¿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using System.IO;
 
-public class PrefabModify : MonoBehaviour
+public class RemoveMissingScriptsInFolder : MonoBehaviour
 {
-    [MenuItem("Tools/Transfer SkinnedMeshRenderer In Folder")]
-    public static void TransferSkinnedMeshRendererInFolder()
+    [MenuItem("Tools/Remove Missing Scripts in Prefabs in Folder")]
+    private static void RemoveMissingScriptsInPrefabsInFolder()
     {
-        string folderPath = "Assets/Resources/Prefabs/Doctors"; // º¯°æÇÒ Æú´õ °æ·Î¸¦ ÁöÁ¤ÇÏ¼¼¿ä.
+        string folderPath = "Assets/Resources/Prefabs/Patient"; // ì›í•˜ëŠ” í´ë” ê²½ë¡œë¡œ ë³€ê²½
 
-        string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { folderPath });
+        string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab", new[] { folderPath });
 
-        foreach (string guid in guids)
+        foreach (string guid in prefabGuids)
         {
-            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            string path = AssetDatabase.GUIDToAssetPath(guid);
 
-            if (prefab != null)
+            // EditPrefabContentsScope ì‚¬ìš©í•˜ì—¬ í”„ë¦¬íŒ¹ ìˆ˜ì •
+            using (var editScope = new PrefabUtility.EditPrefabContentsScope(path))
             {
-                bool isModified = false;
+                GameObject prefabRoot = editScope.prefabContentsRoot;
 
-                // PrefabÀÇ ÀÎ½ºÅÏ½º¸¦ »ı¼ºÇÏ¿© ÀÛ¾÷À» ¼öÇà
-                GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-
-                // ºÎ¸ğ ¿ÀºêÁ§Æ®°¡ °¡Áø ¸ğµç ÀÚ½ÄµéÀ» È®ÀÎ
-                foreach (Transform child in instance.transform)
+                // 'Missing Script'ê°€ ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸í•˜ê³  ì œê±°
+                int removedCount = RemoveMissingScripts(prefabRoot);
+                if (removedCount > 0)
                 {
-                    SkinnedMeshRenderer skinnedMeshRenderer = child.GetComponent<SkinnedMeshRenderer>();
-
-                    if (skinnedMeshRenderer != null)
-                    {
-                        // ºÎ¸ğ ¿ÀºêÁ§Æ®¿¡ SkinnedMeshRenderer Ãß°¡
-                        SkinnedMeshRenderer parentSkinnedMeshRenderer = instance.AddComponent<SkinnedMeshRenderer>();
-
-                        // SkinnedMeshRendererÀÇ ¼Ó¼º º¹»ç
-                        parentSkinnedMeshRenderer.sharedMesh = skinnedMeshRenderer.sharedMesh;
-                        parentSkinnedMeshRenderer.materials = skinnedMeshRenderer.sharedMaterials;
-                        parentSkinnedMeshRenderer.bones = skinnedMeshRenderer.bones;
-                        parentSkinnedMeshRenderer.rootBone = skinnedMeshRenderer.rootBone;
-
-                        // ÀÚ½Ä ¿ÀºêÁ§Æ® »èÁ¦
-                        DestroyImmediate(child.gameObject);
-
-                        isModified = true;
-                    }
+                    Debug.Log($"Removed {removedCount} missing scripts from: {path}");
                 }
-
-                if (isModified)
-                {
-                    // Prefab ÀúÀå
-                    PrefabUtility.SaveAsPrefabAsset(instance, assetPath);
-                    Debug.Log($"Modified and saved prefab: {assetPath}");
-                }
-
-                // ÀÎ½ºÅÏ½º »èÁ¦
-                DestroyImmediate(instance);
             }
         }
 
-        Debug.Log("SkinnedMeshRenderer transfer completed in folder.");
+        Debug.Log("Missing scripts removed from all prefabs in folder.");
+    }
+
+    // GameObjectì—ì„œ 'Missing Script' ì»´í¬ë„ŒíŠ¸ë¥¼ ì œê±°í•˜ëŠ” í•¨ìˆ˜
+    private static int RemoveMissingScripts(GameObject gameObject)
+    {
+        int removedCount = 0;
+        Component[] components = gameObject.GetComponents<Component>();
+
+        for (int i = components.Length - 1; i >= 0; i--)
+        {
+            if (components[i] == null) // Missing Scriptì¸ ê²½ìš°
+            {
+                Undo.RegisterCompleteObjectUndo(gameObject, "Remove Missing Script");
+                GameObjectUtility.RemoveMonoBehavioursWithMissingScript(gameObject);
+                removedCount++;
+            }
+        }
+
+        // ëª¨ë“  í•˜ìœ„ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë„ ê²€ì‚¬
+        foreach (Transform child in gameObject.transform)
+        {
+            removedCount += RemoveMissingScripts(child.gameObject);
+        }
+
+        return removedCount;
     }
 }
+#endif
