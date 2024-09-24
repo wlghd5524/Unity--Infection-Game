@@ -91,8 +91,8 @@ public class NurseController : NPCController
         Managers.NPCManager.FaceEachOther(gameObject, patientGameObject); // 간호사와 환자가 서로를 바라보게 설정
 
         targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
-        //targetPatientController.nurse = gameObject; // 간호사 설정
-        
+                                                    //targetPatientController.nurse = gameObject; // 간호사 설정
+
     }
 
     // 음압실로 이동
@@ -135,7 +135,7 @@ public class NurseController : NPCController
             }
         }
         // 격리실이 남아있지 않을 때
-        if(targetPatientController.nPRoom == null)
+        if (targetPatientController.nPRoom == null)
         {
             targetPatientController.StartCoroutine(targetPatientController.ExitHospital());
         }
@@ -172,7 +172,7 @@ public class NurseController : NPCController
             {
                 for (int i = 4; i <= 13; i++)
                 {
-                    if (waypoints[i] is NurseWaitingPoint nurseWaitingPoint)
+                    if (waypoints[i] is NurseWaitingPoint nurseWaitingPoint && nurseWaitingPoint.doctorOffice.doctor != null)
                     {
                         DoctorController doctorController = nurseWaitingPoint.doctorOffice.doctor.GetComponent<DoctorController>();
                         if (nurseWaitingPoint.isEmpty && !doctorController.isResting && isWaitingAtDoctorOffice == false)
@@ -181,6 +181,7 @@ public class NurseController : NPCController
                             nurseWaitingPoint.isEmpty = false;
                             isWaitingAtDoctorOffice = true;
                             agent.SetDestination(waypoints[i].GetMiddlePointInRange());
+                            //yield return new WaitUntil(() => Managers.NPCManager.isFindPath(agent));
                             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                             transform.eulerAngles = nurseWaitingPoint.doctorOffice.doctor.transform.eulerAngles;
                         }
@@ -191,17 +192,21 @@ public class NurseController : NPCController
                             {
                                 yield return new WaitForSeconds(3);
                                 nurseController.agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i + 10].GetMiddlePointInRange());
+                                //yield return new WaitUntil(() => Managers.NPCManager.isFindPath(agent));
                                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                                 nurseController.gameObject.transform.LookAt(doctorController.gameObject.transform);
                             }
                             else
                             {
                                 nurseController.agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i].GetMiddlePointInRange());
+                                //yield return new WaitUntil(() => Managers.NPCManager.isFindPath(agent));
+                                yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
                                 nurseController.gameObject.transform.eulerAngles = nurseWaitingPoint.doctorOffice.doctor.GetComponent<DoctorController>().chair.transform.eulerAngles;
 
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -274,13 +279,18 @@ public class NurseController : NPCController
         else if (8 <= roleNum && roleNum <= 11)
         {
             int random = Random.Range(4, waypoints.Count);
-            if (!waypoints[random].isEmpty && waypoints[random] is BedWaypoint bed)
+            if (!waypoints[random].isEmpty && waypoints[random] is BedWaypoint bed && bed.patient != null)
             {
                 PatientController targetInpatientController = bed.patient.GetComponent<PatientController>();
                 targetInpatientController.StartCoroutine(targetInpatientController.WaitForNurse());
                 agent.SetDestination(bed.transform.position);
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                 //Managers.NPCManager.FaceEachOther(bed.patient, gameObject);
+                if (bed.patient == null)
+                {
+                    isWaiting = false;
+                    yield break;
+                }
                 transform.LookAt(bed.patient.transform);
                 if (Random.Range(0, 101) <= 50)
                 {

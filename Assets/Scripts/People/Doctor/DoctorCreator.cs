@@ -17,17 +17,10 @@ public class DoctorCreator : MonoBehaviour
         GameObject newDoctor = GameObject.Find("ERDoctor 0");
         newDoctor.GetComponent<DoctorController>().nurse = GameObject.Find("ERNurse 9");
         Managers.ObjectPooling.ActivateDoctor(newDoctor);
-        for (int i = 0; i < doctorCount.Length; i++)
+        for (int i = 0; i < Managers.ObjectPooling.maxOfWardDoctor; i++)
         {
-            for (int j = 0; j < 2; j++)
-            {
-                for (int p = 0; p < 3; p++)
-                {
-                    newDoctor = GameObject.Find("WardDoctor " + ((i * 10) + (j * 5) + p));
-                    Managers.ObjectPooling.ActivateDoctor(newDoctor);
-                }
-
-            }
+            newDoctor = GameObject.Find("WardDoctor " + i);
+            Managers.ObjectPooling.ActivateDoctor(newDoctor);
         }
     }
 

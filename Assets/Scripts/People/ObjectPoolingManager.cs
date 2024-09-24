@@ -6,12 +6,12 @@ public class ObjectPoolingManager
 {
     // 최대 외래 환자, 의사, 간호사, 입원 환자 수
     public int maxOfPatientObject = 300;
-    public int maxOfOutpatient = 25;
-    public int maxOfInpatient = 40;
+    public int maxOfOutpatient = 100;
+    public int maxOfInpatient = 100;
     public int maxOfEmergencyPatient = 28;
 
 
-    public int maxOfWardDoctor = 40;
+    public int maxOfWardDoctor = 24;
     public int maxOfERDoctor = 1;
 
 
@@ -61,13 +61,13 @@ public class ObjectPoolingManager
     {
         // 의사 프리팹 로드
         GameObject[] DoctorPrefabs = Resources.LoadAll<GameObject>("Prefabs/Doctor");
-
+        int[] officeNumbers = { 0, 1, 2, 5, 6, 7 };
         //병동 의사 생성
         for (int i = 0; i < maxOfWardDoctor; i++)
         {
-            int ward = i / 10;
+            int ward = i / 6;
             // 의사 스폰 위치 설정
-            DoctorOffice spawnArea = Managers.NPCManager.waypointDictionary[(ward, "DoctorWaypoints")].Find("Doctor'sOffice (" + (i % 10) + ")").GetComponent<DoctorOffice>();
+            DoctorOffice spawnArea = Managers.NPCManager.waypointDictionary[(ward, "DoctorWaypoints")].Find("Doctor'sOffice (" + (officeNumbers[i % 6]) + ")").GetComponent<DoctorOffice>();
 
             // 프리팹 리스트에서 랜덤으로 하나 선택하여 생성
             GameObject newDoctor = Object.Instantiate(DoctorPrefabs[Random.Range(0, DoctorPrefabs.Length)], spawnArea.GetRandomPointInRange(), Quaternion.identity);
@@ -87,7 +87,7 @@ public class ObjectPoolingManager
             doctorController.waypoints.Add(spawnArea);
 
             // 외래 환자 대기 구역 할당
-            DoctorOffice waypoint = Managers.NPCManager.waypointDictionary[(ward, "OutpatientWaypoints")].Find("Doctor'sOffice (" + (i % 10) + ")").GetComponent<DoctorOffice>();
+            DoctorOffice waypoint = Managers.NPCManager.waypointDictionary[(ward, "OutpatientWaypoints")].Find("Doctor'sOffice (" + (officeNumbers[i % 6]) + ")").GetComponent<DoctorOffice>();
             doctorController.waypoints.Add(waypoint);
             newDoctor.transform.position = spawnArea.transform.position;
             newDoctor.GetComponent<SkinnedMeshRenderer>().enabled = false;
@@ -236,7 +236,7 @@ public class ObjectPoolingManager
         patientController.isExiting = false;
         patientController.nurse = null;
         patientController.nPRoom = null;
-        if(patientController.bedWaypoint != null)
+        if (patientController.bedWaypoint != null)
         {
             patientController.bedWaypoint.isEmpty = true;
             patientController.bedWaypoint = null;

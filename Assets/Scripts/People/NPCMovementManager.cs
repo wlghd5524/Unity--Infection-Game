@@ -125,11 +125,17 @@ public class NPCMovementManager
         // 샘플링된 위치 반환
         return navHit.position;
     }
-
-    public bool isArrived(NavMeshAgent agent)
+    public bool isFindPath(NavMeshAgent agent)
     {
-        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && !agent.hasPath)
+        if (!agent.pathPending && agent.hasPath) 
             return true;
         return false;
     }
+    public bool isArrived(NavMeshAgent agent)
+    {
+        if (!agent.pathPending && agent.remainingDistance <= 0.25 && !agent.hasPath)
+            return true;
+        return false;
+    }
+
 }

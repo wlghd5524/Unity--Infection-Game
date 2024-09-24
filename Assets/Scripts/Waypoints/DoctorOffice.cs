@@ -32,7 +32,7 @@ public class DoctorOffice : Waypoint
     }
     void Start()
     {
-        wardComponent = doctor.GetComponent<DoctorController>().wardComponent;
+        wardComponent = transform.parent.parent.GetComponent<Ward>();
     }
 
     // Update is called once per frame
@@ -44,7 +44,7 @@ public class DoctorOffice : Waypoint
             if (next.isWaitingForDoctor)
             {
                 next = waitingQueue.Dequeue();
-                if(next.isQuarantined || next.isWaitingForNurse || next.isFollowingNurse)
+                if (next.isQuarantined || next.isWaitingForNurse || next.isFollowingNurse)
                 {
                     return;
                 }
@@ -52,7 +52,7 @@ public class DoctorOffice : Waypoint
                 next.officeSignal = true;
             }
         }
-        if(wardComponent.isClosed)
+        if (wardComponent.isClosed)
         {
             waitingQueue.Clear();
         }
