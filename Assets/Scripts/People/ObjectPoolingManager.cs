@@ -6,7 +6,7 @@ public class ObjectPoolingManager
 {
     // 최대 외래 환자, 의사, 간호사, 입원 환자 수
     public int maxOfPatientObject = 300;
-    public int maxOfOutpatient = 100;
+    public int maxOfOutpatient = 50;
     public int maxOfInpatient = 100;
     public int maxOfEmergencyPatient = 28;
 

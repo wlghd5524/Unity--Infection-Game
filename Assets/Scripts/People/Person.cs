@@ -168,7 +168,7 @@ public class Person : MonoBehaviour
     {
         gameObject.GetComponent<NPCController>().wardComponent.infectedNPC++;
         StartCoroutine(IncubationPeriod(infection));
-        if(Random.Range(0,100) <= 30)
+        if (Random.Range(0, 100) <= 30)
         {
             StartCoroutine(SelfRecovery());
         }
@@ -176,7 +176,7 @@ public class Person : MonoBehaviour
 
     public IEnumerator SelfRecovery()
     {
-        yield return new WaitForSeconds(Random.Range(7, 15));
+        yield return new WaitForSeconds(Random.Range(70f, 80f));
         Debug.Log("자가 면역을 가져서 더 이상 감염되지 않음");
         status = InfectionState.Normal;
         isImmune = true;

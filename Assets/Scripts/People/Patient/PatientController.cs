@@ -32,6 +32,8 @@ public class PatientController : NPCController
 
     public Transform waypointsTransform;
 
+    public bool excutedHC = false;  //입원 시간 재는 코루틴 실행 여부
+    public bool excutedQC = false;  //격리 시간 재는 코루틴 실행 여부
 
     public void Activate()
     {
@@ -56,7 +58,7 @@ public class PatientController : NPCController
         if (personComponent.role == Role.Inpatient)
         {
             AddInpatientWaypoints();
-            StartCoroutine(StayDurationCounter());
+            
         }
         if (personComponent.role == Role.EmergencyPatient)
         {
@@ -68,9 +70,18 @@ public class PatientController : NPCController
     {
         // 애니메이션
         Managers.NPCManager.UpdateAnimation(agent, animator);
-
+        if(isQuarantined && excutedQC)
+        {
+            excutedQC = false;
+            StartCoroutine(QuarantineTimeCounter());
+        }
         if (personComponent.role == Role.Inpatient)
         {
+            if(!excutedHC && Managers.PatientCreator.startSignal)
+            {
+                excutedHC = true;
+                StartCoroutine(HospitalizationTimeCounter());
+            }
             if (isExiting)
             {
                 return;
@@ -622,10 +633,17 @@ public class PatientController : NPCController
         waypoints.Add(waypointsTransform.Find("CounterWaypoint (0)").gameObject.GetComponent<Waypoint>());
         waypoints.Add(waypointsTransform.Find("CounterWaypoint (1)").gameObject.GetComponent<Waypoint>());
     }
-    public IEnumerator StayDurationCounter()
+    public IEnumerator HospitalizationTimeCounter()
     {
         yield return new WaitForSeconds(Random.Range(20f, 100f));
 
+        StartCoroutine(ExitHospital());
+    }
+    public IEnumerator QuarantineTimeCounter()
+    {
+        yield return new WaitForSeconds(70);
+        nPRoom = null;
+        isQuarantined = false;
         StartCoroutine(ExitHospital());
     }
 }
