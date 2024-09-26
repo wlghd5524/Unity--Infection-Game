@@ -183,7 +183,8 @@ public class PatientController : NPCController
 
         if (isQuarantined)
         {
-            agent.SetDestination(nPRoom.GetMiddlePointInRange());
+            agent.SetDestination(nPRoom.GetBedPoint());
+            isWaiting = false;
             yield break;
         }
 
@@ -295,7 +296,7 @@ public class PatientController : NPCController
         if (isQuarantined)
         {
             yield return new WaitForSeconds(2.0f);
-            agent.SetDestination(nPRoom.GetRandomPointInRange());
+            agent.SetDestination(nPRoom.GetBedPoint());
             isWaiting = false;
             yield break;
         }
@@ -642,6 +643,7 @@ public class PatientController : NPCController
     public IEnumerator QuarantineTimeCounter()
     {
         yield return new WaitForSeconds(70);
+        nPRoom.isEmpty = true;
         nPRoom = null;
         isQuarantined = false;
         StartCoroutine(ExitHospital());

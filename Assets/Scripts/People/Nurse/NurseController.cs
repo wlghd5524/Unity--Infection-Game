@@ -123,7 +123,7 @@ public class NurseController : NPCController
         targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
         Transform parentTransform = GameObject.Find("Waypoints").transform;
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 14; i++)
         {
             NPRoom nPRoom = parentTransform.Find("N-PRoom (" + i + ")").GetComponent<NPRoom>(); // 음압실 웨이포인트 찾기
             if (nPRoom.isEmpty)
