@@ -68,6 +68,7 @@ public class PatientCreator
             spawnArea.patient = newInpatient;
             PatientController newInpatientController = newInpatient.GetComponent<PatientController>();
             newInpatientController.waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
+            newInpatientController.ward = ward;
             newInpatientController.num = i;
             newInpatientController.bedWaypoint = spawnArea;
             Transform waypointTransform = newInpatientController.bedWaypoint.transform.parent;

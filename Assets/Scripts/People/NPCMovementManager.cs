@@ -133,8 +133,23 @@ public class NPCMovementManager
     }
     public bool isArrived(NavMeshAgent agent)
     {
-        if (!agent.pathPending && agent.remainingDistance <= 0.25 && !agent.hasPath)
+        // Check if the agent is on a path and is still calculating the path
+        if (agent.pathPending)
+            return false;
+
+        // Check if the path status is invalid or partial (unable to reach destination)
+        if (agent.pathStatus == NavMeshPathStatus.PathInvalid || agent.pathStatus == NavMeshPathStatus.PathPartial)
+            return false;
+
+        // Check if the agent has a path and the remaining distance is greater than the stopping distance plus a small threshold
+        if (agent.hasPath && agent.remainingDistance > agent.stoppingDistance + 0.25f)
+            return false;
+
+        // Check if the agent has no path and is not moving (velocity is very low)
+        if (!agent.hasPath || agent.velocity.sqrMagnitude < 0.01f)
             return true;
+
+        // Default to not arrived
         return false;
     }
 
