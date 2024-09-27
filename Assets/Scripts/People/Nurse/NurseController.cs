@@ -147,13 +147,14 @@ public class NurseController : NPCController
             targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
             Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
             yield return new WaitForSeconds(3);
-            agent.speed += 0.5f;
-            isWorking = false;
+
             targetPatientController.isFollowingNurse = false;
             targetPatientController.isQuarantined = true;
             targetPatientController.ward = -1;
             targetPatientController.wardComponent = null;
         }
+        agent.speed += 0.5f;
+        isWorking = false;
     }
 
 

@@ -70,7 +70,7 @@ public class IconManager : MonoBehaviour
                 {
                     //마스크 씌우기
                     //targetNPCCLickManager.WearingMask(targetNPCCLickManager.SearchNurse(person.gameObject.transform.position));
-                    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse)
+                    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting)
                     {
                         Debug.Log("이미 격리중인 환자입니다.");
                     }

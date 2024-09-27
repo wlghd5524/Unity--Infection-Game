@@ -127,12 +127,6 @@ public class NPCMovementManager
         // 샘플링된 위치 반환
         return navHit.position;
     }
-    public bool isFindPath(NavMeshAgent agent)
-    {
-        if (!agent.pathPending && agent.hasPath) 
-            return true;
-        return false;
-    }
     public bool isArrived(NavMeshAgent agent)
     {
         // Check if the agent is on a path and is still calculating the path
