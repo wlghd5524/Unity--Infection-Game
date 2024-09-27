@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Waypoint : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class Waypoint : MonoBehaviour
     public Vector3 rangeSize; // 웨이포인트 범위의 크기
     public Ward wardComponent;
     public Dictionary<int, (GameObject, bool)> chairsDictionary = new Dictionary<int, (GameObject, bool)>();
-
+    public List<Vector3> sampledPositions = new List<Vector3>();
     private void Awake()
     {
         GameObject[] chairsInRange = FindChairs();
@@ -18,6 +19,9 @@ public class Waypoint : MonoBehaviour
         {
             chairsDictionary.Add(i++, (chair, true));
         }
+
+        SamplingPosition();
+
     }
     // 범위 내에서 랜덤 위치를 반환
     public Vector3 GetRandomPointInRange()
@@ -58,6 +62,30 @@ public class Waypoint : MonoBehaviour
 
         // 리스트를 배열로 반환
         return chairsInRange.ToArray();
+    }
+    public Vector3 GetSampledPosition()
+    {
+        return sampledPositions[Random.Range(0, sampledPositions.Count)];
+    }
+    private void SamplingPosition()
+    {
+        float halfWidth = rangeSize.x / 2;
+        float halfHeight = rangeSize.z / 2;
+        // 사각형 영역 내의 지점을 그리드 형태로 탐색
+        for (float x = -halfWidth; x <= halfWidth; x += 1.0f)
+        {
+            for (float z = -halfHeight; z <= halfHeight; z += 1.0f)
+            {
+                Vector3 testPosition = new Vector3(transform.position.x + x, transform.position.y, transform.position.z + z);
+                NavMeshHit hit;
+
+                // 각 지점에서 NavMesh 샘플링
+                if (NavMesh.SamplePosition(testPosition, out hit, 1.0f, NavMesh.AllAreas))
+                {
+                    sampledPositions.Add(hit.position);
+                }
+            }
+        }
     }
 
     // Gizmos를 사용하여 범위를 시각적으로 표시

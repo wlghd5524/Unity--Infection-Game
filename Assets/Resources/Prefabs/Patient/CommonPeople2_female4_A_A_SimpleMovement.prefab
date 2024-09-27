@@ -702,6 +702,8 @@ MonoBehaviour:
   prevWaypointIndex: -1
   isLayingDown: 0
   waypointsTransform: {fileID: 0}
+  excutedHC: 0
+  excutedQC: 0
 --- !u!4 &5247650535729400468 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4647427957008933930, guid: 16e7f270fa0405b43aff654e0bcd844e, type: 3}

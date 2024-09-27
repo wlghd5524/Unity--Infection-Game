@@ -787,6 +787,8 @@ MonoBehaviour:
   prevWaypointIndex: -1
   isLayingDown: 0
   waypointsTransform: {fileID: 0}
+  excutedHC: 0
+  excutedQC: 0
 --- !u!1001 &7552871583356995924
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -39,9 +39,9 @@ public class Virus : MonoBehaviour
             if (Random.value < infectionProbability)
             {
                 person.ChangeStatus(infectionState);
-                Debug.Log($"바이러스에 의해 감염됨 (상태: {infectionState})");
+                //Debug.Log($"바이러스에 의해 감염됨 (상태: {infectionState})");
             }
-            else { Debug.Log($"바이러스에 의해 감염되지 않음 (상태: {infectionState})"); }
+            //else { Debug.Log($"바이러스에 의해 감염되지 않음 (상태: {infectionState})"); }
         }
     }
 

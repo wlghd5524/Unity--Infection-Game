@@ -66,7 +66,7 @@ public class MonthlyReportUI : MonoBehaviour
     // 지출 금액 추가 메서드
     public void AddExpense(int amount)
     {
-        Debug.Log($"AddExpense 호출됨 - amount: {amount}");
+        //Debug.Log($"AddExpense 호출됨 - amount: {amount}");
         totalExpense += amount;
         UpdateExpenseText();
     }
@@ -74,7 +74,7 @@ public class MonthlyReportUI : MonoBehaviour
     // 수입 금액 추가 메서드
     public void AddIncome(int amount)
     {
-        Debug.Log($"AddIncome 호출됨 - amount: {amount}");
+        //Debug.Log($"AddIncome 호출됨 - amount: {amount}");
         totalIncome += amount;
         UpdateIncomeText();
     }
@@ -82,7 +82,7 @@ public class MonthlyReportUI : MonoBehaviour
     // 지출 금액 텍스트 갱신
     private void UpdateExpenseText()
     {
-        Debug.Log($"UpdateExpenseText 호출됨 - totalExpense: {totalExpense}");
+        //Debug.Log($"UpdateExpenseText 호출됨 - totalExpense: {totalExpense}");
         expenseMoney.text = $"{totalExpense:N0} 원";
         UpdateNetIncomeText();
     }
@@ -90,7 +90,7 @@ public class MonthlyReportUI : MonoBehaviour
     // 수입 금액 텍스트 갱신
     private void UpdateIncomeText()
     {
-        Debug.Log($"UpdateIncomeText 호출됨 - totalIncome: {totalIncome}");
+        //Debug.Log($"UpdateIncomeText 호출됨 - totalIncome: {totalIncome}");
         incomeMoney.text = $"{totalIncome:N0} 원";
         UpdateNetIncomeText();
     }

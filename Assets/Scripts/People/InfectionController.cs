@@ -50,7 +50,7 @@ public class InfectionController : MonoBehaviour
     {
         Vector3 dropPosition = transform.position + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
         createVirusManager.CreateVirusObject(dropPosition, person);
-        Debug.Log("바이러스 떨어뜨리기 작동"); //수정
+        //Debug.Log("바이러스 떨어뜨리기 작동"); //수정
     }
 
     void OnTriggerEnter(Collider other)

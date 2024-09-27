@@ -73,6 +73,11 @@ public class PatientController : NPCController
     {
         // 애니메이션
         Managers.NPCManager.UpdateAnimation(agent, animator);
+        if (!isLayingDown)
+        {
+            Managers.NPCManager.PlayWakeUpAnimation(animator);
+            agent.radius = 0.175f;
+        }
         if (isExiting)
         {
             return;
@@ -90,11 +95,7 @@ public class PatientController : NPCController
                 StartCoroutine(HospitalizationTimeCounter());
             }
             
-            if (!isLayingDown)
-            {
-                agent.radius = 0.175f;
-            }
-            else
+            if(isLayingDown)
             {
                 agent.radius = 0.000001f;
                 if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 0, 0))
@@ -145,12 +146,7 @@ public class PatientController : NPCController
         }
         if (personComponent.role == Role.EmergencyPatient)
         {
-            if (!isLayingDown)
-            {
-                agent.radius = 0.175f;
-                //Managers.NPCManager.PlayWakeUpAnimation(animator);
-            }
-            else
+            if(isLayingDown)
             {
                 agent.radius = 0;
                 if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 270, 0))
@@ -325,6 +321,7 @@ public class PatientController : NPCController
             {
                 transform.eulerAngles = Vector3.zero;
             }
+            isLayingDown = true;
             Managers.NPCManager.PlaySittingAnimation(animator);
 
             yield return new WaitForSeconds(0.5f);
@@ -333,7 +330,6 @@ public class PatientController : NPCController
             Managers.NPCManager.PlayLayDownAnimation(animator);
 
             yield return new WaitForSeconds(2.0f);
-            isLayingDown = true;
             waypoints[0].isEmpty = false;
             prevWaypointIndex = 0;
             yield return new WaitForSeconds(2.0f);
@@ -349,7 +345,7 @@ public class PatientController : NPCController
             }
             waypoints[1].isEmpty = false;
 
-            agent.SetDestination(waypoints[1].GetRandomPointInRange());
+            agent.SetDestination(waypoints[1].GetSampledPosition());
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             prevWaypointIndex = 1;
@@ -364,7 +360,7 @@ public class PatientController : NPCController
                 isLayingDown = false;
             }
 
-            agent.SetDestination(waypoints[2].GetRandomPointInRange());
+            agent.SetDestination(waypoints[2].GetSampledPosition());
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             prevWaypointIndex = 2;
@@ -379,7 +375,7 @@ public class PatientController : NPCController
                 isLayingDown = false;
             }
 
-            agent.SetDestination(waypoints[Random.Range(3, 5)].GetRandomPointInRange());
+            agent.SetDestination(waypoints[Random.Range(3, 5)].GetSampledPosition());
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
@@ -396,10 +392,9 @@ public class PatientController : NPCController
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         DoctorController.ERwaitingList.Add(this);
         bedWaypoint.isEmpty = false;
+        isLayingDown = true;
         Managers.NPCManager.PlaySittingAnimation(animator);
         yield return new WaitForSeconds(0.5f);
-
-        isLayingDown = true;
 
         Managers.NPCManager.PlayLayDownAnimation(animator);
         yield return new WaitForSeconds(5.0f);
@@ -587,17 +582,6 @@ public class PatientController : NPCController
             Debug.LogError("의사를 찾을 수 없습니다.");
         }
     }
-
-    public IEnumerator WaitForQuarantine()
-    {
-        yield return new WaitForSeconds(3);
-        if (personComponent.status == InfectionState.CRE || personComponent.status == InfectionState.Covid)
-        {
-            yield return new WaitForSeconds(70);
-        }
-        isQuarantined = false;
-    }
-
     public IEnumerator FollowNurse(GameObject nurse)
     {
         this.nurse = nurse;
@@ -637,58 +621,38 @@ public class PatientController : NPCController
         }
         bedWaypoint = null;
         
-
-
-
-        //int count = 1;
-        //if(!agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetRandomPointInRange()))
-        //{
-        //    Debug.LogError($"{gameObject.name}의 퇴원 경로를 {count}번째 찾지 못했습니다...");
-        //    count++;
-        //}
-        //else
-        //{
-        //    Debug.Log($"{gameObject.name}의 퇴원 경로를 {count}번째에 찾았습니다!");
-        //}
-
-
         Managers.NPCManager.PlayWakeUpAnimation(animator);
-
         yield return new WaitForSeconds(5.0f);
+
         isLayingDown = false;
 
-        agent.SetDestination(waypoints[Random.Range(3, 5)].GetRandomPointInRange());
-        yield return new WaitForSeconds(2.0f);
+        agent.SetDestination(waypoints[Random.Range(3, 5)].GetSampledPosition());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        yield return new WaitForSeconds(2.0f);
 
         if (ward >= 6)
         {
-            agent.SetDestination(GameObject.Find("Waypoints/Discharge PassPoints/Discharge PassPoint (0)").GetComponent<Waypoint>().GetRandomPointInRange());
-            yield return new WaitForSeconds(2.0f);
+            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(0).GetComponent<Waypoint>().GetSampledPosition());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         }
         else if(ward >= 4)
         {
-            agent.SetDestination(GameObject.Find("Waypoints/Discharge PassPoints/Discharge PassPoint (1)").GetComponent<Waypoint>().GetRandomPointInRange());
-            yield return new WaitForSeconds(2.0f);
+            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(1).GetComponent<Waypoint>().GetSampledPosition());
+
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         }
         else if(ward >= 2)
         {
-            agent.SetDestination(GameObject.Find("Waypoints/Discharge PassPoints/Discharge PassPoint (2)").GetComponent<Waypoint>().GetRandomPointInRange());
-            yield return new WaitForSeconds(2.0f);
+            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(2).GetComponent<Waypoint>().GetSampledPosition());
+
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         }
-        agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetRandomPointInRange());
-        yield return new WaitForSeconds(2.0f);
+        agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetSampledPosition());
+
 
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-
-
-
-
 
         Managers.ObjectPooling.DeactivatePatient(gameObject);
         Managers.PatientCreator.numberOfOutpatient--;
@@ -702,27 +666,6 @@ public class PatientController : NPCController
         waypoints.Add(waypointsTransform.Find("SofaWaypoint").gameObject.GetComponent<Waypoint>());
         waypoints.Add(waypointsTransform.Find("CounterWaypoint (0)").gameObject.GetComponent<Waypoint>());
         waypoints.Add(waypointsTransform.Find("CounterWaypoint (1)").gameObject.GetComponent<Waypoint>());
-        //NavMeshPath savedPath = new NavMeshPath();
-        //NavMesh.CalculatePath(bedWaypoint.GetBedPoint(), waypoints[1].GetRandomPointInRange(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-        //NavMesh.CalculatePath(waypoints[1].GetRandomPointInRange(), bedWaypoint.GetBedPoint(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-
-        //NavMesh.CalculatePath(bedWaypoint.GetBedPoint(), waypoints[2].GetRandomPointInRange(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-        //NavMesh.CalculatePath(waypoints[2].GetRandomPointInRange(), bedWaypoint.GetBedPoint(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-
-        //NavMesh.CalculatePath(bedWaypoint.GetBedPoint(), waypoints[3].GetRandomPointInRange(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-        //NavMesh.CalculatePath(waypoints[3].GetRandomPointInRange(), bedWaypoint.GetBedPoint(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-
-        //NavMesh.CalculatePath(bedWaypoint.GetBedPoint(), waypoints[4].GetRandomPointInRange(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-        //NavMesh.CalculatePath(waypoints[4].GetRandomPointInRange(), bedWaypoint.GetBedPoint(), NavMesh.AllAreas, savedPath);
-        //navMeshPaths.Add(savedPath);
-
     }
     public IEnumerator HospitalizationTimeCounter()
     {

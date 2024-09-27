@@ -79,8 +79,7 @@ public class NurseController : NPCController
         agent.SetDestination(targetPatientPosition); // 에이전트 목적지 설정
         //targetPatient = patientGameObject; // 타겟 환자 설정
 
-        yield return new WaitUntil(() => !agent.pathPending);
-        yield return new WaitUntil(() => agent.remainingDistance == 0 && agent.speed == 0);
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
         if (targetPatientController.animator.GetBool("Sleeping"))
         {
@@ -105,9 +104,8 @@ public class NurseController : NPCController
         Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patientGameObject.transform, 0.5f); // 환자 앞의 임의 위치 계산
         agent.SetDestination(targetPatientPosition); // 에이전트 목적지 설정
         //targetPatient = patientGameObject; // 타겟 환자 설정
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
-        yield return new WaitUntil(() => !agent.pathPending);
-        yield return new WaitUntil(() => agent.remainingDistance == 0 && agent.speed == 0);
 
         if (targetPatientController.animator.GetBool("Sleeping"))
         {
@@ -141,8 +139,12 @@ public class NurseController : NPCController
         }
         else
         {
+            if(targetPatientController.personComponent.role == Role.Inpatient)
+            {
+                targetPatientController.StopCoroutine(targetPatientController.HospitalizationTimeCounter());
+            }
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            targetPatientController.StartCoroutine(targetPatientController.WaitForQuarantine());
+            targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
             Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
             yield return new WaitForSeconds(3);
             agent.speed += 0.5f;
@@ -181,7 +183,6 @@ public class NurseController : NPCController
                             nurseWaitingPoint.isEmpty = false;
                             isWaitingAtDoctorOffice = true;
                             agent.SetDestination(waypoints[i].GetMiddlePointInRange());
-                            //yield return new WaitUntil(() => Managers.NPCManager.isFindPath(agent));
                             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                             transform.eulerAngles = nurseWaitingPoint.doctorOffice.doctor.transform.eulerAngles;
                         }
@@ -192,14 +193,12 @@ public class NurseController : NPCController
                             {
                                 yield return new WaitForSeconds(3);
                                 nurseController.agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i + 10].GetMiddlePointInRange());
-                                //yield return new WaitUntil(() => Managers.NPCManager.isFindPath(agent));
                                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                                 nurseController.gameObject.transform.LookAt(doctorController.gameObject.transform);
                             }
                             else
                             {
                                 nurseController.agent.SetDestination(doctorController.nurse.GetComponent<NurseController>().waypoints[i].GetMiddlePointInRange());
-                                //yield return new WaitUntil(() => Managers.NPCManager.isFindPath(agent));
                                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
                                 nurseController.gameObject.transform.eulerAngles = nurseWaitingPoint.doctorOffice.doctor.GetComponent<DoctorController>().chair.transform.eulerAngles;
@@ -254,6 +253,14 @@ public class NurseController : NPCController
         {
             if (animator.GetBool("Sitting"))
             {
+                if (chair.transform.parent.parent.parent.eulerAngles == new Vector3(0, 0, 0))
+                {
+                    transform.eulerAngles = new Vector3(0, 180, 0);
+                }
+                else
+                {
+                    transform.eulerAngles = new Vector3(0, 0, 0);
+                }
                 isWaiting = false;
                 yield break;
             }

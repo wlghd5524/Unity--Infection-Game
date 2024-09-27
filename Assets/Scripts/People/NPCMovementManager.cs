@@ -7,10 +7,12 @@ public class NPCMovementManager
 {
     public Dictionary<(int, string), Transform> waypointDictionary = new Dictionary<(int, string), Transform>();
     public Transform gatewayTransform;
+    public Transform passPointTransform;
 
     public void Init()
     {
         gatewayTransform = GameObject.Find("Waypoints/Gateways").transform;
+        passPointTransform = GameObject.Find("Waypoints/Discharge PassPoints").transform;
         Transform wardTransform = GameObject.Find("Waypoints/Ward (8)/EmergencyPatientWaypoints").transform;
         waypointDictionary.Add((8, "EmergencyPatientWaypoints"), wardTransform);
 
