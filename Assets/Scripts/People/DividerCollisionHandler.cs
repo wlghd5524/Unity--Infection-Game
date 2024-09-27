@@ -18,11 +18,11 @@ public class DividerCollisionHandler : MonoBehaviour
                     int waypointIndex = Outpatient.waypointIndex;
 
                     // LayerChangeManager의 ChangeLayerBasedOnCollider 메서드 호출
-                    LayerChangeManager.Instance.ChangeLayerBasedOnCollider(other.gameObject, gameObject, waypointIndex);
+                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, waypointIndex);
                 }
                 else
                 {
-                    LayerChangeManager.Instance.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 4);
+                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 4);
                 }
             }
         }
@@ -40,11 +40,11 @@ public class DividerCollisionHandler : MonoBehaviour
             {
                 if (Nurse.isWorking == false)
                 {
-                    LayerChangeManager.Instance.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 1);
+                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 1);
                 }
                 else
                 {
-                    LayerChangeManager.Instance.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 4);
+                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 4);
                 }
 
             }

@@ -60,9 +60,9 @@ public class PatientCreator
             // 입원 환자 위치별 Layer 설정
 
 
-            if (ward >= 0 && ward < LayerChangeManager.Instance.layers.Length)
+            if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newInpatient, LayerMask.NameToLayer(LayerChangeManager.Instance.layers[ward]));
+                LayerChangeManager.SetLayerRecursively(newInpatient, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             spawnArea.patient = newInpatient;

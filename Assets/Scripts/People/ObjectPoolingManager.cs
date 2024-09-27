@@ -73,9 +73,9 @@ public class ObjectPoolingManager
             GameObject newDoctor = Object.Instantiate(DoctorPrefabs[Random.Range(0, DoctorPrefabs.Length)], spawnArea.GetRandomPointInRange(), Quaternion.identity);
             newDoctor.name = "WardDoctor " + i;
 
-            if (ward >= 0 && ward < LayerChangeManager.Instance.layers.Length)
+            if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newDoctor, LayerMask.NameToLayer(LayerChangeManager.Instance.layers[ward]));
+                LayerChangeManager.SetLayerRecursively(newDoctor, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             DoctorController doctorController = newDoctor.GetComponent<DoctorController>();
@@ -133,9 +133,9 @@ public class ObjectPoolingManager
             newNurse.name = "WardNurse " + i;
 
             // 간호사 위치별 Layer 설정
-            if (ward >= 0 && ward < LayerChangeManager.Instance.layers.Length)
+            if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(LayerChangeManager.Instance.layers[ward]));
+                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             NurseController newNurseController = newNurse.GetComponent<NurseController>();
@@ -155,9 +155,9 @@ public class ObjectPoolingManager
             GameObject newNurse = Object.Instantiate(NursePrefabs[Random.Range(0, NursePrefabs.Length)], spawnArea.GetRandomPointInRange(), Quaternion.identity);
             newNurse.name = "InpatientWardNurse " + i;
             // 간호사 위치별 Layer 설정
-            if (ward >= 0 && ward < LayerChangeManager.Instance.layers.Length)
+            if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(LayerChangeManager.Instance.layers[ward]));
+                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             NurseController newNurseController = newNurse.GetComponent<NurseController>();
@@ -179,9 +179,9 @@ public class ObjectPoolingManager
             newNurse.name = "ERNurse " + i;
 
             // 간호사 위치별 Layer 설정
-            if (ward >= 0 && ward < LayerChangeManager.Instance.layers.Length)
+            if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(LayerChangeManager.Instance.layers[ward]));
+                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             NurseController newNurseController = newNurse.GetComponent<NurseController>();

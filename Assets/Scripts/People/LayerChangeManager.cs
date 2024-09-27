@@ -1,29 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class LayerChangeManager : MonoBehaviour
+public class LayerChangeManager
 {
-    private static LayerChangeManager _instance;
-    public static LayerChangeManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = FindObjectOfType<LayerChangeManager>();
-                if (_instance == null)
-                {
-                    GameObject manager = new GameObject("LayerChangeManager");
-                    _instance = manager.AddComponent<LayerChangeManager>();
-                }
-            }
-            return _instance;
-        }
-    }
     public string[] layers = { "Floor 2 L", "Floor 2 R", "Floor 3 L", "Floor 3 R", "Floor 4 L", "Floor 4 R", "Floor 5 L", "Floor 5 R" }; // 추가되는 Layer는 여기에 넣기
     private Dictionary<int, int[]> layerMapping;
 
-    private void Awake()
+    public void Init()
     {
         layerMapping = new Dictionary<int, int[]>()
         {

@@ -10,16 +10,18 @@ public class Managers : MonoBehaviour
     public static NPCMovementManager NPCManager { get; private set; } = new NPCMovementManager();
     public static StageManager Stage { get; private set; } = new StageManager();
     public static PatientCreator PatientCreator { get; private set; } = new PatientCreator();
-
+    public static LayerChangeManager LayerChanger { get; private set; } = new LayerChangeManager();
 
     private void Awake()
     {
         Instance = this;
+        LayerChanger = LayerChanger;
         ObjectPooling = ObjectPooling;
         NPCManager = NPCManager;
         Stage = Stage;
         Infection = Infection;
 
+        LayerChanger.Init();
         NPCManager.Init();
         ObjectPooling.Init();
     }
