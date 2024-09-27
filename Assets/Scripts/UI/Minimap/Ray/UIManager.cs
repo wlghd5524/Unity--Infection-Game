@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         // 초기 UI 업데이트
-        UpdateCurrentFloorText("옥상");  // 맨 처음 시작 위치
+        UpdateCurrentFloorText("응급실");  // 맨 처음 시작 위치
         HideObjectName();       // 시작 시 확대된 미니맵 패널의 텍스트 감추기
 
         // CurrentFloorText와 FloorNameText에 아웃라인 추가

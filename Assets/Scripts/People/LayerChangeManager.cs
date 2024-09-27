@@ -20,7 +20,7 @@ public class LayerChangeManager : MonoBehaviour
             return _instance;
         }
     }
-    public string[] layers = { "Floor 2 L", "Floor 2 R", "Floor 3 L", "Floor 3 R", "Floor 4 L", "Floor 4 R" }; // 추가되는 Layer는 여기에 넣기
+    public string[] layers = { "Floor 2 L", "Floor 2 R", "Floor 3 L", "Floor 3 R", "Floor 4 L", "Floor 4 R", "Floor 5 L", "Floor 5 R" }; // 추가되는 Layer는 여기에 넣기
     private Dictionary<int, int[]> layerMapping;
 
     private void Awake()
@@ -30,6 +30,7 @@ public class LayerChangeManager : MonoBehaviour
             { LayerMask.NameToLayer("Floor 1"), new int[] { LayerMask.NameToLayer("Floor 2"), LayerMask.NameToLayer("Floor 1") } },
             { LayerMask.NameToLayer("Floor 2"), new int[] { LayerMask.NameToLayer("Floor 3"), LayerMask.NameToLayer("Floor 2") } },
             { LayerMask.NameToLayer("Floor 3"), new int[] { LayerMask.NameToLayer("Floor 4"), LayerMask.NameToLayer("Floor 3") } },
+            { LayerMask.NameToLayer("Floor 4"), new int[] { LayerMask.NameToLayer("Floor 5"), LayerMask.NameToLayer("Floor 4") } },
             { LayerMask.NameToLayer("Floor 1 L"), new int[] { LayerMask.NameToLayer("Floor 1 L"), LayerMask.NameToLayer("Floor 1") } },
             { LayerMask.NameToLayer("Floor 1 R"), new int[] { LayerMask.NameToLayer("Floor 1 R"), LayerMask.NameToLayer("Floor 1") } },
             { LayerMask.NameToLayer("Floor 2 L"), new int[] { LayerMask.NameToLayer("Floor 2 L"), LayerMask.NameToLayer("Floor 2") } },
@@ -38,6 +39,8 @@ public class LayerChangeManager : MonoBehaviour
             { LayerMask.NameToLayer("Floor 3 R"), new int[] { LayerMask.NameToLayer("Floor 3 R"), LayerMask.NameToLayer("Floor 3") } },
             { LayerMask.NameToLayer("Floor 4 L"), new int[] { LayerMask.NameToLayer("Floor 4 L"), LayerMask.NameToLayer("Floor 4") } },
             { LayerMask.NameToLayer("Floor 4 R"), new int[] { LayerMask.NameToLayer("Floor 4 R"), LayerMask.NameToLayer("Floor 4") } },
+            { LayerMask.NameToLayer("Floor 5 L"), new int[] { LayerMask.NameToLayer("Floor 5 L"), LayerMask.NameToLayer("Floor 5") } },
+            { LayerMask.NameToLayer("Floor 5 R"), new int[] { LayerMask.NameToLayer("Floor 5 R"), LayerMask.NameToLayer("Floor 5") } },
         };
     }
     public void ChangeLayerBasedOnCollider(GameObject npc, GameObject colliderObject, int waypointIndex)

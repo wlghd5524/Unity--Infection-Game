@@ -25,6 +25,8 @@ public class AuthManager : MonoBehaviour
     public GameObject signupPopup; // 회원가입 팝업창
     public MainMenuController mainMenuController;
 
+    public TutorialController tutorialController;
+
     private string id;
     private string username;
 
@@ -47,6 +49,7 @@ public class AuthManager : MonoBehaviour
         loginPopup = Assign(loginPopup, "LoginCanvas");
         signupPopup = Assign(signupPopup, "SignUpCanvas");
         mainMenuController = Assign(mainMenuController, "MainMenuCanvas");
+        tutorialController = Assign(tutorialController, "TutorialController");
 
         // 로그인 이벤트 트리거 추가
         AddEventTrigger(loginCloseButton, (data) => OnBackButtonClicked(loginPopup));
@@ -284,5 +287,6 @@ public class AuthManager : MonoBehaviour
             }
         }
         GoToGame.Instance.StartGame();
+        tutorialController.TutorialCheck();
     }
 }
