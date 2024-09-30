@@ -13,6 +13,7 @@ public class Close : MonoBehaviour
     public GameObject profileOverlay;
     public Canvas questCanvas;
     public GameObject questDisfectCanvas;
+    public GameObject scoreGraphCanvas;
     public GameObject windowPanel;
     public GameObject infoCanvas;
     public GameObject settingWindow;
@@ -46,6 +47,7 @@ public class Close : MonoBehaviour
         infoCanvas = Assign(infoCanvas, "InfoCanvas");
         questCanvas = Assign(questCanvas, "QuestCanvas"); 
         questDisfectCanvas = Assign(questDisfectCanvas, "QuestDisinfectCanvas");
+        scoreGraphCanvas = Assign(scoreGraphCanvas, "ScoreGraphCanvas");
         settingWindow = Assign(settingWindow, "SettingWindow");
         overLayUI = Assign(overLayUI, "OverLayUI");
         windowPanel = Assign(windowPanel, "WindowPanel");
@@ -69,6 +71,7 @@ public class Close : MonoBehaviour
         infoCanvas?.SetActive(false);
         questCanvas.enabled = false;
         questDisfectCanvas.SetActive(false);
+        scoreGraphCanvas.SetActive(false);
         settingWindow?.SetActive(false);
         overLayUI?.SetActive(false);
         windowPanel?.SetActive(false);

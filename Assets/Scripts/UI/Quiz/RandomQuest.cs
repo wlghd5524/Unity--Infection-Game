@@ -4,9 +4,11 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MyApp.DataAccess;
 
 public class RandomQuest : MonoBehaviour
 {
+    // UI references
     public Button[] answerButton;
     public Button[] levelButton;
     public GameObject clickbtn;
@@ -14,8 +16,13 @@ public class RandomQuest : MonoBehaviour
     public GameObject wrongPanel;
     public GameObject rightPanel;
     public TMP_Text rightText;                 //rightPanel의 텍스트
+    public Canvas questCanvas;                 //퀴즈창
     public GameObject coolTimePanel;
+
+    // Reference to MySQLConnector
     public MySQLConnector mySQLConnector;
+
+    // Other references
     public CoolTime coolTimeScript;             //coolTime 스크립트
     public MonthlyReportUI monthlyReportUI;     //MonthlyReportUI 스크립트
     public CurrentMoney currentMoneyManager;    //CurrentMoney 스크립트
@@ -23,9 +30,7 @@ public class RandomQuest : MonoBehaviour
     public TMP_Text moneyText;                  // 돈 표시 UI
     public TMP_Text timerText;                  // 쿨타임 카운트다운 텍스트
 
-    private int currentIndex = -1, lastIndex = -1;
-    private float duration = 0f;
-    private bool firstAttempt = true;                          // 오답 첫 번째 재도전인지 확인
+    // DB data structures
     List<int> availableIndices = null;                         //문제 인덱스 리스트
     private List<User> usersDB = new List<User>();             // DB_퀴즈 및 선택지 데이터
     private List<User> answersDB = new List<User>();           // DB_정답 데이터
@@ -34,6 +39,10 @@ public class RandomQuest : MonoBehaviour
     private Dictionary<string, int> questCount = new Dictionary<string, int>();                         //문제 개수 제어
     private Dictionary<string, int> lastIndexPerLevel = new Dictionary<string, int>();                  //레벨별 마지막 인덱스
     private Dictionary<string, bool> firstAttemptPerLevel = new Dictionary<string, bool>();             //레벨별 첫 번째 오답 여부
+
+    private int currentIndex = -1, lastIndex = -1;
+    private float duration = 0f;
+    private bool firstAttempt = true;                          // 오답 첫 번째 재도전인지 확인
     private float maxCooldown = 60f;                         // 쿨타임 최대 시간
 
     void Start()
@@ -69,7 +78,7 @@ public class RandomQuest : MonoBehaviour
         coolTimePanel = Assign(coolTimePanel, "CoolTimePanel");
         coolTimeScript = Assign(coolTimeScript, "CoolTimeManager");
         mySQLConnector = Assign(mySQLConnector, "MariaDBConnector");
-        //monthlyReportUI = Assign(monthlyReportUI, "InGameUI Manager");
+        questCanvas = Assign(questCanvas, "QuestCanvas");
         monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
         currentMoneyManager = Assign(currentMoneyManager, "CurrentMoneyManager");
         countdownTimer = Assign(countdownTimer, "Timer");
@@ -79,6 +88,16 @@ public class RandomQuest : MonoBehaviour
         if (monthlyReportUI == null)
         {
             Debug.LogError("monthlyReportUI가 없습니다.");
+        }
+
+        if (mySQLConnector != null) 
+        {
+            usersDB = mySQLConnector.GetUsers();
+            answersDB = mySQLConnector.GetAnswers();
+        }
+        else 
+        {
+            Debug.LogError("MySQLConnector is not assigned.");
         }
 
         UpdateMoneyUI();
@@ -173,6 +192,18 @@ public class RandomQuest : MonoBehaviour
     // 난이도에 따른 문제 및 객관식 선택지 텍스트 변환
     public void SetRandomQuest()
     {
+        if (!questCanvas.enabled)
+        {
+            Debug.Log("Quiz Canvas is not active. Skipping question setup.");
+            return;
+        }
+
+        if (availableIndices.Count == 0)
+        {
+            Debug.LogError("No available indices to select a question.");
+            return;
+        }
+
         //5문제 다 풀었으면 쿨타임 패널
         if (questCount[clickbtn.name] % 5 == 0 && questCount[clickbtn.name] != 0)
         {

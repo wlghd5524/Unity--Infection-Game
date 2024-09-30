@@ -16,7 +16,8 @@ public class ObjectActivator : MonoBehaviour
         activateButton = Assign(activateButton, "QuizStartButton");
         questCanvas = Assign(questCanvas, "QuestCanvas");
         quizCloseButton = Assign(quizCloseButton, "XButton");
-        countdownTimer = Assign(countdownTimer, "Timer");
+        countdownTimer = FindObjectOfType<CountdownTimer>();
+        //countdownTimer = Assign(countdownTimer, "Timer");
         randomQuest = Assign(randomQuest, "QuestCanvas");
 
         // 초기 상태 설정: 퀴즈창을 보이지 않게 설정
@@ -26,6 +27,7 @@ public class ObjectActivator : MonoBehaviour
         {
             activateButton.onClick.AddListener(OnActivateButtonClick);
         }
+
         if (quizCloseButton != null)
         {
             quizCloseButton.onClick.AddListener(OnDisactivateButtonClick);
@@ -76,6 +78,15 @@ public class ObjectActivator : MonoBehaviour
             countdownTimer.StopTimer();
             countdownTimer.ResetTimer();
         }
+
+        // 퀴즈 답변과의 상호작용을 방지하기 위해 선택적으로 버튼 리스너를 지움
+        if (randomQuest != null)
+        {
+            foreach (var button in randomQuest.answerButton)
+            {
+                button.onClick.RemoveAllListeners();  // Clear all listeners from answer buttons
+            }
+        }
     }
 
     private void SetQuestCanvasVisible(bool isVisible)
@@ -84,12 +95,17 @@ public class ObjectActivator : MonoBehaviour
         {
             questCanvas.enabled = isVisible;
 
-            // CanvasGroup이 있다면 해당 속성도 조정합니다.
+            // CanvasGroup 속성 조정
             CanvasGroup canvasGroup = questCanvas.GetComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
                 canvasGroup.interactable = isVisible;
                 canvasGroup.blocksRaycasts = isVisible;
+            }
+            if (!isVisible && countdownTimer != null)
+            {
+                countdownTimer.StopTimer();
+                countdownTimer.ResetTimer();
             }
         }
         else

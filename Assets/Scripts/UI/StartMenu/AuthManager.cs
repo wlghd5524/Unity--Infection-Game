@@ -3,6 +3,9 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
+using MyApp.UserManagement;
 
 // 로그인 및 회원가입 관련 기능 매니저
 public class AuthManager : MonoBehaviour
@@ -17,6 +20,7 @@ public class AuthManager : MonoBehaviour
     // 회원가입 관련 객체들
     public TMP_InputField signupIdInputField;
     public TMP_InputField signupUsernameInputField;
+    public TMP_InputField signUpCheckInputField;
     public Image signupButton;
     public Image signupCloseButton;
     public TMP_Text signupMessageText;
@@ -43,6 +47,7 @@ public class AuthManager : MonoBehaviour
         loginMessageText = Assign(loginMessageText, "LoginMessageText");
         signupIdInputField = Assign(signupIdInputField, "SignUpIDInputField");
         signupUsernameInputField = Assign(signupUsernameInputField, "SignUpUserNameInputField");
+        signUpCheckInputField = Assign(signUpCheckInputField, "SignUpCheckInputField");
         signupButton = Assign(signupButton, "SignUpButton");
         signupCloseButton = Assign(signupCloseButton, "SignUpCloseButton");
         signupMessageText = Assign(signupMessageText, "SignUpMessageText");
@@ -141,13 +146,17 @@ public class AuthManager : MonoBehaviour
         // 입력된 ID 및 이름 가져오기
         if (mode == AuthMode.Login)
         {
-            id = loginIdInputField.text;
-            username = loginUsernameInputField.text;
+            //id = loginIdInputField.text;
+            //username = loginUsernameInputField.text;
+            id = loginUsernameInputField.text;
+            username = loginIdInputField.text;
         }
         else if (mode == AuthMode.SignUp)
         {
-            id = signupIdInputField.text;
-            username = signupUsernameInputField.text;
+            //id = signupIdInputField.text;
+            //username = signupUsernameInputField.text;
+            id = signupUsernameInputField.text;
+            username = signupIdInputField.text;
         }
 
         // ID 입력창 비어있을 때 예외처리
@@ -188,8 +197,29 @@ public class AuthManager : MonoBehaviour
     // 로그인 정보 일치 검사
     private void HandleLogin()
     {
+        GameDataManager gameDataMager = GameDataManager.Instance;
+
         if (UserManager.Instance.ValidateUser(id, username))
         {
+            // 게임 데이터에 유저 정보 저장
+            gameDataMager.userId = id;
+            gameDataMager.userName = username;
+
+            // 유저의 튜토리얼 진행 여부 반환
+            int tutorialStatus = UserManager.Instance.GetUserTutorialStatus(id);
+            if (tutorialStatus == 0)
+            {
+                tutorialController.SetTutorialCompletionStatus(false);    
+                UserManager.Instance.AddUser(id, username, 1);      // 튜토리얼은 진행됐을 테니 미리 1로 전환
+            }
+            else
+            {
+                tutorialController.SetTutorialCompletionStatus(true);    
+                Debug.Log("Tutorial: 이미 true임");
+            }
+
+            // 확인된 유저 정보를 바탕으로 게임 데이터 테이블에 데이터 추가
+            gameDataMager.InsertInitialData();
             StartCoroutine(LoginSuccessCoroutine());
         }
         else
@@ -207,11 +237,11 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        if (!IsValidUsername(username))
+        /*if (!IsValidUsername(username))
         {
             DisplayMessage("유효한 이름 형식이 아닙니다.\n(한글, 영어만 가능)", Color.red);
             return;
-        }
+        }*/
 
         if (UserManager.Instance.IsIDExists(id))
         {
@@ -219,20 +249,26 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        if (UserManager.Instance.IsUsernameExists(username))
+        if(signUpCheckInputField.text != signupIdInputField.text)
         {
-            DisplayMessage("이미 존재하는 이름입니다.", Color.red);
+            DisplayMessage("비밀번호가 일치하지 않습니다.", Color.red);
             return;
         }
 
-        UserManager.Instance.AddUser(id, username);
+        /*if (UserManager.Instance.IsUsernameExists(username))
+        {
+            DisplayMessage("이미 존재하는 이름입니다.", Color.red);
+            return;
+        }*/
+
+        UserManager.Instance.AddUser(id, username, 0);
         DisplayMessage("회원가입 성공!\n로그인 화면으로 이동해주세요.", Color.green);
     }
 
     // ID 유효성 검사
     private bool IsValidID(string id)
     {
-        return id.Length >= 6 && id.Length <= 10 && UserManager.Instance.IsValidID(id);
+        return id.Length >= 1 && id.Length <= 10 && UserManager.Instance.IsValidID(id);
     }
 
     // 이름 유효성 검사
@@ -266,6 +302,7 @@ public class AuthManager : MonoBehaviour
         signupIdInputField.text = "";
         signupUsernameInputField.text = "";
         signupMessageText.text = "";
+        signUpCheckInputField.text = "";
     }
 
     // 로그인 성공 시 텀 두는 코루틴 (4초경과)

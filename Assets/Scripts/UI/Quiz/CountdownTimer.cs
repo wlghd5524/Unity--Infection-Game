@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class CountdownTimer : MonoBehaviour
 {
-    public TMP_Text timerText;        // 타이머 UI
+    //public TMP_Text timerText;        // 타이머 UI
+    public TextMeshProUGUI timerText;
     public Image shadowImage;         // Shadow 이미지
     private float timeRemaining;      // 남은 시간
     private bool isTiming;            // 타이머 진행 중인지 확인
@@ -18,6 +19,11 @@ public class CountdownTimer : MonoBehaviour
         //오브젝트 자동할당
         timerText = Assign(timerText, "TimerText");
         shadowImage = Assign(shadowImage, "TimerShadow");
+
+        if (timerText == null)
+            Debug.LogError("Timertext is null");
+        if (shadowImage == null)
+            Debug.LogError("shadowImage is null");
     }
 
     void Update()
@@ -85,10 +91,12 @@ public class CountdownTimer : MonoBehaviour
     // 타이머 UI 업데이트 메서드
     private void UpdateTimerUI()
     {
+        timerText = GameObject.Find("TimerText").GetComponent<TextMeshProUGUI>();
         timerText.text = Mathf.Ceil(timeRemaining).ToString();
 
         // Shadow 영역 업데이트
         float fillAmount = timeRemaining / maxDuration;
+        shadowImage = GameObject.Find("TimerShadow").GetComponent<Image>();
         shadowImage.fillAmount = fillAmount;
     }
 

@@ -17,7 +17,7 @@ public class TutorialController : MonoBehaviour
     private bool isPaused = false;                      // 게임 멈춰 있는지 여부
 
     // DB로부터 받은 튜토리얼 완료 여부를 저장할 변수
-    public bool hasCompletedTutorial = true;           // 일단 임의로 true로 설정함
+    public bool hasCompletedTutorial;       
 
     private MaskController maskController;              // MaskController 참조
 
