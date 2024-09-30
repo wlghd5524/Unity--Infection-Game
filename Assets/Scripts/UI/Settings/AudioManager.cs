@@ -25,7 +25,7 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Background music AudioSource is already playing.");
+            Debug.Log("Background music AudioSource is already playing.");
         }
 
         // 초기 설정값 로드 및 적용

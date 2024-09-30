@@ -14,7 +14,8 @@ public class PersonManager : MonoBehaviour
         { "의사", 0 },
         { "간호사", 0 },
         { "외래 환자", 0 },
-        { "입원 환자", 0 }
+        { "입원 환자", 0 },
+        { "응급 환자", 0 }
     };
 
     private void Awake()

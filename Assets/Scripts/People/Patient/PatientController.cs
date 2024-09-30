@@ -453,6 +453,7 @@ public class PatientController : NPCController
         // 퇴원
         if (random <= 30 || !isFound)
         {
+            nextBed.isEmpty = true;
             nextBed.patient = null;
             AddWaypoint(waypointsTransform, $"Counter");
             AddWaypoint(Managers.NPCManager.gatewayTransform, $"Gateway ({Random.Range(0, 2)})");
@@ -478,6 +479,8 @@ public class PatientController : NPCController
         //입원 환자로 전환
         else
         {
+            nextBed.isEmpty = true;
+            nextBed.patient = null;
             Managers.NPCManager.PlayWakeUpAnimation(animator);
             yield return new WaitForSeconds(5.0f);
             bedWaypoint = nextBed;

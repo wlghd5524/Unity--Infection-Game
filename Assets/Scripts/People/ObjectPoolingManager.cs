@@ -261,10 +261,10 @@ public class ObjectPoolingManager
         patient.SetActive(false); // 비활성화
     }
 
-    public GameObject ActiveEmergentcyPatient(Vector3 position)
+    public GameObject ActiveEmergentcyPatient(Vector3 position, BedWaypoint bed)
     {
         GameObject newEmergencyPatient = patientQueue.Dequeue();
-
+        profileWindow.AddEmerpatientProfile(newEmergencyPatient);
         newEmergencyPatient.transform.position = position;
         newEmergencyPatient.SetActive(true);
         newEmergencyPatient.tag = "EmergencyPatient";
@@ -275,16 +275,10 @@ public class ObjectPoolingManager
         newPatientController.wardComponent.outpatients.Add(newPatientController);
         newPatientController.ward = 8;
 
-        foreach (BedWaypoint bed in newPatientController.wardComponent.beds)
-        {
-            if (bed.patient == null)
-            {
-                bed.patient = newEmergencyPatient;
-                newPatientController.waypoints.Add(bed);
-                newPatientController.bedWaypoint = bed;
-                break;
-            }
-        }
+        newPatientController.bedWaypoint = bed;
+        newPatientController.bedWaypoint.patient = newEmergencyPatient;
+        newPatientController.waypoints.Add(bed);
+        
         return newEmergencyPatient;
 
     }

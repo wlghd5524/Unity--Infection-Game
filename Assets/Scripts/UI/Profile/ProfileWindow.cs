@@ -4,21 +4,24 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System.Linq;
+using Unity.VisualScripting;
+using UnityEditor;
 
 public class ItemManager
 {
-    public static List<(string, int, float, float)> GetDefaultItems()
+    public static List<(string, float)> GetDefaultItems()
     {
-        return new List<(string, int, float, float)>
+        return new List<(string, float)>
         {
-            ("Dental 마스크", 1000, 0.1f, 0.5f),
-            ("N95 마스크", 1500, 0.2f, 1.0f),
-            ("헤어캡", 500, 0.05f, 1.0f),
-            ("고글", 1200, 0.3f, 1.2f),
-            ("AP 가운", 2000, 0.4f, 0.5f),
-            ("PAPR", 2500, 0.5f, 1.5f),
-            ("Level D", 3000, 0.6f, 2.0f),
-            ("Level C", 3500, 0.7f, 2.5f)
+            ("Dental 마스크", 0.1f),
+            ("N95 마스크", 0.2f),
+            ("일회용 장갑", 0.1f),
+            ("라텍스 장갑", 0.2f),
+            ("의료용 헤어캡", 0.05f),
+            ("고글", 0.3f),
+            ("AP 가운", 0.4f),
+            ("PAPR", 0.5f),
+            ("Level C", 0.7f)
         };
     }
 }
@@ -30,26 +33,31 @@ public class ProfileWindow : MonoBehaviour
     public GameObject windowPanel; // 큰 창 패널
     public GameObject profileOverlay;
 
-    public Image doctorWindowButton; // 의사 이미지
-    public Image nurseWindowButton; // 간호사 이미지
-    public Image outpatientWindowButton; // 외래환자 이미지
-    public Image inpatientWindowButton; // 입원환자 이미지
+    public Image doctorWindowButton; // 의사 이미지 버튼
+    public Image nurseWindowButton; // 간호사 이미지 버튼
+    public Image outpatientWindowButton; // 외래환자 이미지 버튼
+    public Image inpatientWindowButton; // 입원환자 이미지 버튼
+    public Image emergencypatientWindowButton; // 응급환자 이미지 버튼
 
     public GameObject profilePrefab; // 프로필 프리팹
     public Transform profileContent; // 프로필을 추가할 스크롤 뷰의 콘텐츠 영역
 
     public ProfileInventoryManager profileInventoryManager;
+    public ClickableObject clickableObject;
 
+    private string currentFloor = "응급실";
+
+
+    public TextMeshProUGUI NowWard; // 현재 병동 위치
     public TextMeshProUGUI DoctorCountText;    // 의사 수
     public TextMeshProUGUI NurseCountText;     // 간호사 수
     public TextMeshProUGUI OutpatientCountText;// 외래 환자 수
     public TextMeshProUGUI InpatientCountText; // 입원 환자 수
+    public TextMeshProUGUI EmergencypatientCountText; // 응급 환자 수
 
     private string currentJob = "의사";
 
     private bool isFirstProfile = false;
-
-    public TextMeshProUGUI profileButtonText;
 
     private void Awake()
     {
@@ -60,15 +68,17 @@ public class ProfileWindow : MonoBehaviour
         nurseWindowButton = Assign(nurseWindowButton, "NurseWindowButton");
         outpatientWindowButton = Assign(outpatientWindowButton, "OutPatientWindowButton");
         inpatientWindowButton = Assign(inpatientWindowButton, "InPatientWindowButton");
+        emergencypatientWindowButton = Assign(emergencypatientWindowButton, "EmergencyPatientWindowButton");
         profilePrefab = Assign(profilePrefab, "ProfilePrefab");
         profileContent = Assign(profileContent, "ProfileContent");
         profileInventoryManager = Assign(profileInventoryManager, "Inventory");
-        profileButtonText = Assign(profileButtonText, "ProfileButtonText");
 
+        NowWard = Assign(NowWard, "NowWard");
         DoctorCountText = Assign(DoctorCountText, "DoctorCountText");
         NurseCountText = Assign(NurseCountText, "NurseCountText");
         OutpatientCountText = Assign(OutpatientCountText, "OutpatientCountText");
         InpatientCountText = Assign(InpatientCountText, "InpatientCountText");
+        EmergencypatientCountText = Assign(EmergencypatientCountText, "EmergencypatientCountText");
 
 
         // 버튼 클릭 이벤트에 메서드 추가
@@ -79,6 +89,7 @@ public class ProfileWindow : MonoBehaviour
         SetupButton(nurseWindowButton, OnNurseClick);
         SetupButton(outpatientWindowButton, OnOutpatientClick);
         SetupButton(inpatientWindowButton, OnInpatientClick);
+        SetupButton(emergencypatientWindowButton, OnEmerpatientClick);
 
         // GridLayoutGroup 설정
         GridLayoutGroup gridLayoutGroup = profileContent.GetComponent<GridLayoutGroup>();
@@ -117,12 +128,18 @@ public class ProfileWindow : MonoBehaviour
         if (currentJob == "입원 환자") RefreshProfiles();
     }
 
+    public void AddEmerpatientProfile(GameObject inpatientObject)
+    {
+        AddPersonProfile(inpatientObject, "응급 환자", Role.EmergencyPatient, PersonManager.Instance.GetPersonCountByJob("응급 환자") + 1);
+        if (currentJob == "응급 환자") RefreshProfiles();
+    }
+
     private void AddPersonProfile(GameObject personObject, string job, Role role, int index)
     {
-        List<(string, int, float, float)> inventory;
+        List<(string, float)> inventory;
 
         // 외래 환자와 입원 환자는 N95 마스크와 Dental 마스크만 인벤토리에 추가
-        if (role == Role.Outpatient || role == Role.Inpatient)
+        if (role == Role.Outpatient || role == Role.Inpatient || role == Role.EmergencyPatient)
         {
             inventory = ItemManager.GetDefaultItems().Where(item => item.Item1 == "N95 마스크" || item.Item1 == "Dental 마스크").ToList();
         }
@@ -171,7 +188,12 @@ public class ProfileWindow : MonoBehaviour
             RefreshProfiles();
         }
 
-        UpdateButtonTexts();
+        if (currentJob == "응급 환자")
+        {
+            UpdateProfile(profile, $"{job} {index}", person.Name, person.ID, person.gameObject.activeSelf);
+            RefreshProfiles();
+        }
+        UpdateButtonTexts(null);
     }
 
     private void ToggleBigPanel()
@@ -241,6 +263,13 @@ public class ProfileWindow : MonoBehaviour
     private void OnInpatientClick()
     {
         currentJob = "입원 환자";
+        profileInventoryManager.ClearInventory();
+        ShowProfiles(currentJob);
+    }
+
+    private void OnEmerpatientClick()
+    {
+        currentJob = "응급 환자";
         profileInventoryManager.ClearInventory();
         ShowProfiles(currentJob);
     }
@@ -349,27 +378,54 @@ public class ProfileWindow : MonoBehaviour
         }
     }
 
-    private void UpdateButtonTexts()
+    public void UpdateButtonTexts(string floorName)
     {
+        // floorName이 null이 아니면 현재 층수 업데이트
+        if (!string.IsNullOrEmpty(floorName))
+        {
+            currentFloor = floorName; // 현재 층 정보를 갱신
+        }
 
-        int doctorCount = 0;
-        int nurseCount = 0;
-        int outpatientCount = 0;
-        int inpatientCount = 0;
+        if (floorName == "옥상")
+        {
+            // 옥상에 대한 특별한 처리가 필요한 경우 여기서 처리
+            NowWard.text = "옥상";
+            DoctorCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("의사")}";
+            NurseCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("간호사")}";
+            OutpatientCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("외래 환자")}";
+            InpatientCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("입원 환자")}";
+            EmergencypatientCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("응급 환자")}";
+        }
+        else
+        {
+            // 현재 선택된 병동 정보를 가져옴
+            Ward nowWard = Ward.wards.Find(w => w.WardName == floorName);
 
-        
-        doctorCount = PersonManager.Instance.GetPersonCountByJob("의사");
-        nurseCount = PersonManager.Instance.GetPersonCountByJob("간호사");
-        outpatientCount = PersonManager.Instance.GetPersonCountByJob("외래 환자");
-        inpatientCount = PersonManager.Instance.GetPersonCountByJob("입원 환자");
-        
+            // 병동이 존재할 경우 직업별 인원 수를 업데이트
+            if (nowWard != null)
+            {
+                int doctorCount = nowWard.doctors.Count;
+                int nurseCount = nowWard.nurses.Count;
+                int outpatientCount = nowWard.outpatients.Count;
+                int inpatientCount = nowWard.inpatients.Count;
+                int emergencyCount = (nowWard.num == 8) ? nowWard.inpatients.Count : 0; // 응급환자는 num == 8 (응급실)에서만 처리
 
-        DoctorCountText.text = $"{doctorCount}";
-        NurseCountText.text = $"{nurseCount}";
-        OutpatientCountText.text = $"{outpatientCount}";
-        InpatientCountText.text = $"{inpatientCount}";
-        
+                // UI 요소에 인원 수 업데이트
+                NowWard.text = $"{nowWard.WardName}";
+                DoctorCountText.text = $"{doctorCount}";
+                NurseCountText.text = $"{nurseCount}";
+                OutpatientCountText.text = $"{outpatientCount}";
+                InpatientCountText.text = $"{inpatientCount}";
+                EmergencypatientCountText.text = $"{emergencyCount}";
+            }
+            else
+            {
+                Debug.LogWarning("해당하는 병동을 찾을 수 없습니다: " + floorName);
+            }
+        }
     }
+
+
 
 
     public void RefreshProfiles()
@@ -410,7 +466,7 @@ public class ProfileWindow : MonoBehaviour
         PersonManager.Instance.RemovePerson(personID);
 
         // Update button texts to reflect changes
-        UpdateButtonTexts();
+        UpdateButtonTexts(null);
     }
 
     // 자동 할당 코드

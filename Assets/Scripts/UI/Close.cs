@@ -23,11 +23,12 @@ public class Close : MonoBehaviour
     public GameObject coolTimePanel;
     public GameObject minimapCanvas;
     public GameObject settingButton;
-    public GameObject newsButtonCanvas;
     public GameObject monthlyReportCanvas;
-    public GameObject researchCanvas;
+    //public GameObject researchCanvas;
     public GameObject disinfectionCanvas;
     public GameObject newsTickerCanvas;
+    public GameObject researchMenuCanvas;
+    public GameObject researchPanel;
 
     void Start()
     {
@@ -56,11 +57,12 @@ public class Close : MonoBehaviour
         coolTimePanel = Assign(coolTimePanel, "CoolTimePanel");
         minimapCanvas = Assign(minimapCanvas, "MinimapCanvas");
         settingButton = Assign(settingButton, "SettingButton");
-        newsButtonCanvas = Assign(newsButtonCanvas, "NewsButtonCanvas");
         monthlyReportCanvas = Assign(monthlyReportCanvas, "MonthlyReportCanvas");
-        researchCanvas = Assign(researchCanvas, "ResearchCanvas");
+        //researchCanvas = Assign(researchCanvas, "ResearchCanvas");
         disinfectionCanvas = Assign(disinfectionCanvas, "DisinfectionCanvas");
         newsTickerCanvas = Assign(newsTickerCanvas, "NewsTickerCanvas");
+        researchMenuCanvas = Assign(researchMenuCanvas, "ResearchMenuCanvas");
+        researchPanel = Assign(researchPanel, "ResearchPanel");
 
         loginCanvas?.SetActive(false);
         signUpCanvas?.SetActive(false);
@@ -80,11 +82,12 @@ public class Close : MonoBehaviour
         coolTimePanel?.SetActive(false);
         minimapCanvas?.SetActive(false);
         settingButton?.SetActive(false);
-        newsButtonCanvas?.SetActive(false);
         monthlyReportCanvas?.SetActive(false);
-        researchCanvas?.SetActive(false);
+        //researchCanvas?.SetActive(false);
         disinfectionCanvas?.SetActive(false);
         newsTickerCanvas?.SetActive(false);
+        researchMenuCanvas?.SetActive(false);
+        researchPanel?.SetActive(false);
     }
 
     // 오브젝트 자동 할당

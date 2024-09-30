@@ -49,6 +49,10 @@ public class NameList : MonoBehaviour
     public static List<string> MaleInpatientNames = MaleNames;
     public static List<string> FemaleInpatientNames = FemaleNames;
 
+    // 응급환자 직업별 남자/여자 이름 리스트
+    public static List<string> MaleEmergencypatientNames = MaleNames;
+    public static List<string> FemaleEmergencypatientNames = FemaleNames;
+
     // 인덱스
     private static int maleDoctorIndex = 0;
     private static int femaleDoctorIndex = 0;
@@ -58,6 +62,8 @@ public class NameList : MonoBehaviour
     private static int femaleOutpatientIndex = 0;
     private static int maleInpatientIndex = 0;
     private static int femaleInpatientIndex = 0;
+    private static int maleEmergencypatientIndex = 0;
+    private static int femaleEmergencypatientIndex = 0;
 
     // 성별에 따른 이름 선택
     public static string GetUniqueName(Role role, bool isMale)
@@ -78,6 +84,9 @@ public class NameList : MonoBehaviour
                 case Role.Inpatient:
                     maleInpatientIndex = maleInpatientIndex % MaleInpatientNames.Count;
                     return MaleInpatientNames[maleInpatientIndex++];
+                case Role.EmergencyPatient:
+                    maleEmergencypatientIndex = maleEmergencypatientIndex % MaleEmergencypatientNames.Count;
+                    return MaleEmergencypatientNames[maleEmergencypatientIndex++];
                 default:
                     return "NoName";
             }
@@ -98,6 +107,9 @@ public class NameList : MonoBehaviour
                 case Role.Inpatient:
                     femaleInpatientIndex = femaleInpatientIndex % FemaleInpatientNames.Count;
                     return FemaleInpatientNames[femaleInpatientIndex++];
+                case Role.EmergencyPatient:
+                    femaleEmergencypatientIndex = femaleEmergencypatientIndex % FemaleEmergencypatientNames.Count;
+                    return FemaleEmergencypatientNames[femaleEmergencypatientIndex++];
                 default:
                     return "NoName";
             }

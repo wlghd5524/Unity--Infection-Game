@@ -140,9 +140,26 @@ public class PatientCreator
     {
         emergencyPatientWaiting = true;
         yield return new WaitUntil(() => startSignal);
+        yield return new WaitForSeconds(spawnDelay); // 대기 시간
+
+        BedWaypoint nextBed = null;
+        foreach (BedWaypoint bed in Ward.wards[8].beds)
+        {
+            if(bed.isEmpty == true)
+            {
+                nextBed = bed;
+                nextBed.isEmpty = false;
+                break;
+            }
+        }
+
+        if(nextBed == null)
+        {
+            yield break;
+        }
 
         Vector3 spawnPosition = spawnAreas[2].GetRandomPointInRange(); // 랜덤 생성 위치 설정
-        GameObject newEmaergencyPatient = Managers.ObjectPooling.ActiveEmergentcyPatient(spawnPosition); // 응급 환자 활성화
+        GameObject newEmaergencyPatient = Managers.ObjectPooling.ActiveEmergentcyPatient(spawnPosition, nextBed); // 응급 환자 활성화
         newEmaergencyPatient.GetComponent<Person>().role = Role.EmergencyPatient;
         if (newEmaergencyPatient != null)
         {
@@ -173,7 +190,7 @@ public class PatientCreator
             Debug.LogError("새 응급 환자를 활성화하는 데 실패했습니다.");
         }
 
-        yield return new WaitForSeconds(spawnDelay); // 대기 시간
+        
         emergencyPatientWaiting = false; // 대기 상태 해제
 
     }

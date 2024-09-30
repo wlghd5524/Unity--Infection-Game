@@ -23,17 +23,13 @@ public struct ItemInfo
 {
     public bool isPurchased;
     public bool isEquipped;
-    public int price;
     public float protectionRate;
-    public float stressIncreaseValue; // 스트레스 증가 값
 
-    public ItemInfo(bool isPurchased, bool isEquipped, int price, float protectionRate, float stressIncreaseValue)
+    public ItemInfo(bool isPurchased, bool isEquipped, float protectionRate)
     {
         this.isPurchased = isPurchased;
         this.isEquipped = isEquipped;
-        this.price = price;
         this.protectionRate = protectionRate;
-        this.stressIncreaseValue = stressIncreaseValue;
     }
 }
 public class Person : MonoBehaviour
@@ -60,7 +56,7 @@ public class Person : MonoBehaviour
     public bool IsMale { get; private set; } // 성별 필드 추가
 
 
-    public void Initialize(int id, string name, string job, bool isResting, Role role, List<(string itemName, int itemPrice, float protectionRate, float stressIncreaseValue)> inventory)
+    public void Initialize(int id, string name, string job, bool isResting, Role role, List<(string itemName, float protectionRate)> inventory)
     {
         ID = id;
         Name = name;
@@ -68,9 +64,9 @@ public class Person : MonoBehaviour
         IsResting = isResting;
         this.role = role;
         Inventory = new Dictionary<string, ItemInfo>();
-        foreach (var (itemName, itemPrice, protectionRate, stressIncreaseValue) in inventory)
+        foreach (var (itemName, protectionRate) in inventory)
         {
-            Inventory[itemName] = new ItemInfo(false, false, itemPrice, protectionRate, stressIncreaseValue); // 기본 구매 및 착용 상태는 false
+            Inventory[itemName] = new ItemInfo(false, false, protectionRate); // 기본 구매 및 착용 상태는 false
         }
 
         // 성별 랜덤 설정
@@ -145,7 +141,7 @@ public class Person : MonoBehaviour
         List<string> keys = new List<string>(Inventory.Keys);
         foreach (var key in keys)
         {
-            Inventory[key] = new ItemInfo(false, false, Inventory[key].price, Inventory[key].protectionRate, Inventory[key].stressIncreaseValue);
+            Inventory[key] = new ItemInfo(false, false, Inventory[key].protectionRate);
         }
     }
     public void ToggleRestingState()
@@ -156,6 +152,7 @@ public class Person : MonoBehaviour
             ResetInventory();
         }
     }
+
     public void ResetPerson()
     {
         role = Role.Outpatient;
@@ -176,7 +173,7 @@ public class Person : MonoBehaviour
 
     public IEnumerator SelfRecovery()
     {
-        yield return new WaitForSeconds(Random.Range(70f, 80f));
+        yield return new WaitForSeconds(Random.Range(7, 15));
         Debug.Log("자가 면역을 가져서 더 이상 감염되지 않음");
         status = InfectionState.Normal;
         isImmune = true;
@@ -192,22 +189,6 @@ public class Person : MonoBehaviour
         yield return new WaitForSeconds(5);
         isWaiting = false;
         OnInfectionStateChanged?.Invoke(infection); // 이벤트 호출
-    }
-
-    public void EquipItem(string itemName)
-    {
-        if (Inventory.ContainsKey(itemName) && Inventory[itemName].isPurchased)
-        {
-            Inventory[itemName] = new ItemInfo(Inventory[itemName].isPurchased, true, Inventory[itemName].price, Inventory[itemName].protectionRate, Inventory[itemName].stressIncreaseValue);
-        }
-    }
-
-    public void UnequipItem(string itemName)
-    {
-        if (Inventory.ContainsKey(itemName))
-        {
-            Inventory[itemName] = new ItemInfo(Inventory[itemName].isPurchased, false, Inventory[itemName].price, Inventory[itemName].protectionRate, Inventory[itemName].stressIncreaseValue);
-        }
     }
 
     public float GetTotalProtectionRate()

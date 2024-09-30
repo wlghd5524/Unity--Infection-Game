@@ -14,9 +14,13 @@ public class GoToGame : MonoBehaviour
     public GameObject settingButtonIcon;
     public GameObject minimapCanvas;
     public CalendarManager calendarManager;
-    public GameObject researchCanvas;
+    //public GameObject researchCanvas;
     public GameObject disinfectionCanvas;
     public GameObject newsTickerCanvas;
+    public GameObject researchPanel;
+    public GameObject researchMenuCanvas;
+
+    public ProfileWindow profileWindow;
 
     //public Transform cameraTransform;
     //public Transform targetTransform;
@@ -34,10 +38,13 @@ public class GoToGame : MonoBehaviour
         infoWindowUI = Assign(infoWindowUI, "InfoCanvas");
         settingButtonIcon = Assign(settingButtonIcon, "SettingButton");
         minimapCanvas = Assign(minimapCanvas, "MinimapCanvas");
-        researchCanvas = Assign(researchCanvas, "ResearchCanvas");
+        //researchCanvas = Assign(researchCanvas, "ResearchCanvas");
         disinfectionCanvas = Assign(disinfectionCanvas, "DisinfectionCanvas");
         newsTickerCanvas = Assign(newsTickerCanvas, "NewsTickerCanvas");
         calendarManager = FindObjectOfType<CalendarManager>();
+        profileWindow = FindObjectOfType<ProfileWindow>();
+        researchPanel = Assign(researchPanel, "ResearchPanel");
+        researchMenuCanvas = Assign(researchMenuCanvas, "ResearchMenuCanvas");
 
         if (Instance == null)
         {
@@ -83,10 +90,13 @@ public class GoToGame : MonoBehaviour
         infoWindowUI.SetActive(true);
         settingButtonIcon.SetActive(true);
         minimapCanvas.SetActive(true);
-        researchCanvas.SetActive(true);
+        //researchCanvas.SetActive(true);
         disinfectionCanvas.SetActive(true);
         newsTickerCanvas.SetActive(true);
+        researchMenuCanvas.SetActive(true);
+        researchPanel.SetActive(false);
         calendarManager.StartCalendar();
+        profileWindow.UpdateButtonTexts("응급실");
         Managers.PatientCreator.startSignal = true; // => 게임 시작 전에 환자 생성 막는 코드입니다 patient 코드가 사라져서 오류가 뜹니다
         isStart = true;
         Debug.Log("Start!!!");
