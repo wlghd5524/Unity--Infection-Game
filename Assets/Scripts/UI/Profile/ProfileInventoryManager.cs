@@ -66,7 +66,6 @@ public class ProfileInventoryManager : MonoBehaviour
             Debug.Log($"Person {person.Name} is resting. Inventory will not be shown.");
             return;
         }
-
         foreach (var item in person.Inventory)
         {
             GameObject itemObj = Instantiate(itemPrefab, inventoryContainer);

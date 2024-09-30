@@ -12,9 +12,11 @@ public class Managers : MonoBehaviour
     public static PatientCreator PatientCreator { get; private set; } = new PatientCreator();
     public static LayerChangeManager LayerChanger { get; private set; } = new LayerChangeManager();
 
+    public static ItemManager Item { get; private set; } = new ItemManager();
     private void Awake()
     {
         Instance = this;
+        Item = Item;
         LayerChanger = LayerChanger;
         ObjectPooling = ObjectPooling;
         NPCManager = NPCManager;

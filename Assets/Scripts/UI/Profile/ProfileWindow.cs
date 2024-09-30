@@ -7,24 +7,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 
-public class ItemManager
-{
-    public static List<(string, float)> GetDefaultItems()
-    {
-        return new List<(string, float)>
-        {
-            ("Dental 마스크", 0.1f),
-            ("N95 마스크", 0.2f),
-            ("일회용 장갑", 0.1f),
-            ("라텍스 장갑", 0.2f),
-            ("의료용 헤어캡", 0.05f),
-            ("고글", 0.3f),
-            ("AP 가운", 0.4f),
-            ("PAPR", 0.5f),
-            ("Level C", 0.7f)
-        };
-    }
-}
+
 
 // 프로필 창 관리 및 표시 스크립트
 public class ProfileWindow : MonoBehaviour
@@ -136,19 +119,19 @@ public class ProfileWindow : MonoBehaviour
 
     private void AddPersonProfile(GameObject personObject, string job, Role role, int index)
     {
-        List<(string, float)> inventory;
+        List<Item> inventory = new List<Item>();
 
         // 외래 환자와 입원 환자는 N95 마스크와 Dental 마스크만 인벤토리에 추가
         if (role == Role.Outpatient || role == Role.Inpatient || role == Role.EmergencyPatient)
         {
-            inventory = ItemManager.GetDefaultItems().Where(item => item.Item1 == "N95 마스크" || item.Item1 == "Dental 마스크").ToList();
+            inventory.Add(Managers.Item.items[0]);
+            inventory.Add(Managers.Item.items[1]);
         }
         else
         {
-            inventory = ItemManager.GetDefaultItems(); // 모든 아이템을 인벤토리에 추가
+            inventory = Managers.Item.items; // 모든 아이템을 인벤토리에 추가
         }
-
-
+        inventory = Managers.Item.items;
         int personID = PersonManager.Instance.GeneratePersonID();
         Person person = personObject.GetComponent<Person>();
         if (person == null)
@@ -193,7 +176,7 @@ public class ProfileWindow : MonoBehaviour
             UpdateProfile(profile, $"{job} {index}", person.Name, person.ID, person.gameObject.activeSelf);
             RefreshProfiles();
         }
-        UpdateButtonTexts(null);
+        UpdateButtonTexts(NowWard.text);
     }
 
     private void ToggleBigPanel()
@@ -386,6 +369,10 @@ public class ProfileWindow : MonoBehaviour
             currentFloor = floorName; // 현재 층 정보를 갱신
         }
 
+    
+        // 현재 선택된 병동 정보를 가져옴
+        Ward nowWard = Ward.wards.Find(w => w.WardName == floorName);
+
         if (floorName == "옥상")
         {
             // 옥상에 대한 특별한 처리가 필요한 경우 여기서 처리
@@ -398,8 +385,6 @@ public class ProfileWindow : MonoBehaviour
         }
         else
         {
-            // 현재 선택된 병동 정보를 가져옴
-            Ward nowWard = Ward.wards.Find(w => w.WardName == floorName);
 
             // 병동이 존재할 경우 직업별 인원 수를 업데이트
             if (nowWard != null)
@@ -466,7 +451,7 @@ public class ProfileWindow : MonoBehaviour
         PersonManager.Instance.RemovePerson(personID);
 
         // Update button texts to reflect changes
-        UpdateButtonTexts(null);
+        UpdateButtonTexts(NowWard.text);
     }
 
     // 자동 할당 코드

@@ -24,6 +24,7 @@ public class ProfileClickHandler : MonoBehaviour, IPointerClickHandler, IPointer
         {
             Person person = PersonManager.Instance.GetPerson(personID);
 
+            //ProfileUI.Instance.ShowProfileUI(personID);
             if (person != null && !person.IsResting)
             {
                 // 인벤토리 표시

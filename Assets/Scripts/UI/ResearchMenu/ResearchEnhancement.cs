@@ -14,7 +14,6 @@ class ResearchInfomation
     public string medicalResearch_2_2 = "의료용 헤어캡 착용|의료진이 의료용 헤어캡을\n착용합니다.";
     public string medicalResearch_2_3 = "AP 가운 착용|의료진이 AP 가운을\n착용합니다.";
     public string medicalResearch_3_1 = "Level C 착용|의료진이 보호구를 Level C\n보호 장비로 교체합니다.\n(PAPR, Level C 보호복,\n팔토시, 덧신, 장갑, 마스크)";
-    public string medicalResearch_3_2 = "Level D 착용|의료진이 보호구를 Level D\n보호 장비로 교체합니다.\n(Level D 보호복, 고글, 장갑,\n마스크, 부츠 커버)";
     public string medicalResearch_4_1 = "의료진 훈련 I|의료진에게 감염병 기초 정보 및\n기본적인 훈련을 실시합니다.\n감염방지율이 증가합니다.";
     public string medicalResearch_5_1 = "의료진 훈련 II|의료진에게 고위험 상황에서의\n대응 방법을 훈련합니다.\n감염방지율이 증가합니다.";
     public string medicalResearch_6_1 = "의료진 훈련 III|의료진이 감염 상황에서\n실시간 대응을 할 수 있습니다.\n감염방지율이 증가합니다.";
@@ -308,7 +307,7 @@ public class ResearchEnhancement : MonoBehaviour
                 subResearchData = new string[] { researchInfo.medicalResearch_2_1, researchInfo.medicalResearch_2_2, researchInfo.medicalResearch_2_3 };
                 break;
             case 3:
-                subResearchData = new string[] { researchInfo.medicalResearch_3_1, researchInfo.medicalResearch_3_2 };
+                subResearchData = new string[] { researchInfo.medicalResearch_3_1};
                 break;
             case 4:
                 subResearchData = new string[] { researchInfo.medicalResearch_4_1 };

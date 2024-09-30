@@ -15,6 +15,7 @@ public class IsResearch : MonoBehaviour
     public bool isMedicalResearch_5 = false;
     public bool isMedicalResearch_6 = false;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,25 +28,58 @@ public class IsResearch : MonoBehaviour
 
     }
 
+    public void EveryoneChangeEquipState(string itemName)
+    {
+        foreach(Item item in Managers.Item.items)
+        {
+            if(item.itemName == itemName)
+            {
+                item.isEquipped = true;
+            }
+        }
+        List<Person> persons = PersonManager.Instance.GetAllPersons();
+        foreach(Person person in persons)
+        {
+            person.Inventory[itemName].isEquipped = true;
+        }
+    }
+
+    public void EveryoneChangeInfectionResistance(int rate)
+    {
+        List<Person> persons = PersonManager.Instance.GetAllPersons();
+        foreach(Person person in persons)
+        {
+            person.infectionResistance = rate;
+        }
+    }
+
     public void IsOnMedicalResearch_0()
     {
-
+        EveryoneChangeEquipState("Dental 마스크");
+        EveryoneChangeEquipState("일회용 장갑");
         Debug.Log("의료진 연구 0번 실행");
     }
     public void IsOnMedicalResearch_1()
     {
+        EveryoneChangeEquipState("N95 마스크");
+        EveryoneChangeEquipState("라텍스 장갑");
         Debug.Log("의료진 연구 1번 실행");
     }
     public void IsOnMedicalResearch_2()
     {
+        EveryoneChangeEquipState("의료용 헤어캡");
+        EveryoneChangeEquipState("의료용 고글");
+        EveryoneChangeEquipState("AP 가운");
         Debug.Log("의료진 연구 2번 실행");
     }
     public void IsOnMedicalResearch_3()
     {
+        EveryoneChangeEquipState("Level C");
         Debug.Log("의료진 연구 3번 실행");
     }
     public void IsOnMedicalResearch_4()
     {
+        EveryoneChangeInfectionResistance(50);
         Debug.Log("의료진 연구 4번 실행");
     }
     public void IsOnMedicalResearch_5()

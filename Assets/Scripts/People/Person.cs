@@ -19,19 +19,6 @@ public enum Role
     Inpatient,
     EmergencyPatient
 }
-public struct ItemInfo
-{
-    public bool isPurchased;
-    public bool isEquipped;
-    public float protectionRate;
-
-    public ItemInfo(bool isPurchased, bool isEquipped, float protectionRate)
-    {
-        this.isPurchased = isPurchased;
-        this.isEquipped = isEquipped;
-        this.protectionRate = protectionRate;
-    }
-}
 public class Person : MonoBehaviour
 {
     public InfectionState status = InfectionState.Normal;
@@ -51,22 +38,22 @@ public class Person : MonoBehaviour
     public string Name { get; private set; }
     public string Job { get; private set; }
     public bool IsResting { get; private set; }
-    public Dictionary<string, ItemInfo> Inventory { get; private set; }
+    public Dictionary<string, Item> Inventory { get; private set; }
     public Sprite AvatarSprite { get; private set; } // 추가된 필드
     public bool IsMale { get; private set; } // 성별 필드 추가
 
 
-    public void Initialize(int id, string name, string job, bool isResting, Role role, List<(string itemName, float protectionRate)> inventory)
+    public void Initialize(int id, string name, string job, bool isResting, Role role, List<Item> inventory)
     {
         ID = id;
         Name = name;
         Job = job;
         IsResting = isResting;
         this.role = role;
-        Inventory = new Dictionary<string, ItemInfo>();
-        foreach (var (itemName, protectionRate) in inventory)
+        Inventory = new Dictionary<string, Item>();
+        foreach (Item item in inventory)
         {
-            Inventory[itemName] = new ItemInfo(false, false, protectionRate); // 기본 구매 및 착용 상태는 false
+            Inventory[item.itemName] = new Item(item.itemName, item.isEquipped, item.protectionRate); // 기본 구매 및 착용 상태는 false
         }
 
         // 성별 랜덤 설정
@@ -141,7 +128,7 @@ public class Person : MonoBehaviour
         List<string> keys = new List<string>(Inventory.Keys);
         foreach (var key in keys)
         {
-            Inventory[key] = new ItemInfo(false, false, Inventory[key].protectionRate);
+            Inventory[key] = new Item(Inventory[key].itemName, false, Inventory[key].protectionRate);
         }
     }
     public void ToggleRestingState()
