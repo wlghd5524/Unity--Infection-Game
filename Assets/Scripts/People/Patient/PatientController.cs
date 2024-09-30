@@ -339,6 +339,10 @@ public class PatientController : NPCController
 
             agent.SetDestination(bedWaypoint.GetBedPoint());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+            if(isExiting)
+            {
+                yield break;
+            }
             if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 0, 0))
             {
                 transform.eulerAngles = new Vector3(0, -180, 0);
@@ -487,6 +491,7 @@ public class PatientController : NPCController
             agent.SetDestination(bedWaypoint.GetBedPoint());
             isLayingDown = false;
             waypoints.Clear();
+            wardComponent.emergencyPatients.Remove(this);
 
             Managers.PatientCreator.numberOfEmergencyPatient--;
             ward = bedWaypoint.ward;
@@ -662,10 +667,13 @@ public class PatientController : NPCController
 
         isLayingDown = false;
 
-        agent.SetDestination(waypoints[Random.Range(3, 5)].GetSampledPosition());
-        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        yield return new WaitForSeconds(2.0f);
-
+        if(personComponent.role != Role.Outpatient)
+        {
+            agent.SetDestination(waypoints[Random.Range(3, 5)].GetSampledPosition());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+            yield return new WaitForSeconds(2.0f);
+        }
+        
         if (ward >= 6)
         {
             agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(0).GetComponent<Waypoint>().GetSampledPosition());
@@ -690,6 +698,18 @@ public class PatientController : NPCController
 
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
+        if(personComponent.role == Role.Inpatient)
+        {
+            wardComponent.inpatients.Remove(this);
+        }
+        else if(personComponent.role == Role.Outpatient)
+        {
+            wardComponent.outpatients.Remove(this);
+        }
+        else if(personComponent.role == Role.EmergencyPatient)
+        {
+            wardComponent.emergencyPatients.Remove(this);
+        }
         Managers.ObjectPooling.DeactivatePatient(gameObject);
         Managers.PatientCreator.numberOfOutpatient--;
     }

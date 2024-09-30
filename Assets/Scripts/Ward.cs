@@ -12,6 +12,7 @@ public class Ward : MonoBehaviour
     public List<PatientController> inpatients = new List<PatientController>();
     public List<NurseController> nurses = new List<NurseController>();
     public List<PatientController> outpatients = new List<PatientController>();
+    public List<PatientController> emergencyPatients = new List<PatientController>();
     public List<BedWaypoint> beds = new List<BedWaypoint>();
     public float totalOfNPC = 0;
     public float infectedNPC = 0;

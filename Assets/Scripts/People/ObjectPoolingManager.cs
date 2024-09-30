@@ -272,7 +272,7 @@ public class ObjectPoolingManager
         PatientController newPatientController = newEmergencyPatient.GetComponent<PatientController>();
         newPatientController.waypointsTransform = Managers.NPCManager.waypointDictionary[(8, "EmergencyPatientWaypoints")];
         newPatientController.wardComponent = newPatientController.waypointsTransform.GetComponentInParent<Ward>();
-        newPatientController.wardComponent.outpatients.Add(newPatientController);
+        newPatientController.wardComponent.emergencyPatients.Add(newPatientController);
         newPatientController.ward = 8;
 
         newPatientController.bedWaypoint = bed;

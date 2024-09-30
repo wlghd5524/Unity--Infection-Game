@@ -393,7 +393,7 @@ public class ProfileWindow : MonoBehaviour
                 int nurseCount = nowWard.nurses.Count;
                 int outpatientCount = nowWard.outpatients.Count;
                 int inpatientCount = nowWard.inpatients.Count;
-                int emergencyCount = (nowWard.num == 8) ? nowWard.inpatients.Count : 0; // 응급환자는 num == 8 (응급실)에서만 처리
+                int emergencyCount = (nowWard.num == 8) ? nowWard.emergencyPatients.Count : 0; // 응급환자는 num == 8 (응급실)에서만 처리
 
                 // UI 요소에 인원 수 업데이트
                 NowWard.text = $"{nowWard.WardName}";
