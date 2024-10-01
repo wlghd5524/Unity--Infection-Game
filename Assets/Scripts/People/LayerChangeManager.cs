@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class LayerChangeManager
 {
-    public string[] layers = { "Floor 2 L", "Floor 2 R", "Floor 3 L", "Floor 3 R", "Floor 4 L", "Floor 4 R", "Floor 5 L", "Floor 5 R" }; // 추가되는 Layer는 여기에 넣기
+    public string[] layers = { "Floor 2 L", "Floor 2 R", "Floor 3 L", "Floor 3 R", "Floor 4 L", "Floor 4 R", "Floor 5 L", "Floor 5 R", "Floor 1 L", "Floor 1 R" }; // 추가되는 Layer는 여기에 넣기
     public Dictionary<int, int[]> layerMapping;
 
     public void Init()

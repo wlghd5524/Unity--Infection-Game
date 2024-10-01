@@ -21,7 +21,7 @@ public class DividerCollisionHandler : MonoBehaviour
             {
                 if (patientController.isFollowingNurse || patientController.isExiting)
                 {
-                    if(patientController.isFollowingNurse && LayerMask.LayerToName(colliderLayer) == "Floor 1 R")
+                    if (patientController.isFollowingNurse && LayerMask.LayerToName(colliderLayer) == "Floor 1 R")
                     {
                         Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
 
@@ -58,11 +58,12 @@ public class DividerCollisionHandler : MonoBehaviour
                 }
 
             }
+            else
+            {
+                Debug.LogWarning($"Colliding object {other.gameObject.name} does not have an OutpatientController component.");
+            }
         }
-        else
-        {
-            Debug.LogWarning($"Colliding object {other.gameObject.name} does not have an OutpatientController component.");
-        }
+
 
         // Nurse 태그를 가진 오브젝트와 충돌했는지 확인
         if (other.CompareTag("Nurse"))
@@ -75,13 +76,35 @@ public class DividerCollisionHandler : MonoBehaviour
 
             if (Nurse != null)
             {
-                if (Nurse.isWorking == false)
+             
+                
+                if (Nurse.isReturning)
                 {
-                    Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
+                    
+
+                    if (LayerMask.LayerToName(colliderLayer) == "Floor 1 R")
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
+
+                    }
+                    else
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
+                    }
+
+
                 }
                 else
                 {
-                    Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
+                    if (LayerMask.LayerToName(colliderLayer) == "Floor 1 R")
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
+
+                    }
+                    else
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
+                    }
                 }
 
             }

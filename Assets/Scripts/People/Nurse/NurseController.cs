@@ -15,6 +15,7 @@ public class NurseController : NPCController
     public bool isWorking = false; // 간호사가 일하는 중인지 여부
     public bool isRest = false;
     public bool isWaitingAtDoctorOffice = false;
+    public bool isReturning = false;
     public DoctorController doctor;
 
     //public GameObject targetPatient; // 타겟 환자
@@ -107,13 +108,31 @@ public class NurseController : NPCController
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
 
-        if (targetPatientController.animator.GetBool("Sleeping"))
+        if (targetPatientController.isLayingDown)
         {
+            targetPatientController.isLayingDown = false;
             Managers.NPCManager.PlayWakeUpAnimation(targetPatientController.animator);
             yield return new WaitForSeconds(5.0f);
         }
 
         Managers.NPCManager.FaceEachOther(gameObject, patientGameObject); // 간호사와 환자가 서로를 바라보게 설정
+
+        if (targetPatientController.isWaiting)
+        {
+            if (targetPatientController.personComponent.role == Role.Outpatient)
+            {
+                targetPatientController.StopCoroutine(targetPatientController.OutpatientMove());
+            }
+            else if (targetPatientController.personComponent.role == Role.Inpatient)
+            {
+                targetPatientController.StopCoroutine(targetPatientController.InpatientMove());
+            }
+            else if (targetPatientController.personComponent.role == Role.EmergencyPatient)
+            {
+                targetPatientController.StopCoroutine(targetPatientController.EmergencyPatientMove());
+            }
+        }
+
 
         targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
         //targetPatientController.nurse = gameObject; // 간호사 설정
@@ -126,18 +145,35 @@ public class NurseController : NPCController
         {
             targetPatientController.StopCoroutine(targetPatientController.HospitalizationTimeCounter());
         }
-        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
+        while (!Managers.NPCManager.isArrived(agent))
+        {
+            yield return new WaitForSeconds(0.5f);
+            if (Vector3.Distance(gameObject.transform.position, patientGameObject.transform.position) > 3.0f)
+            {
+                agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
+            }
+        }
+        //yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
         Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
-        yield return new WaitForSeconds(3);
-
+        yield return new WaitForSeconds(2.0f);
 
         targetPatientController.isFollowingNurse = false;
         targetPatientController.isQuarantined = true;
+        targetPatientController.isWaiting = false;
         targetPatientController.ward = 9;
         targetPatientController.wardComponent = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")].GetComponentInParent<Ward>();
-        
+
         agent.speed += 1.0f;
+        agent.SetDestination(waypoints[0].GetSampledPosition());
+        isReturning = true;
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        isReturning = false;
         isWorking = false;
     }
 
@@ -275,7 +311,7 @@ public class NurseController : NPCController
             {
                 PatientController targetInpatientController = bed.patient.GetComponent<PatientController>();
                 targetInpatientController.StartCoroutine(targetInpatientController.WaitForNurse());
-                agent.SetDestination(bed.transform.position);
+                agent.SetDestination(bed.patient.transform.position);
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                 //Managers.NPCManager.FaceEachOther(bed.patient, gameObject);
                 if (bed.patient == null)

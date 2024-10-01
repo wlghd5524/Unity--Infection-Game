@@ -61,7 +61,7 @@ public class DoctorController : NPCController
             {
                 StartCoroutine(WardDoctorMove());
             }
-            else if(role == DoctorRole.ER)
+            else if (role == DoctorRole.ER)
             {
                 StartCoroutine(ERDoctorMove());
             }
@@ -99,6 +99,7 @@ public class DoctorController : NPCController
                     agent.SetDestination(new Vector3(chair.transform.position.x, chair.transform.position.y, chair.transform.position.z - 0.5f));
                 }
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+                yield return new WaitForSeconds(1.0f);
                 transform.eulerAngles = chair.transform.rotation.eulerAngles;
                 Managers.NPCManager.PlaySittingAnimation(animator);
             }
@@ -118,7 +119,7 @@ public class DoctorController : NPCController
     public IEnumerator ERDoctorMove()
     {
         isWaiting = true;
-        if(ERwaitingList.Count > 0)
+        if (ERwaitingList.Count > 0)
         {
             isWorking = true;
             int random = Random.Range(0, ERwaitingList.Count);

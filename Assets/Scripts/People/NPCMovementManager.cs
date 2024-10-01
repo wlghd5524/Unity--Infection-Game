@@ -28,12 +28,12 @@ public class NPCMovementManager
                 waypointsGameObject = wardTransform.Find("DoctorWaypoints");
                 waypointDictionary.Add((i, "DoctorWaypoints"), waypointsGameObject);
             }
-            else if(i >= 4 && i <= 7)
+            else if (i >= 4 && i <= 7)
             {
                 waypointsGameObject = wardTransform.Find("InpatientWaypoints");
                 waypointDictionary.Add((i, "InpatientWaypoints"), waypointsGameObject);
             }
-            else if(i == 8)
+            else if (i == 8)
             {
                 waypointsGameObject = wardTransform.Find("EmergencyPatientWaypoints").transform;
                 waypointDictionary.Add((i, "EmergencyPatientWaypoints"), waypointsGameObject);
@@ -41,7 +41,7 @@ public class NPCMovementManager
             waypointsGameObject = wardTransform.Find("NurseWaypoints");
             waypointDictionary.Add((i, "NurseWaypoints"), waypointsGameObject);
         }
-        
+
     }
     public void FaceEachOther(GameObject obj1, GameObject obj2)
     {
@@ -140,7 +140,7 @@ public class NPCMovementManager
             return false;
 
         // Check if the agent has a path and the remaining distance is greater than the stopping distance plus a small threshold
-        if (agent.hasPath && agent.remainingDistance > agent.stoppingDistance + 0.25f)
+        if (agent.hasPath && agent.remainingDistance > 0.25f)
             return false;
 
         // Check if the agent has no path and is not moving (velocity is very low)

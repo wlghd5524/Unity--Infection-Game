@@ -62,11 +62,11 @@ public class IconManager : MonoBehaviour
             }
             symptomCoroutine = StartCoroutine(ShowRandomSymptomIcon());
             Debug.Log("증상 발현!");
-            if(Random.Range(0,100) <= 30)
+            if (Random.Range(0, 100) <= 30)
             {
                 Debug.Log("증상 발견!");
                 QuarantineManager targetQuarantineManager = person.gameObject.GetComponent<QuarantineManager>();
-                
+
                 if (person.gameObject.CompareTag("Outpatient") || person.gameObject.CompareTag("Inpatient") || person.gameObject.CompareTag("EmergencyPatient"))
                 {
                     PatientController patientController = person.gameObject.GetComponent<PatientController>();
@@ -90,20 +90,27 @@ public class IconManager : MonoBehaviour
                     else
                     {
                         GameObject closestNurse = targetQuarantineManager.SearchNurse(person.gameObject.transform.position);
-                        if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting)
+                        try
                         {
-                            Debug.Log("이미 격리중인 환자입니다.");
+                            if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor)
+                            {
+                                Debug.Log("이미 격리중인 환자입니다.");
+                            }
+                            else if (closestNurse == null)
+                            {
+                                Debug.Log("근처에 간호사가 없습니다.");
+                                return;
+                            }
+                            else
+                            {
+                                // 음압실 데려가기
+                                targetQuarantineManager.Quarantine(closestNurse);
+                                Debug.Log("증상 발견으로 인한 격리 조치 중!");
+                            }
                         }
-                        else if (closestNurse == null)
+                        catch (System.Exception ex)
                         {
-                            Debug.Log("근처에 간호사가 없습니다.");
-                            return;
-                        }
-                        else
-                        {
-                            //음압실 데려가기
-                            targetQuarantineManager.Quarantine(closestNurse);
-                            Debug.Log("증상 발견으로 인한 격리 조치 중!");
+                            Debug.LogError($"예외 발생: {ex.Message}");
                         }
                     }
                 }
@@ -112,7 +119,7 @@ public class IconManager : MonoBehaviour
             {
                 Debug.Log("증상 미발견...");
             }
-            
+
         }
         else
         {

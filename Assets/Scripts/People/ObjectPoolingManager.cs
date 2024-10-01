@@ -243,7 +243,8 @@ public class ObjectPoolingManager
         patientController.prevWaypointIndex = -1;
         patientController.waypointsTransform = null;
         patientController.ward = -1;
-
+        patientController.excutedHC = false;
+        patientController.excutedQC = false;
         Person outpatientPerson = patient.GetComponent<Person>();
 
         if (outpatientPerson.status != InfectionState.Normal)

@@ -52,6 +52,7 @@ public class QuarantineManager : MonoBehaviour
         else
         {
             //Debug.Log("No Nurse found.");
+            return null;
         }
         // 가장 가까운 간호사의 게임 오브젝트를 반환합니다.
         return closestNurse.gameObject;
