@@ -6,7 +6,6 @@ using System.Collections;
 // ProfileWindowManager
 public class ProfileUI : MonoBehaviour
 {
-    public static ProfileUI Instance { get; private set; }
 
     public GameObject showIndividualPanel;      // 해당 NPC 정보 패널
     public TextMeshProUGUI npcNameText;         // NPC 이름 Text
@@ -21,17 +20,6 @@ public class ProfileUI : MonoBehaviour
     private float allStress;
     private int count = 0;
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     void Start()
     {

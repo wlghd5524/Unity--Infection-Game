@@ -81,7 +81,16 @@ public class ProfileInventoryManager : MonoBehaviour
             }
 
             itemNameText.text = item.Key;
-            itemStatusText.text = item.Value.isEquipped ? "착용 중" : "착용 안함";
+            if (item.Value.isEquipped)
+            {
+                itemStatusText.text = "O"; // 착용 중은 "O"
+                itemStatusText.color = new Color32(0, 128, 255, 255); // 밝은 파란색
+            }
+            else
+            {
+                itemStatusText.text = "X"; // 착용 안함은 "X"
+                itemStatusText.color = new Color32(255, 69, 0, 255); // 빨간색
+            }
             protectionRateText.text = $"+ {item.Value.protectionRate}";
 
             Sprite itemSprite = Resources.Load<Sprite>($"Sprites/ItemSprites/{item.Key}");

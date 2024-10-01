@@ -122,16 +122,15 @@ public class ProfileWindow : MonoBehaviour
         List<Item> inventory = new List<Item>();
 
         // 외래 환자와 입원 환자는 N95 마스크와 Dental 마스크만 인벤토리에 추가
+        if (role == Role.Doctor || role == Role.Nurse)
+        {
+            inventory = Managers.Item.items; // 모든 아이템을 인벤토리에 추가
+        }
         if (role == Role.Outpatient || role == Role.Inpatient || role == Role.EmergencyPatient)
         {
             inventory.Add(Managers.Item.items[0]);
             inventory.Add(Managers.Item.items[1]);
         }
-        else
-        {
-            inventory = Managers.Item.items; // 모든 아이템을 인벤토리에 추가
-        }
-        inventory = Managers.Item.items;
         int personID = PersonManager.Instance.GeneratePersonID();
         Person person = personObject.GetComponent<Person>();
         if (person == null)

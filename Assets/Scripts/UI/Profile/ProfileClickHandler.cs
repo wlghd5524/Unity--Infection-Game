@@ -6,7 +6,13 @@ public class ProfileClickHandler : MonoBehaviour, IPointerClickHandler, IPointer
 {
     public int personID;
     private ProfileInventoryManager inventoryManager;
+    public ProfileUI profileUI;
     private Outline outline;
+
+    public void Start()
+    {
+        profileUI = FindObjectOfType<ProfileUI>();
+    }
 
     public void Initialize(int id, ProfileInventoryManager manager)
     {
@@ -23,17 +29,20 @@ public class ProfileClickHandler : MonoBehaviour, IPointerClickHandler, IPointer
         if (inventoryManager != null)
         {
             Person person = PersonManager.Instance.GetPerson(personID);
-
-            //ProfileUI.Instance.ShowProfileUI(personID);
-            if (person != null && !person.IsResting)
+            if (person == null)
+            {
+                Debug.LogError($"No person found with ID {personID}.");
+                return;
+            }
+            
+            if (person != null)
             {
                 // 인벤토리 표시
+                profileUI.ShowProfileUI(personID);
                 inventoryManager.ShowInventory(personID);
             }
-            else if (person != null && person.IsResting)
-            {
-                Debug.Log($"{person.Name} is resting. Cannot open inventory.");
-            }
+            else
+                Debug.Log("person 이 없어용");
         }
         else
         {

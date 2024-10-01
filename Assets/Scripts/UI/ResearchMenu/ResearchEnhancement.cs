@@ -6,17 +6,22 @@ using UnityEngine.UI;
 
 class ResearchInfomation
 {
-    public string medicalResearch_0_1 = "Dental 마스크 착용|의료진이 마스크를\n착용합니다.";
-    public string medicalResearch_0_2 = "일회용 장갑 착용|의료진이 일회용 장갑을\n착용합니다.";
-    public string medicalResearch_1_1 = "N95 마스크 착용|의료진이 N95 마스크를\n착용합니다.";
-    public string medicalResearch_1_2 = "라텍스 장갑 착용|의료진이 라텍스 장갑을\n착용합니다.";
-    public string medicalResearch_2_1 = "의료용 고글 착용|의료진이 의료용 고글을\n착용합니다.";
-    public string medicalResearch_2_2 = "의료용 헤어캡 착용|의료진이 의료용 헤어캡을\n착용합니다.";
-    public string medicalResearch_2_3 = "AP 가운 착용|의료진이 AP 가운을\n착용합니다.";
-    public string medicalResearch_3_1 = "Level C 착용|의료진이 보호구를 Level C\n보호 장비로 교체합니다.\n(PAPR, Level C 보호복,\n팔토시, 덧신, 장갑, 마스크)";
-    public string medicalResearch_4_1 = "의료진 훈련 I|의료진에게 감염병 기초 정보 및\n기본적인 훈련을 실시합니다.\n감염방지율이 증가합니다.";
-    public string medicalResearch_5_1 = "의료진 훈련 II|의료진에게 고위험 상황에서의\n대응 방법을 훈련합니다.\n감염방지율이 증가합니다.";
-    public string medicalResearch_6_1 = "의료진 훈련 III|의료진이 감염 상황에서\n실시간 대응을 할 수 있습니다.\n감염방지율이 증가합니다.";
+    public string medicalResearch_0_1 = "Dental 마스크 착용|의료진이 기본적인 Dental 마스크를 착용하여 초기 단계 감염 예방 조치를 시행합니다. 이 마스크는 비말 차단을 통해 감염병의 확산을 줄이는 데 중요한 역할을 합니다.";
+    public string medicalResearch_0_2 = "일회용 장갑 착용|의료진이 환자와의 접촉 시 감염을 예방하기 위해 일회용 장갑을 착용합니다. 장갑은 환자 사이의 교차 감염을 줄이기 위한 필수 보호 장비입니다.";
+
+    public string medicalResearch_1_1 = "N95 마스크 착용|의료진이 N95 마스크를 착용하여 공기 중에 떠다니는 미세 입자로부터 보호를 받습니다. 이 마스크는 고위험 상황에서 감염을 방지하는 데 중요한 역할을 합니다.";
+    public string medicalResearch_1_2 = "라텍스 장갑 착용|의료진이 환자의 체액 및 혈액으로부터 손을 보호하기 위해 고품질의 라텍스 장갑을 착용합니다. 이 장갑은 민감한 의료 절차 시 안전을 보장합니다.";
+
+    public string medicalResearch_2_1 = "의료용 고글 착용|의료진이 눈을 통해 바이러스가 침투하는 것을 막기 위해 의료용 고글을 착용합니다. 눈 보호는 특히 비말 전염 위험이 높은 상황에서 매우 중요합니다.";
+    public string medicalResearch_2_2 = "의료용 헤어캡 착용|의료진이 머리카락을 통한 오염을 막기 위해 의료용 헤어캡을 착용합니다. 이는 깨끗한 작업 환경을 유지하고, 불필요한 오염 위험을 줄입니다.";
+    public string medicalResearch_2_3 = "AP 가운 착용|의료진이 AP 가운을 착용하여 전신을 보호합니다. 이 방호복은 의료진을 다양한 유해 물질로부터 보호하며, 감염 위험이 있는 환경에서 필수적인 장비입니다.";
+
+    public string medicalResearch_3_1 = "Level C 착용|의료진이 완전한 Level C 보호 장비를 착용하여, PAPR, Level C 보호복, 팔토시, 덧신, 장갑, 마스크 등을 갖추고 고위험 감염 상황에서 철저한 방호를 시행합니다. 이 장비는 매우 높은 보호 수준을 제공합니다.";
+
+    public string medicalResearch_4_1 = "의료진 훈련 I|의료진에게 감염병의 기초 지식과 기본적인 대응 방법을 교육하여, 감염 상황에서 신속하고 효율적인 조치를 취할 수 있도록 훈련합니다. 이를 통해 감염 방지율을 향상시킵니다.";
+    public string medicalResearch_5_1 = "의료진 훈련 II|의료진이 고위험 상황에서의 대응 능력을 강화하기 위한 심화 훈련을 진행합니다. 이를 통해 예기치 못한 위기 상황에서도 의료진의 감염 예방 능력이 대폭 향상됩니다.";
+    public string medicalResearch_6_1 = "의료진 훈련 III|의료진이 실제 감염 상황에서 실시간으로 적절한 조치를 취할 수 있는 고급 대응 능력을 배양합니다. 이 훈련을 통해 의료진은 감염병 확산을 효과적으로 방지할 수 있습니다.";
+
 }
 
 public class ResearchEnhancement : MonoBehaviour

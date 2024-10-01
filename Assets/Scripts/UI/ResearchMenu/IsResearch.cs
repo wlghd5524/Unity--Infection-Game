@@ -28,6 +28,7 @@ public class IsResearch : MonoBehaviour
 
     }
 
+    // 특정 연구 완료 시 장비 착용 설정
     public void EveryoneChangeEquipState(string itemName)
     {
         foreach(Item item in Managers.Item.items)
@@ -40,16 +41,23 @@ public class IsResearch : MonoBehaviour
         List<Person> persons = PersonManager.Instance.GetAllPersons();
         foreach(Person person in persons)
         {
-            person.Inventory[itemName].isEquipped = true;
+            if(person.Inventory.ContainsKey(itemName))
+            {
+                person.Inventory[itemName].isEquipped = true;
+            }
         }
     }
 
+    // 특정 연구 완료 시 감염방지율 수정 -> 아직 생성되는 사람들은 수정 안된 상태.
     public void EveryoneChangeInfectionResistance(int rate)
     {
         List<Person> persons = PersonManager.Instance.GetAllPersons();
         foreach(Person person in persons)
         {
-            person.infectionResistance = rate;
+            if (person.role == Role.Doctor || person.role == Role.Nurse)
+            {
+                person.infectionResistance = rate;
+            }
         }
     }
 
