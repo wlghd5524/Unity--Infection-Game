@@ -31,17 +31,17 @@ public class IsResearch : MonoBehaviour
     // 특정 연구 완료 시 장비 착용 설정
     public void EveryoneChangeEquipState(string itemName)
     {
-        foreach(Item item in Managers.Item.items)
+        foreach (Item item in Managers.Item.items)
         {
-            if(item.itemName == itemName)
+            if (item.itemName == itemName)
             {
                 item.isEquipped = true;
             }
         }
         List<Person> persons = PersonManager.Instance.GetAllPersons();
-        foreach(Person person in persons)
+        foreach (Person person in persons)
         {
-            if(person.Inventory.ContainsKey(itemName))
+            if (person.Inventory.ContainsKey(itemName))
             {
                 person.Inventory[itemName].isEquipped = true;
             }
@@ -52,7 +52,7 @@ public class IsResearch : MonoBehaviour
     public void EveryoneChangeInfectionResistance(int rate)
     {
         List<Person> persons = PersonManager.Instance.GetAllPersons();
-        foreach(Person person in persons)
+        foreach (Person person in persons)
         {
             if (person.role == Role.Doctor || person.role == Role.Nurse)
             {
@@ -87,15 +87,17 @@ public class IsResearch : MonoBehaviour
     }
     public void IsOnMedicalResearch_4()
     {
-        EveryoneChangeInfectionResistance(50);
+        EveryoneChangeInfectionResistance(10);
         Debug.Log("의료진 연구 4번 실행");
     }
     public void IsOnMedicalResearch_5()
     {
+        EveryoneChangeInfectionResistance(20);
         Debug.Log("의료진 연구 5번 실행");
     }
     public void IsOnMedicalResearch_6()
     {
+        EveryoneChangeInfectionResistance(30);
         Debug.Log("의료진 연구 6번 실행");
     }
 

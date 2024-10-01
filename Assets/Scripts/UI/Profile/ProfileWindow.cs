@@ -14,6 +14,7 @@ public class ProfileWindow : MonoBehaviour
 {
     public Button profileWindowButton; // 왼쪽 위 버튼
     public GameObject windowPanel; // 큰 창 패널
+    public Image profileCloseButton;
     public GameObject profileOverlay;
 
     public Image doctorWindowButton; // 의사 이미지 버튼
@@ -44,6 +45,7 @@ public class ProfileWindow : MonoBehaviour
 
     private void Awake()
     {
+        profileCloseButton = Assign(profileCloseButton, "ProfileCloseButton");
         profileWindowButton = Assign(profileWindowButton, "ProfileWindowButton");
         windowPanel = Assign(windowPanel, "WindowPanel");
         profileOverlay = Assign(profileOverlay, "ProfileOverlay");
@@ -73,6 +75,7 @@ public class ProfileWindow : MonoBehaviour
         SetupButton(outpatientWindowButton, OnOutpatientClick);
         SetupButton(inpatientWindowButton, OnInpatientClick);
         SetupButton(emergencypatientWindowButton, OnEmerpatientClick);
+        SetupButton(profileCloseButton, OnProfileClosePanelClick);
 
         // GridLayoutGroup 설정
         GridLayoutGroup gridLayoutGroup = profileContent.GetComponent<GridLayoutGroup>();
@@ -219,6 +222,16 @@ public class ProfileWindow : MonoBehaviour
         }
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => onClick());
+    }
+
+    private void OnProfileClosePanelClick()
+    {
+        windowPanel.SetActive(false);
+        profileOverlay.SetActive(false);
+        ClearProfilesList();
+        profileInventoryManager.ClearInventory();
+        IsAbleManager.Instance.CloseWindow(windowPanel);
+        Time.timeScale = 1.0f;
     }
 
     private void OnDoctorClick()
@@ -435,7 +448,7 @@ public class ProfileWindow : MonoBehaviour
         Person person = PersonManager.Instance.GetPerson(personID);
         if (person == null)
         {
-            Debug.LogError($"Person with ID {personID} not found.");
+            //Debug.LogError($"Person with ID {personID} not found.");
             return;
         }
 

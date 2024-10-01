@@ -25,7 +25,6 @@ public class ObjectPoolingManager
     public ProfileWindow profileWindow;
 
     // 비활성화된 외래 환자 오브젝트를 저장하는 큐
-    public Queue<GameObject> outpatientQueue = new Queue<GameObject>();
     public Queue<GameObject> patientQueue = new Queue<GameObject>();
 
     public void Init()
@@ -75,7 +74,7 @@ public class ObjectPoolingManager
 
             if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newDoctor, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
+                Managers.LayerChanger.SetLayerRecursively(newDoctor, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             DoctorController doctorController = newDoctor.GetComponent<DoctorController>();
@@ -135,7 +134,7 @@ public class ObjectPoolingManager
             // 간호사 위치별 Layer 설정
             if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
+                Managers.LayerChanger.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             NurseController newNurseController = newNurse.GetComponent<NurseController>();
@@ -157,7 +156,7 @@ public class ObjectPoolingManager
             // 간호사 위치별 Layer 설정
             if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
+                Managers.LayerChanger.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             NurseController newNurseController = newNurse.GetComponent<NurseController>();
@@ -181,7 +180,7 @@ public class ObjectPoolingManager
             // 간호사 위치별 Layer 설정
             if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
+                Managers.LayerChanger.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             NurseController newNurseController = newNurse.GetComponent<NurseController>();
@@ -215,7 +214,7 @@ public class ObjectPoolingManager
         newOutpatient.transform.position = position; // 위치 설정
         newOutpatient.SetActive(true); // 활성화
         newOutpatient.tag = "Outpatient";
-        LayerChangeManager.SetLayerRecursively(newOutpatient, LayerMask.NameToLayer("Floor 1"));
+        Managers.LayerChanger.SetLayerRecursively(newOutpatient, LayerMask.NameToLayer("Floor 1"));
         PatientController newPatientController = newOutpatient.GetComponent<PatientController>();
         newOutpatients++;
         newPatientController.Activate();
@@ -256,8 +255,7 @@ public class ObjectPoolingManager
         outpatientPerson.isImmune = false;
         //outpatientController.wardComponent.outpatients.Remove(outpatientController);
         patientController.wardComponent = null;
-        outpatientQueue.Enqueue(patient); // 큐에 추가
-        profileWindow.RemoveProfile(patient.GetComponent<Person>().ID);
+        patientQueue.Enqueue(patient); // 큐에 추가
         patient.SetActive(false); // 비활성화
     }
 
@@ -268,7 +266,7 @@ public class ObjectPoolingManager
         newEmergencyPatient.transform.position = position;
         newEmergencyPatient.SetActive(true);
         newEmergencyPatient.tag = "EmergencyPatient";
-        LayerChangeManager.SetLayerRecursively(newEmergencyPatient, LayerMask.NameToLayer("Floor 1"));
+        Managers.LayerChanger.SetLayerRecursively(newEmergencyPatient, LayerMask.NameToLayer("Floor 1"));
         PatientController newPatientController = newEmergencyPatient.GetComponent<PatientController>();
         newPatientController.waypointsTransform = Managers.NPCManager.waypointDictionary[(8, "EmergencyPatientWaypoints")];
         newPatientController.wardComponent = newPatientController.waypointsTransform.GetComponentInParent<Ward>();

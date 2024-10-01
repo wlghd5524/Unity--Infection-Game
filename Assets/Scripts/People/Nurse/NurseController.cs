@@ -119,40 +119,24 @@ public class NurseController : NPCController
         //targetPatientController.nurse = gameObject; // 간호사 설정
         agent.speed = targetPatientController.agent.speed - 0.5f;
         targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
-        Transform parentTransform = GameObject.Find("Waypoints").transform;
+        agent.SetDestination(targetPatientController.nPRoom.GetRandomPointInRange()); // 음압실로 이동
 
-        for (int i = 0; i < 14; i++)
-        {
-            NPRoom nPRoom = parentTransform.Find("N-PRoom (" + i + ")").GetComponent<NPRoom>(); // 음압실 웨이포인트 찾기
-            if (nPRoom.isEmpty)
-            {
-                targetPatientController.nPRoom = nPRoom;
-                nPRoom.isEmpty = false;
-                agent.SetDestination(nPRoom.GetRandomPointInRange()); // 음압실로 이동
-                break;
-            }
-        }
-        // 격리실이 남아있지 않을 때
-        if (targetPatientController.nPRoom == null)
-        {
-            targetPatientController.StartCoroutine(targetPatientController.ExitHospital());
-        }
-        else
-        {
-            if(targetPatientController.personComponent.role == Role.Inpatient)
-            {
-                targetPatientController.StopCoroutine(targetPatientController.HospitalizationTimeCounter());
-            }
-            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
-            Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
-            yield return new WaitForSeconds(3);
 
-            targetPatientController.isFollowingNurse = false;
-            targetPatientController.isQuarantined = true;
-            targetPatientController.ward = -1;
-            targetPatientController.wardComponent = null;
+        if (targetPatientController.personComponent.role == Role.Inpatient)
+        {
+            targetPatientController.StopCoroutine(targetPatientController.HospitalizationTimeCounter());
         }
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
+        Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
+        yield return new WaitForSeconds(3);
+
+
+        targetPatientController.isFollowingNurse = false;
+        targetPatientController.isQuarantined = true;
+        targetPatientController.ward = 9;
+        targetPatientController.wardComponent = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")].GetComponentInParent<Ward>();
+        
         agent.speed += 0.5f;
         isWorking = false;
     }

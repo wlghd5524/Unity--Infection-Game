@@ -13,13 +13,10 @@ public class NPCMovementManager
     {
         gatewayTransform = GameObject.Find("Waypoints/Gateways").transform;
         passPointTransform = GameObject.Find("Waypoints/Discharge PassPoints").transform;
-        Transform wardTransform = GameObject.Find("Waypoints/Ward (8)/EmergencyPatientWaypoints").transform;
-        waypointDictionary.Add((8, "EmergencyPatientWaypoints"), wardTransform);
+        Transform wardTransform;
 
-        wardTransform = GameObject.Find("Waypoints/Ward (8)/NurseWaypoints").transform;
-        waypointDictionary.Add((8, "NurseWaypoints"), wardTransform);
 
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 10; i++)
         {
             wardTransform = GameObject.Find("Waypoints/Ward (" + i + ")").transform;
             Transform waypointsGameObject;
@@ -31,10 +28,15 @@ public class NPCMovementManager
                 waypointsGameObject = wardTransform.Find("DoctorWaypoints");
                 waypointDictionary.Add((i, "DoctorWaypoints"), waypointsGameObject);
             }
-            else if(i >= 4)
+            else if(i >= 4 && i <= 7)
             {
                 waypointsGameObject = wardTransform.Find("InpatientWaypoints");
                 waypointDictionary.Add((i, "InpatientWaypoints"), waypointsGameObject);
+            }
+            else if(i == 8)
+            {
+                waypointsGameObject = wardTransform.Find("EmergencyPatientWaypoints").transform;
+                waypointDictionary.Add((i, "EmergencyPatientWaypoints"), waypointsGameObject);
             }
             waypointsGameObject = wardTransform.Find("NurseWaypoints");
             waypointDictionary.Add((i, "NurseWaypoints"), waypointsGameObject);

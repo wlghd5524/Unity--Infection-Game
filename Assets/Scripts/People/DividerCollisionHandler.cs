@@ -6,24 +6,48 @@ public class DividerCollisionHandler : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
+        int colliderLayer = gameObject.layer;
+
         // Outpatient 태그를 가진 오브젝트와 충돌했는지 확인
-        if (other.CompareTag("Outpatient") || other.CompareTag("Inpatient"))
+        if (other.CompareTag("Outpatient") || other.CompareTag("Inpatient") || other.CompareTag("EmergencyPatient"))
         {
-            PatientController Outpatient = other.GetComponent<PatientController>();
-
-            if (Outpatient != null)
+            if (!Managers.LayerChanger.layerMapping.TryGetValue(colliderLayer, out int[] layers))
             {
-                if (Outpatient.isFollowingNurse == false)
-                {
-                    int waypointIndex = Outpatient.waypointIndex;
+                Debug.LogWarning($"Layer {colliderLayer} not found in layer mapping.");
+            }
+            PatientController patientController = other.GetComponent<PatientController>();
 
-                    // LayerChangeManager의 ChangeLayerBasedOnCollider 메서드 호출
-                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, waypointIndex);
+            if (patientController != null)
+            {
+                if (patientController.isFollowingNurse || patientController.isExiting)
+                {
+                    Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
                 }
                 else
                 {
-                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 4);
+                    if (patientController.personComponent.role == Role.Outpatient)
+                    {
+                        if (patientController.waypointIndex == 4)
+                        {
+                            Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
+                        }
+                        else
+                        {
+                            Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
+                        }
+                    }
+
+                    else if (patientController.personComponent.role == Role.Inpatient)
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
+                    }
+
+                    else if (patientController.personComponent.role == Role.EmergencyPatient)
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
+                    }
                 }
+
             }
         }
         else
@@ -34,17 +58,21 @@ public class DividerCollisionHandler : MonoBehaviour
         // Nurse 태그를 가진 오브젝트와 충돌했는지 확인
         if (other.CompareTag("Nurse"))
         {
+            if (!Managers.LayerChanger.layerMapping.TryGetValue(colliderLayer, out int[] layers))
+            {
+                Debug.LogWarning($"Layer {colliderLayer} not found in layer mapping.");
+            }
             NurseController Nurse = other.GetComponent<NurseController>();
 
             if (Nurse != null)
             {
                 if (Nurse.isWorking == false)
                 {
-                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 1);
+                    Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
                 }
                 else
                 {
-                    Managers.LayerChanger.ChangeLayerBasedOnCollider(other.gameObject, gameObject, 4);
+                    Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
                 }
 
             }

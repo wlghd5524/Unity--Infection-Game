@@ -4,7 +4,7 @@ using UnityEngine;
 public class LayerChangeManager
 {
     public string[] layers = { "Floor 2 L", "Floor 2 R", "Floor 3 L", "Floor 3 R", "Floor 4 L", "Floor 4 R", "Floor 5 L", "Floor 5 R" }; // 추가되는 Layer는 여기에 넣기
-    private Dictionary<int, int[]> layerMapping;
+    public Dictionary<int, int[]> layerMapping;
 
     public void Init()
     {
@@ -26,32 +26,8 @@ public class LayerChangeManager
             { LayerMask.NameToLayer("Floor 5 R"), new int[] { LayerMask.NameToLayer("Floor 5 R"), LayerMask.NameToLayer("Floor 5") } },
         };
     }
-    public void ChangeLayerBasedOnCollider(GameObject npc, GameObject colliderObject, int waypointIndex)
-    {
-        int colliderLayer = colliderObject.layer;
 
-        if (layerMapping.TryGetValue(colliderLayer, out int[] layers))
-        {
-            if (waypointIndex == 1)
-            {
-                SetLayerRecursively(npc, layers[0]);
-            }
-            else if (waypointIndex == 4 || npc.GetComponent<PatientController>().isExiting)
-            {
-                SetLayerRecursively(npc, layers[1]);
-            }
-            else
-            {
-                Debug.LogWarning($"Invalid waypointIndex {waypointIndex} for NPC {npc.name}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Layer {colliderLayer} not found in layer mapping.");
-        }
-    }
-
-    public static void SetLayerRecursively(GameObject obj, int newLayer)
+    public void SetLayerRecursively(GameObject obj, int newLayer)
     {
         if (obj == null) return;
 

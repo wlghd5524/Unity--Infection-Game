@@ -46,12 +46,12 @@ public class QuarantineManager : MonoBehaviour
             Person person = closestNurse.GetComponent<Person>();
             if (person != null)
             {
-                Debug.Log("Closest Nurse found: " + person.gameObject.name);
+                //Debug.Log("Closest Nurse found: " + person.gameObject.name);
             }
         }
         else
         {
-            Debug.Log("No Nurse found.");
+            //Debug.Log("No Nurse found.");
         }
         // 가장 가까운 간호사의 게임 오브젝트를 반환합니다.
         return closestNurse.gameObject;

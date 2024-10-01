@@ -62,7 +62,7 @@ public class PatientCreator
 
             if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
-                LayerChangeManager.SetLayerRecursively(newInpatient, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
+                Managers.LayerChanger.SetLayerRecursively(newInpatient, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
             }
 
             spawnArea.patient = newInpatient;

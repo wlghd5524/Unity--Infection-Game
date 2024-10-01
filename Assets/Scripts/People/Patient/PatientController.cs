@@ -38,6 +38,7 @@ public class PatientController : NPCController
     public bool excutedHC = false;  //입원 시간 재는 코루틴 실행 여부
     public bool excutedQC = false;  //격리 시간 재는 코루틴 실행 여부
 
+    public ProfileWindow profileWindow;
     public void Activate()
     {
         do
@@ -55,6 +56,7 @@ public class PatientController : NPCController
     // 진오 추가
     private void Start()
     {
+        profileWindow = FindObjectOfType<ProfileWindow>();
         iconManager = GetComponent<IconManager>();
         personComponent = GetComponent<Person>();
         //입원 환자 웨이포인트 추가
@@ -176,7 +178,7 @@ public class PatientController : NPCController
             {
                 agent.SetDestination(nPRoom.GetBedPoint());
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-                transform.forward = (transform.position - bedWaypoint.bedGameObject.transform.position).normalized;
+                transform.forward = (transform.position - nPRoom.bedGameObject.transform.position).normalized;
                 isLayingDown = true;
                 Managers.NPCManager.PlaySittingAnimation(animator);
                 yield return new WaitForSeconds(0.5f);
@@ -237,8 +239,7 @@ public class PatientController : NPCController
             // 다음 웨이포인트로 이동
             if (!isWaitingForDoctor)
             {
-                // 진오 추가
-                // 현재 웨이포인트가 DoctorOffice일 경우 아이콘을 표시
+                // 현재 웨이포인트가 DoctorOffice일 경우
                 if (waypointIndex > 0 && waypoints[waypointIndex - 1] is DoctorOffice)
                 {
                     bool isFound = false;
@@ -274,11 +275,13 @@ public class PatientController : NPCController
                         officeSignal = false;
                         doctorSignal = false;
                         wardComponent.outpatients.Remove(this);
+                        profileWindow.RemoveProfile(personComponent.ID);
                         Managers.PatientCreator.numberOfOutpatient--;
                         ward = bedWaypoint.ward;
                         wardComponent = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
                         waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
                         wardComponent.inpatients.Add(this);
+                        profileWindow.AddInpatientProfile(gameObject);
                         Managers.PatientCreator.numberOfInpatient++;
                         doctorSignal = false;
                         AddInpatientWaypoints();
@@ -483,8 +486,6 @@ public class PatientController : NPCController
         //입원 환자로 전환
         else
         {
-            nextBed.isEmpty = true;
-            nextBed.patient = null;
             Managers.NPCManager.PlayWakeUpAnimation(animator);
             yield return new WaitForSeconds(5.0f);
             bedWaypoint = nextBed;
@@ -492,6 +493,7 @@ public class PatientController : NPCController
             isLayingDown = false;
             waypoints.Clear();
             wardComponent.emergencyPatients.Remove(this);
+            profileWindow.RemoveProfile(personComponent.ID);
 
             Managers.PatientCreator.numberOfEmergencyPatient--;
             ward = bedWaypoint.ward;
@@ -501,6 +503,7 @@ public class PatientController : NPCController
             AddInpatientWaypoints();
 
             wardComponent.inpatients.Add(this);
+            profileWindow.AddInpatientProfile(gameObject);
             Managers.PatientCreator.numberOfInpatient++;
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             yield return new WaitForSeconds(2.0f);
@@ -673,7 +676,21 @@ public class PatientController : NPCController
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             yield return new WaitForSeconds(2.0f);
         }
-        
+
+        if (personComponent.role == Role.Inpatient)
+        {
+            wardComponent.inpatients.Remove(this);
+        }
+        else if (personComponent.role == Role.Outpatient)
+        {
+            wardComponent.outpatients.Remove(this);
+        }
+        else if (personComponent.role == Role.EmergencyPatient)
+        {
+            wardComponent.emergencyPatients.Remove(this);
+        }
+        profileWindow.RemoveProfile(personComponent.ID);
+
         if (ward >= 6)
         {
             agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(0).GetComponent<Waypoint>().GetSampledPosition());
@@ -698,18 +715,7 @@ public class PatientController : NPCController
 
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
-        if(personComponent.role == Role.Inpatient)
-        {
-            wardComponent.inpatients.Remove(this);
-        }
-        else if(personComponent.role == Role.Outpatient)
-        {
-            wardComponent.outpatients.Remove(this);
-        }
-        else if(personComponent.role == Role.EmergencyPatient)
-        {
-            wardComponent.emergencyPatients.Remove(this);
-        }
+        
         Managers.ObjectPooling.DeactivatePatient(gameObject);
         Managers.PatientCreator.numberOfOutpatient--;
     }
