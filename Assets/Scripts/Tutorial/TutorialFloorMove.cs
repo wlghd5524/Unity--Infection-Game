@@ -26,17 +26,8 @@ public class TutorialFloorMove : TutorialBase
         {
             isFloorChanged = true;
 
-            cameraController.StartCoroutine(TransitionToNextTutorial(controller));
+            cameraController.StartCoroutine(controller.Delay());
         }
-    }
-
-    private IEnumerator TransitionToNextTutorial(TutorialController controller)
-    {
-        // 지정된 시간만큼 기다림
-        yield return new WaitForSeconds(1f);
-
-        // 다음 튜토리얼로 이동
-        controller.SetNextTutorial();
     }
 
     public override void Exit()

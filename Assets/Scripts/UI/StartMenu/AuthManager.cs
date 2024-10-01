@@ -198,12 +198,15 @@ public class AuthManager : MonoBehaviour
     private void HandleLogin()
     {
         GameDataManager gameDataMager = GameDataManager.Instance;
+        ResearchDBManager researchDBManager = ResearchDBManager.Instance;
 
         if (UserManager.Instance.ValidateUser(id, username))
         {
             // 게임 데이터에 유저 정보 저장
             gameDataMager.userId = id;
             gameDataMager.userName = username;
+            researchDBManager.userNum = id;
+            researchDBManager.userName = username;
 
             // 유저의 튜토리얼 진행 여부 반환
             int tutorialStatus = UserManager.Instance.GetUserTutorialStatus(id);
@@ -220,6 +223,7 @@ public class AuthManager : MonoBehaviour
 
             // 확인된 유저 정보를 바탕으로 게임 데이터 테이블에 데이터 추가
             gameDataMager.InsertInitialData();
+            researchDBManager.SendResearchDataToServer();
             StartCoroutine(LoginSuccessCoroutine());
         }
         else
@@ -263,6 +267,14 @@ public class AuthManager : MonoBehaviour
 
         UserManager.Instance.AddUser(id, username, 0);
         DisplayMessage("회원가입 성공!\n로그인 화면으로 이동해주세요.", Color.green);
+        StartCoroutine(CompleteSignUp());
+    }
+
+    // 회원가입 완료 로그 1.8초 동안 보여주고 창 종료
+    IEnumerator CompleteSignUp()
+    {
+        yield return new WaitForSeconds(1.8f);
+        OnBackButtonClicked(signupPopup);
     }
 
     // ID 유효성 검사

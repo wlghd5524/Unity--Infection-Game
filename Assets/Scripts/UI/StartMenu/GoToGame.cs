@@ -95,9 +95,9 @@ public class GoToGame : MonoBehaviour
         newsTickerCanvas.SetActive(true);
         researchMenuCanvas.SetActive(true);
         researchPanel.SetActive(false);
-        calendarManager.StartCalendar();
+        //calendarManager.StartCalendar();
         profileWindow.UpdateButtonTexts("응급실");
-        Managers.PatientCreator.startSignal = true; // => 게임 시작 전에 환자 생성 막는 코드입니다 patient 코드가 사라져서 오류가 뜹니다
+        //Managers.PatientCreator.startSignal = true; // => 게임 시작 전에 환자 생성 막는 코드입니다 patient 코드가 사라져서 오류가 뜹니다
         isStart = true;
         Debug.Log("Start!!!");
     }

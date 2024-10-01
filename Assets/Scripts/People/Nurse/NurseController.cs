@@ -117,7 +117,7 @@ public class NurseController : NPCController
 
         targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
         //targetPatientController.nurse = gameObject; // 간호사 설정
-        agent.speed = targetPatientController.agent.speed - 0.5f;
+        agent.speed = targetPatientController.agent.speed - 1.0f;
         targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
         agent.SetDestination(targetPatientController.nPRoom.GetRandomPointInRange()); // 음압실로 이동
 
@@ -137,7 +137,7 @@ public class NurseController : NPCController
         targetPatientController.ward = 9;
         targetPatientController.wardComponent = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")].GetComponentInParent<Ward>();
         
-        agent.speed += 0.5f;
+        agent.speed += 1.0f;
         isWorking = false;
     }
 

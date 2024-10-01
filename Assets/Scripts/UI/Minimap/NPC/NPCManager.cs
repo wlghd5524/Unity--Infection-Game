@@ -13,11 +13,11 @@ public class NPCManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
     }
 
@@ -56,17 +56,6 @@ public class NPCManager : MonoBehaviour
             if (npcData.ObjectRenderer != null)
             {
                 npcData.ObjectRenderer.materials = npcData.OriginalMaterials;
-            }
-        }
-    }
-
-    public void UnhighlightAllNPCs()
-    {
-        foreach (var kvp in npcDataDict)
-        {
-            if (kvp.Value.ObjectRenderer != null)
-            {
-                kvp.Value.ObjectRenderer.materials = kvp.Value.OriginalMaterials;
             }
         }
     }

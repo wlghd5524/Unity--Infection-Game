@@ -77,14 +77,6 @@ public class Person : MonoBehaviour
         coll = GetComponent<CapsuleCollider>();
 
         patientController = GetComponent<PatientController>();
-
-        // Renderer 컴포넌트 얻기
-        Renderer renderer = GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            // NPCManager에 NPC 등록
-            NPCManager.Instance.RegisterNPC(gameObject, this, renderer);
-        }
     }
     void Update()
     {
@@ -151,6 +143,8 @@ public class Person : MonoBehaviour
     public void ChangeStatus(InfectionState infection)
     {
         gameObject.GetComponent<NPCController>().wardComponent.infectedNPC++;
+        NPCManager.Instance.HighlightNPC(gameObject);
+        Debug.Log("감염자 색상 변경" + gameObject.name);
         StartCoroutine(IncubationPeriod(infection));
         if (Random.Range(0, 100) <= 30)
         {
@@ -162,6 +156,8 @@ public class Person : MonoBehaviour
     {
         yield return new WaitForSeconds(Random.Range(7, 15));
         Debug.Log("자가 면역을 가져서 더 이상 감염되지 않음");
+        NPCManager.Instance.UnhighlightNPC(gameObject);
+        Debug.Log("감염자 색상 풀림" + gameObject.name);
         status = InfectionState.Normal;
         isImmune = true;
     }

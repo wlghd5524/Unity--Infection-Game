@@ -107,8 +107,12 @@ public class PatientCreator
         if (newOutpatient != null)
         {
             Person newOutPatientPerson = newOutpatient.GetComponent<Person>(); // Person 컴포넌트 가져오기
+            Renderer renderer = newOutpatient.GetComponent<Renderer>();
+
             if (newOutPatientPerson != null)
             {
+                NPCManager.Instance.RegisterNPC(newOutpatient, newOutPatientPerson, renderer);
+
                 // 감염 상태 설정
                 if (Random.value < infectionRate)
                 {
@@ -164,8 +168,11 @@ public class PatientCreator
         if (newEmaergencyPatient != null)
         {
             Person newEmergencyPatientPerson = newEmaergencyPatient.GetComponent<Person>(); // Person 컴포넌트 가져오기
+            Renderer renderer = newEmergencyPatientPerson.GetComponent<Renderer>();         // Renderer 컴포넌트 가져오기
+
             if (newEmergencyPatientPerson != null)
             {
+                NPCManager.Instance.RegisterNPC(newEmaergencyPatient, newEmergencyPatientPerson, renderer);
                 // 감염 상태 설정
                 if (Random.value < infectionRate)
                 {

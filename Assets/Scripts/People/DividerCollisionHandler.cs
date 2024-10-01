@@ -21,7 +21,16 @@ public class DividerCollisionHandler : MonoBehaviour
             {
                 if (patientController.isFollowingNurse || patientController.isExiting)
                 {
-                    Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
+                    if(patientController.isFollowingNurse && LayerMask.LayerToName(colliderLayer) == "Floor 1 R")
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[0]);
+
+                    }
+                    else
+                    {
+                        Managers.LayerChanger.SetLayerRecursively(other.gameObject, layers[1]);
+
+                    }
                 }
                 else
                 {
@@ -78,7 +87,7 @@ public class DividerCollisionHandler : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"Colliding object {other.gameObject.name} does not have an OutpatientController component.");
+                Debug.LogWarning($"Colliding object {other.gameObject.name} does not have an NurseController component.");
             }
         }
     }

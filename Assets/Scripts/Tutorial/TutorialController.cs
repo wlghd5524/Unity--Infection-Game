@@ -48,7 +48,6 @@ public class TutorialController : MonoBehaviour
 
     private void ShowTutorialSkipPrompt()
     {
-        PauseGame();
         // 튜토리얼 스킵 여부를 묻는 UI 창을 활성화
         tutorialSkipPromptUI.SetActive(true);
 
@@ -62,7 +61,6 @@ public class TutorialController : MonoBehaviour
         // "네"를 선택했을 때 튜토리얼을 건너뜀
         CompletedAllTutorials();
         tutorialSkipPromptUI.SetActive(false);
-        ResumeGame();
     }
 
     private void StartTutorial()
@@ -105,22 +103,14 @@ public class TutorialController : MonoBehaviour
 
         // 마스크 업데이트
         maskController.UpdateMask(currentIndex);
-
-        // 대화창이 있는 튜토리얼일 경우 게임을 멈춥니다.
-        if (currentTutorial is TutorialDialog)  // TutorialDialog를 상속받는 경우 게임 멈춤
-        {
-            PauseGame();
-        }
-        else
-        {
-            ResumeGame();
-        }
     }
 
     public void CompletedAllTutorials()
     {
         currentTutorial = null;
         Debug.Log("Compleye All");
+        Managers.PatientCreator.startSignal = true;         // 튜토리얼 끝나면 npc 생성 시작
+        GoToGame.Instance.calendarManager.StartCalendar();  // 튜토리얼 끝나면 시간 흐름
     }
 
     // 현재 튜토리얼에서 대화가 나오면 게임을 멈춥니다.
@@ -137,10 +127,10 @@ public class TutorialController : MonoBehaviour
         Time.timeScale = 1f; // 게임 다시 시작
     }
 
-    public IEnumerator DelayNextTutorial()
+    public IEnumerator Delay()
     {
         // 설정된 시간만큼 기다림
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.3f);
 
         // 다음 튜토리얼로 이동
         SetNextTutorial();

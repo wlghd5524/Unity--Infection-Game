@@ -37,7 +37,7 @@ public class TutorialProfileClick : TutorialBase
                     {
                         Debug.Log($"Profile clicked: {profileClickHandler.personID}");
                         isClicked = true;
-                        StartCoroutine(controller.DelayNextTutorial());  // 클릭 후 딜레이 처리
+                        StartCoroutine(controller.Delay());  // 클릭 후 딜레이 처리
                     }
                     else
                     {
