@@ -712,14 +712,17 @@ public class PatientController : NPCController
         if (personComponent.role == Role.Inpatient)
         {
             wardComponent.inpatients.Remove(this);
+            Managers.PatientCreator.numberOfInpatient--;
         }
         else if (personComponent.role == Role.Outpatient)
         {
             wardComponent.outpatients.Remove(this);
+            Managers.PatientCreator.numberOfOutpatient--;
         }
         else if (personComponent.role == Role.EmergencyPatient)
         {
             wardComponent.emergencyPatients.Remove(this);
+            Managers.PatientCreator.numberOfEmergencyPatient--;
         }
         profileWindow.RemoveProfile(personComponent.ID);
 
@@ -761,7 +764,7 @@ public class PatientController : NPCController
 
 
         Managers.ObjectPooling.DeactivatePatient(gameObject);
-        Managers.PatientCreator.numberOfOutpatient--;
+        
     }
 
     private void AddInpatientWaypoints()

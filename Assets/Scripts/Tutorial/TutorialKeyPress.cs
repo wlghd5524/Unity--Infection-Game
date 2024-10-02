@@ -1,5 +1,4 @@
-﻿using TMPro.Examples;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class TutorialKeyPress : TutorialBase

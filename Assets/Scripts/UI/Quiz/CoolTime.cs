@@ -34,11 +34,14 @@ public class CoolTime : MonoBehaviour
         return obj;
 
     }
+    private float startTime; // 쿨타임 시작 시간
+
     public void StartCooldown(float remainingCooldown, float maxCooldown, System.Action onCooldownComplete)
     {
         this.maxCooldown = maxCooldown;  //쿨타임의 최대 시간 설정
         this.onCooldownComplete = onCooldownComplete;  //쿨타임이 끝날 때 실행할 함수 지정
         currentCooldown = remainingCooldown;
+        startTime = Time.realtimeSinceStartup; // 시작 시간 기록
         UpdateCooltimeUI();
         gameObject.SetActive(true);  // 오브젝트를 활성화
         if (_co != null)
@@ -48,17 +51,19 @@ public class CoolTime : MonoBehaviour
         _co = StartCoroutine(CooldownCoroutine());
     }
 
-
     //시간이 남아있으면 매 프레임마다 currentCooldown을 감소시킴
     //쿨타임 끝나면 onCooldownCompete 호출
     private IEnumerator CooldownCoroutine()
     {
-        while (currentCooldown > 0)
+        float endTime = startTime + currentCooldown; // 종료 시간 계산
+
+        while (Time.realtimeSinceStartup < endTime)
         {
-            currentCooldown -= Time.deltaTime;
+            currentCooldown = endTime - Time.realtimeSinceStartup; // 남은 시간 계산
             UpdateCooltimeUI();
             yield return null;
         }
+
         currentCooldown = 0;
         UpdateCooltimeUI();
         onCooldownComplete?.Invoke();  //null이 아니면 호출해서 등록된 메서드 실행
@@ -82,4 +87,5 @@ public class CoolTime : MonoBehaviour
             fillImage.fillAmount = currentCooldown / maxCooldown;
         }
     }
+
 }

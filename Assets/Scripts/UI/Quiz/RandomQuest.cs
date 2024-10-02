@@ -107,7 +107,7 @@ public class RandomQuest : MonoBehaviour
     private void UpdateMoneyUI()
     {
         //현재 금액 가져오기 
-        moneyText.text = $"{currentMoneyManager.CurrentMoneyGetter:N0}원";  // 천단위 콤마 추가
+        moneyText.text = $"{currentMoneyManager.CurrentMoneyGetter:N0}Sch";  // 천단위 콤마 추가
     }
 
     // DB 데이터 로드가 끝나면 
@@ -275,12 +275,12 @@ public class RandomQuest : MonoBehaviour
         int moneyToAdd = clickbtn.name switch
         {
             "LevelButton1" => 10,
-            "LevelButton2" => 100,
-            "LevelButton3" => 1000,
+            "LevelButton2" => 20,
+            "LevelButton3" => 30,
             _ => 0
         };
 
-        rightText.text = $"{moneyToAdd}원 획득하였습니다.";
+        rightText.text = $"{moneyToAdd}Sch 획득하였습니다.";
 
         if (monthlyReportUI != null)
         {
@@ -300,7 +300,7 @@ public class RandomQuest : MonoBehaviour
         if (rightPanel != null)
         {
             rightPanel.SetActive(true);
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSecondsRealtime(1.5f);
             rightPanel.SetActive(false);
         }
         else
@@ -318,7 +318,7 @@ public class RandomQuest : MonoBehaviour
         if (wrongPanel != null)
         {
             wrongPanel.SetActive(true);
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSecondsRealtime(1.5f);
             wrongPanel.SetActive(false);
 
             if (moveToNext)
@@ -389,7 +389,7 @@ public class RandomQuest : MonoBehaviour
     IEnumerator NextQuestionDelay()
     {
         questCount[clickbtn.name]++;            //푼 문제 개수 누적
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSecondsRealtime(0.2f);
         SetRandomQuest();                       // 새로운 퀘스트와 버튼 텍스트 설정
         UpdateMoneyUI();
     }
