@@ -24,7 +24,7 @@ public class RandomQuest : MonoBehaviour
 
     // Other references
     public CoolTime coolTimeScript;             //coolTime 스크립트
-    public MonthlyReportUI monthlyReportUI;     //MonthlyReportUI 스크립트
+    //public MonthlyReportUI monthlyReportUI;     //MonthlyReportUI 스크립트
     public CurrentMoney currentMoneyManager;    //CurrentMoney 스크립트
     public CountdownTimer countdownTimer;       // 카운트다운 타이머 
     public TMP_Text moneyText;                  // 돈 표시 UI
@@ -79,16 +79,13 @@ public class RandomQuest : MonoBehaviour
         coolTimeScript = Assign(coolTimeScript, "CoolTimeManager");
         mySQLConnector = Assign(mySQLConnector, "MariaDBConnector");
         questCanvas = Assign(questCanvas, "QuestCanvas");
-        monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
+        //monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
         currentMoneyManager = Assign(currentMoneyManager, "CurrentMoneyManager");
         countdownTimer = Assign(countdownTimer, "Timer");
         moneyText = Assign(moneyText, "MoneyText");
         timerText = Assign(timerText, "TimerText");
 
-        if (monthlyReportUI == null)
-        {
-            Debug.LogError("monthlyReportUI가 없습니다.");
-        }
+ 
 
         if (mySQLConnector != null) 
         {
@@ -282,15 +279,15 @@ public class RandomQuest : MonoBehaviour
 
         rightText.text = $"{moneyToAdd}Sch 획득하였습니다.";
 
-        if (monthlyReportUI != null)
-        {
-            currentMoneyManager.CurrentMoneyGetter += moneyToAdd;
-            monthlyReportUI.AddIncome(moneyToAdd);      // 월말표 갱신 
-        }
-        else
-        {
-            Debug.LogError("monthlyReportUI가 null. 돈을 추가할 수 없음");
-        }
+        //if (monthlyReportUI != null)
+        //{
+        //    currentMoneyManager.CurrentMoneyGetter += moneyToAdd;
+        //    monthlyReportUI.AddIncome(moneyToAdd);      // 월말표 갱신 
+        //}
+        //else
+        //{
+        //    Debug.LogError("monthlyReportUI가 null. 돈을 추가할 수 없음");
+        //}
         UpdateMoneyUI();
     }
 

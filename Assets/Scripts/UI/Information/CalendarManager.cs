@@ -11,7 +11,7 @@ public class CalendarManager : MonoBehaviour
     private Coroutine dateCoroutine;
     private const int maxDaysInMonth = 28; // 한 달 최대 일 수
 
-    private MonthlyReportUI monthlyReportUI;
+    //private MonthlyReportUI monthlyReportUI;
     private readonly string[] monthNames = { "Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec." };
 
     void Start()
@@ -19,7 +19,7 @@ public class CalendarManager : MonoBehaviour
         Debug.Log("Start 메소드 호출됨");
         dateText = Assign(dateText, "DateText");
         monthText = Assign(monthText, "MonthText");
-        monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
+        //monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
         UpdateMonthText();
     }
 
@@ -89,7 +89,7 @@ public class CalendarManager : MonoBehaviour
             currentMonth = 1; // 12월 초과 시 1월로 초기화
         }
         UpdateMonthText();
-        HandleEndOfMonth();
+        //HandleEndOfMonth();
     }
 
     // 날짜 텍스트 업데이트
@@ -105,13 +105,13 @@ public class CalendarManager : MonoBehaviour
     }
 
     // 게임 일시정지 및 월 정산 표시
-    void HandleEndOfMonth()
-    {
-        Time.timeScale = 0;
-        if (monthlyReportUI != null)
-        {
-            monthlyReportUI.ShowMonthlyReport();    // 월 정산 목록 표시
-        }
-        else Debug.LogError("월정산목록 표시 안댐");
-    }
+    //void HandleEndOfMonth()
+    //{
+    //    Time.timeScale = 0;
+    //    if (monthlyReportUI != null)
+    //    {
+    //        monthlyReportUI.ShowMonthlyReport();    // 월 정산 목록 표시
+    //    }
+    //    else Debug.LogError("월정산목록 표시 안댐");
+    //}
 }

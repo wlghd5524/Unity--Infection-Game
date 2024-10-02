@@ -25,7 +25,7 @@ public class PatientController : NPCController
 
     public GameObject nurse;
     public NPRoom nPRoom;
-    public MonthlyReportUI monthlyReportUI;     //MonthlyReportUI 스크립트
+    //public MonthlyReportUI //monthlyReportUI;     //MonthlyReportUI 스크립트
 
     private IconManager iconManager;       // 진오 추가
 
@@ -264,8 +264,8 @@ public class PatientController : NPCController
                 // 진료비 수입 증가 임시 위치
                 // 진료비 : 10000
                 MoneyManager.Instance.IncreaseMoney(MoneyManager.MedicalFee);
-                monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
-                monthlyReportUI.AddIncome(MoneyManager.MedicalFee);
+                //monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
+                //monthlyReportUI.AddIncome(MoneyManager.MedicalFee);
 
                 doctorController.outpatientSignal = false;
             }

@@ -11,7 +11,6 @@ public class ProfileInventoryManager : MonoBehaviour
     public GameObject itemPrefab;           // 아이템 프리팹
     public TextMeshProUGUI moneyText;       // 게임 재화 Text
     public GameObject decreaseTextPrefab;   // 감소 텍스트 프리팹
-    public MonthlyReportUI monthlyReportUI;
 
     void Start()
     {
@@ -19,7 +18,6 @@ public class ProfileInventoryManager : MonoBehaviour
         itemPrefab = Assign(itemPrefab, "ItemPrefab");
         moneyText = Assign(moneyText, "MoneyInfo");
         decreaseTextPrefab = Assign(decreaseTextPrefab, "DecreasePrefab");
-        monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
 
         // GridLayoutGroup 설정
         GridLayoutGroup gridLayoutGroup = inventoryContainer.GetComponent<GridLayoutGroup>();
