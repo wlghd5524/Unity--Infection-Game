@@ -140,7 +140,7 @@ public class NPCMovementManager
             return false;
 
         // Check if the agent has a path and the remaining distance is greater than the stopping distance plus a small threshold
-        if (agent.hasPath && agent.remainingDistance > 0.25f)
+        if (agent.hasPath && agent.remainingDistance > agent.stoppingDistance + 0.2f)
             return false;
 
         // Check if the agent has no path and is not moving (velocity is very low)

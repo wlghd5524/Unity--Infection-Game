@@ -94,7 +94,7 @@ public class QuarantineManager : MonoBehaviour
         else
         {
             // 간호사가 격리실로 가도록 지시합니다.
-            nurseController.StartCoroutine(nurseController.GoToNegativePressureRoom(gameObject));
+            nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(gameObject));
         }
     }
 }

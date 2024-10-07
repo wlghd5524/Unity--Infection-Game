@@ -11,6 +11,7 @@ TagManager:
   - EmergencyPatient
   - Bed
   - Chair
+  - AutoDoor
   layers:
   - Default
   - TransparentFX

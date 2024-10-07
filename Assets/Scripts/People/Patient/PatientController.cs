@@ -24,7 +24,7 @@ public class PatientController : NPCController
     public bool doctorSignal = false;
 
     public GameObject nurse;
-    public NPRoom nPRoom;
+    public QuarantineRoom nPRoom;
     //public MonthlyReportUI //monthlyReportUI;     //MonthlyReportUI 스크립트
 
     private IconManager iconManager;       // 진오 추가
@@ -738,25 +738,25 @@ public class PatientController : NPCController
             agent.ResetPath();
         }
 
-        if (ward >= 6 && ward <= 7)
-        {
-            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(0).GetComponent<Waypoint>().GetSampledPosition());
-            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        }
-        else if (ward >= 4 && ward <= 5)
-        {
-            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(1).GetComponent<Waypoint>().GetSampledPosition());
+        //if (ward >= 6 && ward <= 7)
+        //{
+        //    agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(0).GetComponent<Waypoint>().GetSampledPosition());
+        //    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        //}
+        //else if (ward >= 4 && ward <= 5)
+        //{
+        //    agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(1).GetComponent<Waypoint>().GetSampledPosition());
 
 
-            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        }
-        else if (ward >= 2 && ward <= 3)
-        {
-            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(2).GetComponent<Waypoint>().GetSampledPosition());
+        //    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        //}
+        //else if (ward >= 2 && ward <= 3)
+        //{
+        //    agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(2).GetComponent<Waypoint>().GetSampledPosition());
 
 
-            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        }
+        //    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        //}
         agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetSampledPosition());
 
 
