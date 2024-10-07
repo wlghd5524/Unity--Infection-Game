@@ -15,6 +15,7 @@ namespace MyApp.UserManagement
     {
         public int nurse_id;
         public string nurse_name;
+        public string nurse_passwd;
         public int tutorial;
     }
 
@@ -81,17 +82,31 @@ namespace MyApp.UserManagement
         }
 
         // 로그인 정보 확인 (둘다 일치 시 true)
-        public bool ValidateUser(string id, string name)
+        public bool ValidateUser(string id, string passwd)
         {
             foreach (var user in users)
             {
-                if (user.nurse_id.ToString() == id && user.nurse_name == name)
+                if (user.nurse_id.ToString() == id && user.nurse_passwd == passwd)
                 {
                     return true;
                 }
             }
             Debug.LogError("로그인DB에서 사용자 정보 찾기 실패");
             return false;
+        }
+
+        // 로그인 ID로 사용자 이름 가져오기
+        public string GetNameById(string id)
+        {
+            foreach (var user in users)
+            {
+                if (user.nurse_id.ToString() == id)
+                {
+                    return user.nurse_name;
+                }
+            }
+            Debug.LogError("로그인DB에서 Name을 찾지 못했습니다.");
+            return null;
         }
 
         // 유저의 튜토리얼 진행 여부 확인
@@ -147,14 +162,15 @@ namespace MyApp.UserManagement
 
         // 회원가입을 통해 로그인DB에 회원 정보 추가
         // 튜토리얼 진행 여부 업데이트
-        public void AddUser(string id, string username, int istutorial)
+        public void AddUser(string id, string username, string password, int istutorial)
         {
             WWWForm form = new WWWForm();
             form.AddField("nurse_id", id);
             form.AddField("nurse_name", username);
+            form.AddField("nurse_passwd", password);
             form.AddField("tutorial", istutorial);
 
-            Debug.Log($"DB: Sending Data: nurse_id={id}, nurse_name={username}");
+            Debug.Log($"DB: Sending Data: nurse_id={id}, nurse_name={username}, nurse_passwd={password}");
 
             string urlSignupData = "http://220.69.209.164:3333/signup_or_update_tutorial";
 

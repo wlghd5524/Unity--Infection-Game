@@ -12,15 +12,16 @@ public class AuthManager : MonoBehaviour
 {
     // 로그인 관련 객체들
     public TMP_InputField loginIdInputField;
-    public TMP_InputField loginUsernameInputField;
+    public TMP_InputField loginPasswdInputField;
     public Image loginButton;
     public Image loginCloseButton;
     public TMP_Text loginMessageText;
 
     // 회원가입 관련 객체들
-    public TMP_InputField signupIdInputField;
     public TMP_InputField signupUsernameInputField;
-    public TMP_InputField signUpCheckInputField;
+    public TMP_InputField signupIdInputField;
+    public TMP_InputField signUpPasswdInputField;
+    public TMP_InputField signUpCheckpasswdInputField;
     public Image signupButton;
     public Image signupCloseButton;
     public TMP_Text signupMessageText;
@@ -28,11 +29,13 @@ public class AuthManager : MonoBehaviour
     public GameObject loginPopup;  // 로그인 팝업창
     public GameObject signupPopup; // 회원가입 팝업창
     public MainMenuController mainMenuController;
-
+    public UserManager userManager;
     public TutorialController tutorialController;
 
     private string id;
     private string username;
+    private string password;
+    private string checkPassword;
 
     private enum AuthMode { Login, SignUp }
     private AuthMode currentMode;
@@ -41,13 +44,14 @@ public class AuthManager : MonoBehaviour
     {
         // 오브젝트 자동 할당
         loginIdInputField = Assign(loginIdInputField, "LoginIDInputField");
-        loginUsernameInputField = Assign(loginUsernameInputField, "LoginUserNameInputField");
+        loginPasswdInputField = Assign(loginPasswdInputField, "LoginPasswdInputField");
         loginButton = Assign(loginButton, "LoginButton");
         loginCloseButton = Assign(loginCloseButton, "LoginCloseButton");
         loginMessageText = Assign(loginMessageText, "LoginMessageText");
-        signupIdInputField = Assign(signupIdInputField, "SignUpIDInputField");
         signupUsernameInputField = Assign(signupUsernameInputField, "SignUpUserNameInputField");
-        signUpCheckInputField = Assign(signUpCheckInputField, "SignUpCheckInputField");
+        signupIdInputField = Assign(signupIdInputField, "SignUpIDInputField");
+        signUpPasswdInputField = Assign(signUpPasswdInputField, "SignUpPasswdInputField");
+        signUpCheckpasswdInputField = Assign(signUpCheckpasswdInputField, "SignUpCheckPasswdInputField");
         signupButton = Assign(signupButton, "SignUpButton");
         signupCloseButton = Assign(signupCloseButton, "SignUpCloseButton");
         signupMessageText = Assign(signupMessageText, "SignUpMessageText");
@@ -55,6 +59,7 @@ public class AuthManager : MonoBehaviour
         signupPopup = Assign(signupPopup, "SignUpCanvas");
         mainMenuController = Assign(mainMenuController, "MainMenuCanvas");
         tutorialController = Assign(tutorialController, "TutorialController");
+        userManager = UserManager.Instance;
 
         // 로그인 이벤트 트리거 추가
         AddEventTrigger(loginCloseButton, (data) => OnBackButtonClicked(loginPopup));
@@ -146,17 +151,15 @@ public class AuthManager : MonoBehaviour
         // 입력된 ID 및 이름 가져오기
         if (mode == AuthMode.Login)
         {
-            //id = loginIdInputField.text;
-            //username = loginUsernameInputField.text;
-            id = loginUsernameInputField.text;
-            username = loginIdInputField.text;
+            id = loginIdInputField.text;
+            password = loginPasswdInputField.text;
         }
         else if (mode == AuthMode.SignUp)
         {
-            //id = signupIdInputField.text;
-            //username = signupUsernameInputField.text;
-            id = signupUsernameInputField.text;
-            username = signupIdInputField.text;
+            username = signupUsernameInputField.text;
+            id = signupIdInputField.text;
+            password = signUpPasswdInputField.text;
+            checkPassword = signUpCheckpasswdInputField.text;
         }
 
         // ID 입력창 비어있을 때 예외처리
@@ -168,9 +171,9 @@ public class AuthManager : MonoBehaviour
         }
 
         // 이름 입력창 비어있을 때 예외처리
-        if (string.IsNullOrEmpty(username))
+        if (string.IsNullOrEmpty(password))
         {
-            GetCurrentMessageText().text = "이름을 입력해주세요.";
+            GetCurrentMessageText().text = "비밀번호를 입력해주세요.";
             GetCurrentMessageText().color = Color.red;
             return;
         }
@@ -200,20 +203,20 @@ public class AuthManager : MonoBehaviour
         GameDataManager gameDataMager = GameDataManager.Instance;
         ResearchDBManager researchDBManager = ResearchDBManager.Instance;
 
-        if (UserManager.Instance.ValidateUser(id, username))
+        if (userManager.ValidateUser(id, password))
         {
             // 게임 데이터에 유저 정보 저장
             gameDataMager.userId = id;
-            gameDataMager.userName = username;
+            gameDataMager.userName = userManager.GetNameById(id);
             researchDBManager.userNum = id;
-            researchDBManager.userName = username;
+            researchDBManager.userName = userManager.GetNameById(id);
 
             // 유저의 튜토리얼 진행 여부 반환
-            int tutorialStatus = UserManager.Instance.GetUserTutorialStatus(id);
+            int tutorialStatus = userManager.GetUserTutorialStatus(id);
             if (tutorialStatus == 0)
             {
                 tutorialController.SetTutorialCompletionStatus(false);    
-                UserManager.Instance.AddUser(id, username, 1);      // 튜토리얼은 진행됐을 테니 미리 1로 전환
+                UserManager.Instance.AddUser(id, username, password, 1);      // 튜토리얼은 진행됐을 테니 미리 1로 전환
             }
             else
             {
@@ -241,31 +244,31 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        /*if (!IsValidUsername(username))
-        {
-            DisplayMessage("유효한 이름 형식이 아닙니다.\n(한글, 영어만 가능)", Color.red);
-            return;
-        }*/
-
-        if (UserManager.Instance.IsIDExists(id))
+        if (userManager.IsIDExists(id))
         {
             DisplayMessage("이미 존재하는 사원번호입니다.", Color.red);
             return;
         }
 
-        if(signUpCheckInputField.text != signupIdInputField.text)
+        if (!IsValidUsername(username))
         {
-            DisplayMessage("비밀번호가 일치하지 않습니다.", Color.red);
+            DisplayMessage("유효한 이름 형식이 아닙니다.\n(한글, 영어만 가능)", Color.red);
             return;
         }
 
-        /*if (UserManager.Instance.IsUsernameExists(username))
+        if (!IsValidPasswd(password))
         {
-            DisplayMessage("이미 존재하는 이름입니다.", Color.red);
+            DisplayMessage("유효한 비밀번호 형식이 아닙니다.\n(1~11자 입력)", Color.red);
             return;
-        }*/
+        }
 
-        UserManager.Instance.AddUser(id, username, 0);
+        if (password != checkPassword)
+        {
+            DisplayMessage("비밀번호가 일치하지 않습니다.\n", Color.red);
+            return;
+        }
+
+        UserManager.Instance.AddUser(id, username, password, 0);
         DisplayMessage("회원가입 성공!\n로그인 화면으로 이동해주세요.", Color.green);
         StartCoroutine(CompleteSignUp());
     }
@@ -280,13 +283,19 @@ public class AuthManager : MonoBehaviour
     // ID 유효성 검사
     private bool IsValidID(string id)
     {
-        return id.Length >= 1 && id.Length <= 10 && UserManager.Instance.IsValidID(id);
+        return id.Length >= 1 && id.Length <= 10 && userManager.IsValidID(id);
     }
 
     // 이름 유효성 검사
     private bool IsValidUsername(string username)
     {
-        return username.Length >= 2 && username.Length <= 11 && UserManager.Instance.IsValidUsername(username);
+        return username.Length >= 1 && username.Length <= 11 && userManager.IsValidUsername(username);
+    }
+
+    // 비밀번호 유효성 검사
+    private bool IsValidPasswd(string pwd)
+    {
+        return pwd.Length >= 1 && pwd.Length <= 11;
     }
 
     // AuthMode에 따라 해당 팝업창이 로그인 창인지 회원가입 창인지 알려주는 텍스트
@@ -309,12 +318,13 @@ public class AuthManager : MonoBehaviour
     private void InitializePopup()
     {
         loginIdInputField.text = "";
-        loginUsernameInputField.text = "";
+        loginPasswdInputField.text = "";
         loginMessageText.text = "";
         signupIdInputField.text = "";
         signupUsernameInputField.text = "";
+        signUpPasswdInputField.text = "";
+        signUpCheckpasswdInputField.text = "";
         signupMessageText.text = "";
-        signUpCheckInputField.text = "";
     }
 
     // 로그인 성공 시 텀 두는 코루틴 (4초경과)
