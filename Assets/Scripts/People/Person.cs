@@ -77,6 +77,7 @@ public class Person : MonoBehaviour
         coll = GetComponent<CapsuleCollider>();
 
         patientController = GetComponent<PatientController>();
+
     }
     void Update()
     {
@@ -84,15 +85,65 @@ public class Person : MonoBehaviour
         //감염병 종류에 따라 감염 범위 설정
         if (status == InfectionState.CRE)
         {
-            coll.radius = 0.3f;
+            if (patientController != null)
+            {
+                if (patientController.isLayingDown && !patientController.isQuarantined)
+                {
+                    coll.radius = 2.5f;
+                }
+                else
+                {
+                    coll.radius = 0.3f;
+
+                }
+            }
+            else
+            {
+                coll.radius = 0.3f;
+
+            }
+
         }
         else if (status == InfectionState.Covid)
         {
-            coll.radius = 1.0f;
+
+            if (patientController != null)
+            {
+                if (patientController.isLayingDown && !patientController.isQuarantined)
+                {
+                    coll.radius = 3.0f;
+                }
+                else
+                {
+                    coll.radius = 1.0f;
+
+                }
+            }
+            else
+            {
+                coll.radius = 1.0f;
+            }
         }
         else if (status == InfectionState.Normal)
         {
-            coll.radius = 0.2f;
+            if (patientController != null)
+            {
+                if (patientController.isLayingDown && !patientController.isQuarantined)
+                {
+
+                    coll.radius = 2.3f;
+                }
+                else
+                {
+                    coll.radius = 0.2f;
+
+                }
+            }
+            else
+            {
+                coll.radius = 0.2f;
+
+            }
         }
         if (isWaiting)
         {
