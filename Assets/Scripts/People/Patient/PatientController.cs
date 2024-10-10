@@ -757,6 +757,7 @@ public class PatientController : NPCController
 
         //    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         //}
+
         agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetSampledPosition());
 
 
@@ -789,9 +790,22 @@ public class PatientController : NPCController
         {
             StopCoroutine(QuarantineMove());
         }
+        isQuarantined = false;
+        Managers.NPCManager.PlayWakeUpAnimation(animator);
+        yield return new WaitForSeconds(5.0f);
+        AutoDoorWaypoint[] inFrontOfAutoDoor = nPRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
+        agent.SetDestination(inFrontOfAutoDoor[1].GetMiddlePointInRange());
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
+        yield return new WaitForSeconds(1.0f);
+
+        agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
+        agent.SetDestination(waypoints[0].GetSampledPosition());
+
         nPRoom.isEmpty = true;
         nPRoom = null;
-        isQuarantined = false;
         isWaiting = false;
         StartCoroutine(ExitHospital());
     }

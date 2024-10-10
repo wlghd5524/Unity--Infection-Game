@@ -76,6 +76,66 @@ public class InfectionManager
         return (totalInfected / totalNPCs) * 100f; // 전체 감염률을 퍼센트로 계산
     }
 
+    public Dictionary<string,float> GetInfectionRateByRole()
+    {
+        Dictionary<string, float> infectionRateByRoleDictionary = new Dictionary<string, float>();
+        int[] numberOfInfectedNPC = new int[3];
+        int[] numberOfNPC = new int[3];
+
+        foreach(Ward ward in Ward.wards)
+        {
+            foreach(PatientController patient in ward.inpatients)
+            {
+                if(patient.personComponent.status != InfectionState.Normal)
+                {
+                    numberOfInfectedNPC[0]++;
+                }
+                numberOfNPC[0]++;
+            }
+            foreach (PatientController patient in ward.outpatients)
+            {
+                if(patient.personComponent.status != InfectionState.Normal)
+                {
+                    numberOfInfectedNPC[0]++;
+                }
+                numberOfNPC[0]++;
+
+            }
+            foreach (PatientController patient in ward.emergencyPatients)
+            {
+                if(patient.personComponent.status != InfectionState.Normal)
+                {
+                    numberOfInfectedNPC[0]++;
+                }
+                numberOfNPC[0]++;
+
+            }
+
+            foreach(NurseController nurse in ward.nurses)
+            {
+                if(nurse.personComponent.status != InfectionState.Normal)
+                {
+                    numberOfInfectedNPC[1]++;
+                }
+                numberOfNPC[1]++;
+            }
+
+            foreach(DoctorController doctor in ward.doctors)
+            {
+                if (doctor.personComponent.status != InfectionState.Normal)
+                {
+                    numberOfInfectedNPC[2]++;
+                }
+                numberOfNPC[2]++;
+            }
+        }
+        infectionRateByRoleDictionary.Add("patient", numberOfInfectedNPC[0] / numberOfNPC[0]);
+        infectionRateByRoleDictionary.Add("nurse", numberOfInfectedNPC[1] / numberOfNPC[1]);
+        infectionRateByRoleDictionary.Add("doctor", numberOfInfectedNPC[2] / numberOfNPC[2]);
+        return infectionRateByRoleDictionary;
+    }
+
+
     //감염 여부 체크
     public bool CheckInfection(int infectionResistance)
     {
