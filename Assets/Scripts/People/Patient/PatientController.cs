@@ -789,6 +789,7 @@ public class PatientController : NPCController
         if(isWaiting)
         {
             StopCoroutine(QuarantineMove());
+            isQuarantined = false;
         }
         isQuarantined = false;
         Managers.NPCManager.PlayWakeUpAnimation(animator);
