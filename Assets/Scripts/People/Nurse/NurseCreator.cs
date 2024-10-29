@@ -113,6 +113,37 @@ public class NurseCreator : MonoBehaviour
             }
 
         }
+        for (int i = 0; i < Managers.ObjectPooling.maxOfICUNurse; i++)
+        {
+            GameObject newNurse = GameObject.Find("ICUNurse " + i);
+            Managers.ObjectPooling.ActivateNurse(newNurse);
+            NurseController newNurseController = newNurse.GetComponent<NurseController>();
+            newNurseController.waypoints.AddRange(Managers.NPCManager.waypointDictionary[(newNurseController.ward, "NurseWaypoints")].GetComponentsInChildren<Waypoint>());
+            if (0 <= newNurseController.num && newNurseController.num <= 5)
+            {
+                for (int j = 0; j < newNurseController.waypoints[0].chairsDictionary.Count; j++)
+                {
+                    if (newNurseController.waypoints[0].chairsDictionary[j].Item2)
+                    {
+                        newNurseController.waypoints[0].chairsDictionary[j] = (newNurseController.waypoints[0].chairsDictionary[j].Item1, false);
+                        newNurseController.chair = newNurseController.waypoints[0].chairsDictionary[j].Item1;
+                        break;
+                    }
+                }
+            }
+            else if (6 <= newNurseController.num && newNurseController.num <= 11)
+            {
+                for (int j = 0; j < newNurseController.waypoints[1].chairsDictionary.Count; j++)
+                {
+                    if (newNurseController.waypoints[1].chairsDictionary[j].Item2)
+                    {
+                        newNurseController.waypoints[1].chairsDictionary[j] = (newNurseController.waypoints[1].chairsDictionary[j].Item1, false);
+                        newNurseController.chair = newNurseController.waypoints[1].chairsDictionary[j].Item1;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
 

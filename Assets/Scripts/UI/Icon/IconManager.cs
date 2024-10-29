@@ -61,7 +61,7 @@ public class IconManager : MonoBehaviour
                 StopCoroutine(symptomCoroutine);
             }
             symptomCoroutine = StartCoroutine(ShowRandomSymptomIcon());
-            Debug.Log("증상 발현!");
+            //Debug.Log("증상 발현!");
             if (Random.Range(0, 100) <= 30)
             {
                 Debug.Log("증상 발견!");

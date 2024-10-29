@@ -7,6 +7,7 @@ using UnityEngine.AI;
 public enum NurseRole
 {
     ER,
+    ICU,
     Ward,
     InpateintWard
 }
@@ -47,15 +48,10 @@ public class NurseController : NPCController
                 if (isWorking)
                     return;
 
-
                 if (!isWorking)
                 {
-
                     StartCoroutine(WardNurseMove()); // 다음 작업을 위해 대기 후 이동
-
-
                 }
-
             }
             else if (role == NurseRole.ER)
             {
@@ -64,6 +60,10 @@ public class NurseController : NPCController
             else if (role == NurseRole.InpateintWard)
             {
                 StartCoroutine(InpatientWardNurseMove());
+            }
+            else if(role == NurseRole.ICU)
+            {
+                StartCoroutine(ICUNurseMove());
             }
         }
 
@@ -432,5 +432,42 @@ public class NurseController : NPCController
             }
         }
         isWaiting = false;
+    }
+    public IEnumerator ICUNurseMove()
+    {
+        isWaiting = true;
+        yield return new WaitForSeconds(2.0f);
+        if (isWorking)
+        {
+            isWaiting = false;
+            yield break;
+        }
+        if (waypoints.Count > 0)
+        {
+            if (0 <= num && num <= 12) //중앙 카운터 간호사들
+            {
+                if (chair.transform.parent.parent.eulerAngles == new Vector3(0, 0, 0))
+                {
+                    agent.SetDestination(new Vector3(chair.transform.position.x, chair.transform.position.y, chair.transform.position.z - 0.5f));
+                }
+                else
+                {
+                    agent.SetDestination(new Vector3(chair.transform.position.x, chair.transform.position.y, chair.transform.position.z + 0.5f));
+                }
+                yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
+                if (chair.transform.parent.parent.eulerAngles == new Vector3(0, 0, 0))
+                {
+                    transform.eulerAngles = new Vector3(0, 180, 0);
+                }
+                else
+                {
+                    transform.eulerAngles = new Vector3(0, 0, 0);
+                }
+                Managers.NPCManager.PlaySittingAnimation(animator);
+                yield return new WaitForSeconds(2.0f);
+
+            }
+        }
     }
 }

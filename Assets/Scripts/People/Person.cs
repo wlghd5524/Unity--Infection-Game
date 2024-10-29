@@ -195,7 +195,7 @@ public class Person : MonoBehaviour
     {
         gameObject.GetComponent<NPCController>().wardComponent.infectedNPC++;
         NPCManager.Instance.HighlightNPC(gameObject);
-        Debug.Log("감염자 색상 변경" + gameObject.name);
+        //Debug.Log("감염자 색상 변경" + gameObject.name);
         StartCoroutine(IncubationPeriod(infection));
         if (Random.Range(0, 100) <= 30)
         {

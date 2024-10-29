@@ -18,6 +18,7 @@ public class ObjectPoolingManager
     public int maxOfWardNurse = 64;
     public int maxOfERNurse = 10;
     public int maxOfInpatientWardNurse = 48;
+    public int maxOfICUNurse = 12;
 
     public float newOutpatients = 0;
     public float infectedOutpatients = 0;
@@ -193,6 +194,25 @@ public class ObjectPoolingManager
             newNurse.GetComponent<CapsuleCollider>().enabled = false;
             newNurse.GetComponent<Person>().role = Role.Nurse;
         }
+        for (int i = 0; i < maxOfICUNurse; i++)
+        {
+            int ward = 9;
+            Waypoint spawnArea = Managers.NPCManager.waypointDictionary[(ward, "NurseWaypoints")].Find("Counter").gameObject.GetComponent<Waypoint>();
+            GameObject newNurse = Object.Instantiate(NursePrefabs[Random.Range(0, NursePrefabs.Length)], spawnArea.GetRandomPointInRange(), Quaternion.identity);
+            newNurse.name = "ICUNurse " + i;
+
+            // 간호사 위치별 Layer 설정
+            if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
+            {
+                Managers.LayerChanger.SetLayerRecursively(newNurse, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
+            }
+            NurseController newNurseController = newNurse.GetComponent<NurseController>();
+            newNurseController.num = i;
+            newNurseController.ward = ward;
+            newNurseController.wardComponent = spawnArea.gameObject.transform.parent.parent.GetComponent<Ward>();
+            newNurseController.role = NurseRole.ICU;
+            newNurse.GetComponent<Person>().role = Role.Nurse;
+        }
     }
 
     public GameObject ActivateInpatient(Vector3 position)
@@ -277,7 +297,7 @@ public class ObjectPoolingManager
         newPatientController.bedWaypoint = bed;
         newPatientController.bedWaypoint.patient = newEmergencyPatient;
         newPatientController.waypoints.Add(bed);
-        
+
         return newEmergencyPatient;
 
     }
