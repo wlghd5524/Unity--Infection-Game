@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+public enum StandingState
+{
+    Standing,
+    Sitting,
+    LayingDown
+}
 
 public class NPCController : MonoBehaviour
 {
     public Animator animator;
+    public StandingState standingState = StandingState.Standing;
     public NavMeshAgent agent;
     public List<Waypoint> waypoints = new List<Waypoint>();
-
     public Ward wardComponent;
     public int ward;
 
@@ -35,6 +41,5 @@ public class NPCController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
     }
 }

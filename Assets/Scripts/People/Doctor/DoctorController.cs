@@ -101,11 +101,11 @@ public class DoctorController : NPCController
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                 yield return new WaitForSeconds(1.0f);
                 transform.eulerAngles = chair.transform.rotation.eulerAngles;
-                Managers.NPCManager.PlaySittingAnimation(animator);
+                Managers.NPCManager.PlaySittingAnimation(this);
             }
             else
             {
-                Managers.NPCManager.PlayWakeUpAnimation(animator);
+                Managers.NPCManager.PlayWakeUpAnimation(this);
                 yield return new WaitForSeconds(1.0f);
                 Vector3 outpatientLocation = Managers.NPCManager.GetPositionInFront(transform, patient.transform, 0.75f);
                 agent.SetDestination(outpatientLocation);

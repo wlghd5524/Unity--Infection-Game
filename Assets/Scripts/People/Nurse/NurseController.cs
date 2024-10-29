@@ -61,7 +61,7 @@ public class NurseController : NPCController
             {
                 StartCoroutine(InpatientWardNurseMove());
             }
-            else if(role == NurseRole.ICU)
+            else if (role == NurseRole.ICU)
             {
                 StartCoroutine(ICUNurseMove());
             }
@@ -75,7 +75,7 @@ public class NurseController : NPCController
     {
         PatientController targetPatientController = patientGameObject.GetComponent<PatientController>();
         isWorking = true; // 일하는 중으로 설정
-        Managers.NPCManager.PlayWakeUpAnimation(animator);
+        Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return new WaitForSeconds(1.0f);
         Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patientGameObject.transform, 0.5f); // 환자 앞의 임의 위치 계산
         agent.SetDestination(targetPatientPosition); // 에이전트 목적지 설정
@@ -85,7 +85,7 @@ public class NurseController : NPCController
 
         if (targetPatientController.animator.GetBool("Sleeping"))
         {
-            Managers.NPCManager.PlayWakeUpAnimation(targetPatientController.animator);
+            Managers.NPCManager.PlayWakeUpAnimation(targetPatientController);
             yield return new WaitForSeconds(5.0f);
         }
 
@@ -101,20 +101,20 @@ public class NurseController : NPCController
     {
         PatientController targetPatientController = patientGameObject.GetComponent<PatientController>();
         isWorking = true; // 일하는 중으로 설정
-        Managers.NPCManager.PlayWakeUpAnimation(animator);
+        Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return new WaitForSeconds(1.0f);
         agent.avoidancePriority = targetPatientController.agent.avoidancePriority++ - 1;
 
         //Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patientGameObject.transform, 0.5f); // 환자 앞의 임의 위치 계산
-        agent.SetDestination(patientGameObject.transform.position); // 에이전트 목적지 설정
+        agent.SetDestination(patientGameObject.transform.position);
         //targetPatient = patientGameObject; // 타겟 환자 설정
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
 
-        if (targetPatientController.isLayingDown)
+        if (targetPatientController.standingState == StandingState.LayingDown)
         {
-            targetPatientController.isLayingDown = false;
-            Managers.NPCManager.PlayWakeUpAnimation(targetPatientController.animator);
+            targetPatientController.standingState = StandingState.Standing;
+            Managers.NPCManager.PlayWakeUpAnimation(targetPatientController);
             yield return new WaitForSeconds(5.0f);
         }
 
@@ -273,7 +273,7 @@ public class NurseController : NPCController
                 {
                     transform.eulerAngles = new Vector3(0, 0, 0);
                 }
-                Managers.NPCManager.PlaySittingAnimation(animator);
+                Managers.NPCManager.PlaySittingAnimation(this);
             }
 
             else
@@ -321,7 +321,7 @@ public class NurseController : NPCController
             {
                 transform.eulerAngles = new Vector3(0, 0, 0);
             }
-            Managers.NPCManager.PlaySittingAnimation(animator);
+            Managers.NPCManager.PlaySittingAnimation(this);
         }
         else if (8 <= roleNum && roleNum <= 11)
         {
@@ -341,11 +341,11 @@ public class NurseController : NPCController
                 transform.LookAt(bed.patient.transform);
                 if (Random.Range(0, 101) <= 50)
                 {
-                    if (targetInpatientController.isLayingDown)
+                    if (targetInpatientController.standingState == StandingState.LayingDown)
                     {
-                        Managers.NPCManager.WakeUpAndSittingAndTalking(targetInpatientController.animator);
+                        Managers.NPCManager.WakeUpAndSittingAndTalking(targetInpatientController);
                         yield return new WaitForSeconds(4.0f);
-                        Managers.NPCManager.PlayLayDownAnimation(targetInpatientController.animator);
+                        Managers.NPCManager.PlayLayDownAnimation(targetInpatientController);
                     }
 
                 }
@@ -396,7 +396,7 @@ public class NurseController : NPCController
                 {
                     transform.eulerAngles = new Vector3(0, 0, 0);
                 }
-                Managers.NPCManager.PlaySittingAnimation(animator);
+                Managers.NPCManager.PlaySittingAnimation(this);
                 yield return new WaitForSeconds(2.0f);
 
             }
@@ -405,7 +405,7 @@ public class NurseController : NPCController
                 agent.SetDestination(new Vector3(chair.transform.position.x, chair.transform.position.y, chair.transform.position.z - 0.5f));
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                 transform.eulerAngles = new Vector3(0, 180, 0);
-                Managers.NPCManager.PlaySittingAnimation(animator);
+                Managers.NPCManager.PlaySittingAnimation(this);
                 yield return new WaitForSeconds(2.0f);
             }
             else //환자 보러다니는 간호사들
@@ -464,9 +464,9 @@ public class NurseController : NPCController
                 {
                     transform.eulerAngles = new Vector3(0, 0, 0);
                 }
-                Managers.NPCManager.PlaySittingAnimation(animator);
+                Managers.NPCManager.PlaySittingAnimation(this);
                 yield return new WaitForSeconds(2.0f);
-
+                isWaiting = false;
             }
         }
     }

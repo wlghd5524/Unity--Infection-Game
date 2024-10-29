@@ -81,36 +81,40 @@ public class NPCMovementManager
     }
 
     // 앉기
-    public void PlaySittingAnimation(Animator animator)
+    public void PlaySittingAnimation(NPCController nPCController)
     {
-        animator.SetBool("Sitting", true);
-        animator.SetBool("Sleeping", false);
-        animator.SetBool("Talking", false);
+        nPCController.animator.SetBool("Sitting", true);
+        nPCController.animator.SetBool("Sleeping", false);
+        nPCController.animator.SetBool("Talking", false);
+        nPCController.standingState = StandingState.Sitting;
     }
 
     // 눕기
-    public void PlayLayDownAnimation(Animator animator)
+    public void PlayLayDownAnimation(NPCController nPCController)
     {
-        animator.SetBool("Sitting", false);
-        animator.SetBool("Sleeping", true);
-        animator.SetBool("Talking", false);
+        nPCController.animator.SetBool("Sitting", false);
+        nPCController.animator.SetBool("Sleeping", true);
+        nPCController.animator.SetBool("Talking", false);
+        nPCController.standingState = StandingState.LayingDown;
     }
 
 
     // 누운 상태에서 앉고 대화하기
-    public void WakeUpAndSittingAndTalking(Animator animator)
+    public void WakeUpAndSittingAndTalking(NPCController nPCController)
     {
-        animator.SetBool("Sitting", true);
-        animator.SetBool("Sleeping", false);
-        animator.SetBool("Talking", true);
+        nPCController.animator.SetBool("Sitting", true);
+        nPCController.animator.SetBool("Sleeping", false);
+        nPCController.animator.SetBool("Talking", true);
+        nPCController.standingState = StandingState.Sitting;
     }
 
     // 누운 상태에서 일어나기
-    public void PlayWakeUpAnimation(Animator animator)
+    public void PlayWakeUpAnimation(NPCController nPCController)
     {
-        animator.SetBool("Sitting", false);
-        animator.SetBool("Sleeping", false);
-        animator.SetBool("Talking", false);
+        nPCController.animator.SetBool("Sitting", false);
+        nPCController.animator.SetBool("Sleeping", false);
+        nPCController.animator.SetBool("Talking", false);
+        nPCController.standingState = StandingState.Standing;
     }
 
 

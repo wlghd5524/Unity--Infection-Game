@@ -87,7 +87,7 @@ public class Person : MonoBehaviour
         {
             if (patientController != null)
             {
-                if (patientController.isLayingDown && !patientController.isQuarantined)
+                if (patientController.standingState == StandingState.LayingDown && !patientController.isQuarantined)
                 {
                     coll.radius = 2.5f;
                 }
@@ -109,7 +109,7 @@ public class Person : MonoBehaviour
 
             if (patientController != null)
             {
-                if (patientController.isLayingDown && !patientController.isQuarantined)
+                if (patientController.standingState == StandingState.LayingDown && !patientController.isQuarantined)
                 {
                     coll.radius = 3.0f;
                 }
@@ -128,7 +128,7 @@ public class Person : MonoBehaviour
         {
             if (patientController != null)
             {
-                if (patientController.isLayingDown && !patientController.isQuarantined)
+                if (patientController.standingState == StandingState.LayingDown && !patientController.isQuarantined)
                 {
 
                     coll.radius = 2.3f;

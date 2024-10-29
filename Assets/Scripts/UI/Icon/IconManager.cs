@@ -71,7 +71,7 @@ public class IconManager : MonoBehaviour
                 {
                     PatientController patientController = person.gameObject.GetComponent<PatientController>();
                     Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
-                    for (int i = 0; i < 14; i++)
+                    for (int i = 0; i < 8; i++)
                     {
                         QuarantineRoom nPRoom = parentTransform.Find("N-PRoom (" + i + ")").GetComponent<QuarantineRoom>(); // 음압실 웨이포인트 찾기
                         if (nPRoom.isEmpty)
