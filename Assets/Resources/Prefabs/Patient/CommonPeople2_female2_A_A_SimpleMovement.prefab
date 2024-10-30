@@ -759,7 +759,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5760185495852175944}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.15
+  m_Radius: 0.05
   m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -821,6 +821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  standingState: 0
   agent: {fileID: 0}
   waypoints: []
   wardComponent: {fileID: 0}
@@ -839,13 +840,12 @@ MonoBehaviour:
   doctorSignal: 0
   nurse: {fileID: 0}
   nPRoom: {fileID: 0}
-  monthlyReportUI: {fileID: 0}
   bedWaypoint: {fileID: 0}
   prevWaypointIndex: -1
-  isLayingDown: 0
   waypointsTransform: {fileID: 0}
   excutedHC: 0
   excutedQC: 0
+  profileWindow: {fileID: 0}
 --- !u!4 &5940344561892586489 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7130370750154654805, guid: db7c25b8703502a439babb4d9000246c, type: 3}

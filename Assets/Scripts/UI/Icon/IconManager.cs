@@ -73,12 +73,12 @@ public class IconManager : MonoBehaviour
                     Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
                     for (int i = 0; i < 8; i++)
                     {
-                        QuarantineRoom nPRoom = parentTransform.Find("N-PRoom (" + i + ")").GetComponent<QuarantineRoom>(); // 음압실 웨이포인트 찾기
-                        if (nPRoom.isEmpty)
+                        QuarantineRoom quarantineRoom = parentTransform.Find("N-PRoom (" + i + ")").GetComponent<QuarantineRoom>(); // 음압실 웨이포인트 찾기
+                        if (quarantineRoom.isEmpty)
                         {
-                            patientController.nPRoom = nPRoom;
-                            nPRoom.isEmpty = false;
-
+                            patientController.nPRoom = quarantineRoom;
+                            quarantineRoom.isEmpty = false;
+                            quarantineRoom.patient = patientController.gameObject;
                             break;
                         }
                     }

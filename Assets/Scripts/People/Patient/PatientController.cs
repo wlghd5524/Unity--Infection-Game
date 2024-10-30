@@ -808,6 +808,9 @@ public class PatientController : NPCController
         nPRoom.isEmpty = true;
         nPRoom = null;
         isWaiting = false;
-        StartCoroutine(ExitHospital());
+        //StartCoroutine(ExitHospital());
+        agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetSampledPosition());
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        Managers.ObjectPooling.DeactivatePatient(gameObject);
     }
 }

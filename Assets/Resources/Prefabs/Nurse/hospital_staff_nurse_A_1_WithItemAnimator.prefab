@@ -614,7 +614,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 8078986149237809172}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.1
+  m_Radius: 0.05
   m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -642,8 +642,8 @@ MonoBehaviour:
   status: 0
   infectionResistance: 0
   role: 1
-  outpatientController: {fileID: 0}
-  wardComponent: {fileID: 0}
+  isImmune: 0
+  patientController: {fileID: 0}
 --- !u!114 &8500830769302455033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -656,9 +656,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab1b0ebc0a55dd40a1e450be33d99d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 64
   createVirusManager: {fileID: 0}
 --- !u!114 &-5021696021025061034
 MonoBehaviour:
@@ -673,14 +670,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  standingState: 0
   agent: {fileID: 0}
   waypoints: []
-  waypointsTransform: {fileID: 0}
   wardComponent: {fileID: 0}
   ward: 0
   isWaiting: 0
+  personComponent: {fileID: 0}
+  num: 0
+  role: 0
   isWorking: 0
   isRest: 0
   isWaitingAtDoctorOffice: 0
-  num: 0
+  isReturning: 0
+  doctor: {fileID: 0}
   chair: {fileID: 0}

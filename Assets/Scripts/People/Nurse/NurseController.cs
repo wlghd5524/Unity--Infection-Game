@@ -329,7 +329,7 @@ public class NurseController : NPCController
             if (!waypoints[random].isEmpty && waypoints[random] is BedWaypoint bed && bed.patient != null)
             {
                 PatientController targetInpatientController = bed.patient.GetComponent<PatientController>();
-                targetInpatientController.StartCoroutine(targetInpatientController.WaitForNurse());
+                //targetInpatientController.StartCoroutine(targetInpatientController.WaitForNurse());
                 agent.SetDestination(bed.patient.transform.position);
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                 //Managers.NPCManager.FaceEachOther(bed.patient, gameObject);
@@ -339,21 +339,21 @@ public class NurseController : NPCController
                     yield break;
                 }
                 transform.LookAt(bed.patient.transform);
-                if (Random.Range(0, 101) <= 50)
+                if (Random.Range(0, 100) <= 50)
                 {
-                    if (targetInpatientController.standingState == StandingState.LayingDown)
-                    {
-                        Managers.NPCManager.WakeUpAndSittingAndTalking(targetInpatientController);
-                        yield return new WaitForSeconds(4.0f);
-                        Managers.NPCManager.PlayLayDownAnimation(targetInpatientController);
-                    }
+                    //if (targetInpatientController.standingState == StandingState.LayingDown)
+                    //{
+                    //    Managers.NPCManager.WakeUpAndSittingAndTalking(targetInpatientController);
+                    //    yield return new WaitForSeconds(4.0f);
+                    //    Managers.NPCManager.PlayLayDownAnimation(targetInpatientController);
+                    //}
 
                 }
                 else
                 {
                     yield return new WaitForSeconds(2.0f);
                 }
-                targetInpatientController.nurseSignal = true;
+                //targetInpatientController.nurseSignal = true;
             }
             else
             {
