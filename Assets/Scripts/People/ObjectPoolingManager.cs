@@ -254,7 +254,7 @@ public class ObjectPoolingManager
         patientController.officeSignal = false; // 진료실 신호 초기화
         patientController.isExiting = false;
         patientController.nurse = null;
-        patientController.nPRoom = null;
+        patientController.quarantineRoom = null;
         if (patientController.bedWaypoint != null)
         {
             patientController.bedWaypoint.isEmpty = true;

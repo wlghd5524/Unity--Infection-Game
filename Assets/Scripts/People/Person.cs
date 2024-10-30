@@ -79,7 +79,7 @@ public class Person : MonoBehaviour
         patientController = GetComponent<PatientController>();
 
     }
-    void Update()
+    void FixedUpdate()
     {
 
         //감염병 종류에 따라 감염 범위 설정
@@ -206,9 +206,9 @@ public class Person : MonoBehaviour
     public IEnumerator SelfRecovery()
     {
         yield return new WaitForSeconds(Random.Range(7, 15));
-        Debug.Log("자가 면역을 가져서 더 이상 감염되지 않음");
+        //Debug.Log("자가 면역을 가져서 더 이상 감염되지 않음");
         NPCManager.Instance.UnhighlightNPC(gameObject);
-        Debug.Log("감염자 색상 풀림" + gameObject.name);
+        //Debug.Log("감염자 색상 풀림" + gameObject.name);
         status = InfectionState.Normal;
         isImmune = true;
     }

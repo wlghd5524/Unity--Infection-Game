@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
-using System.IO;
 
 public class PatientController : NPCController
 {
@@ -24,7 +23,7 @@ public class PatientController : NPCController
     public bool doctorSignal = false;
 
     public GameObject nurse;
-    public QuarantineRoom nPRoom;
+    public QuarantineRoom quarantineRoom;
     //public MonthlyReportUI //monthlyReportUI;     //MonthlyReportUI 스크립트
 
     private IconManager iconManager;       // 진오 추가
@@ -70,7 +69,7 @@ public class PatientController : NPCController
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // 애니메이션
         Managers.NPCManager.UpdateAnimation(agent, animator);
@@ -87,7 +86,7 @@ public class PatientController : NPCController
         {
             if (standingState == StandingState.LayingDown)
             {
-                if (nPRoom.bedNum >= 8)
+                if (quarantineRoom.bedNum >= 8)
                 {
                     transform.eulerAngles = new Vector3(0, 90, 0);
                 }
@@ -198,11 +197,11 @@ public class PatientController : NPCController
         {
             if (standingState == StandingState.Standing)
             {
-                agent.SetDestination(nPRoom.GetBedPoint());
+                agent.SetDestination(quarantineRoom.GetBedPoint());
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                 if (standingState == StandingState.LayingDown)
                 {
-                    if (nPRoom.bedNum >= 8)
+                    if (quarantineRoom.bedNum >= 8)
                     {
                         transform.eulerAngles = new Vector3(0, 90, 0);
                     }
@@ -300,7 +299,7 @@ public class PatientController : NPCController
                     //입원 환자로 전환
                     if (random >= 30 && isFound)
                     {
-                        Debug.Log("외래 환자 -> 입원 환자");
+                        //Debug.Log("외래 환자 -> 입원 환자");
                         bedWaypoint = nextBed;
                         standingState = StandingState.Standing;
                         waypoints.Clear();
@@ -360,7 +359,7 @@ public class PatientController : NPCController
         if (isQuarantined)
         {
             yield return new WaitForSeconds(2.0f);
-            agent.SetDestination(nPRoom.GetBedPoint());
+            agent.SetDestination(quarantineRoom.GetBedPoint());
             isWaiting = false;
             yield break;
         }
@@ -413,7 +412,7 @@ public class PatientController : NPCController
             }
             waypoints[1].isEmpty = false;
             agent.stoppingDistance = 0.5f;
-            agent.SetDestination(waypoints[1].GetSampledPosition());
+            agent.SetDestination(waypoints[1].GetRandomPointInRange());
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             prevWaypointIndex = 1;
@@ -428,7 +427,7 @@ public class PatientController : NPCController
                 standingState = StandingState.Standing;
             }
             agent.stoppingDistance = 0.5f;
-            agent.SetDestination(waypoints[2].GetSampledPosition());
+            agent.SetDestination(waypoints[2].GetRandomPointInRange());
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             prevWaypointIndex = 2;
@@ -443,7 +442,7 @@ public class PatientController : NPCController
                 standingState = StandingState.Standing;
             }
             agent.stoppingDistance = 0.5f;
-            agent.SetDestination(waypoints[Random.Range(3, 5)].GetSampledPosition());
+            agent.SetDestination(waypoints[Random.Range(3, 5)].GetRandomPointInRange());
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
@@ -694,7 +693,7 @@ public class PatientController : NPCController
             }
         }
 
-        Debug.Log($"{gameObject.name} 퇴원 시작");
+        //Debug.Log($"{gameObject.name} 퇴원 시작");
 
 
         Managers.NPCManager.PlayWakeUpAnimation(this);
@@ -794,7 +793,7 @@ public class PatientController : NPCController
         isQuarantined = false;
         Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return new WaitForSeconds(5.0f);
-        AutoDoorWaypoint[] inFrontOfAutoDoor = nPRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
+        AutoDoorWaypoint[] inFrontOfAutoDoor = quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[1].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
@@ -803,10 +802,10 @@ public class PatientController : NPCController
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
-        agent.SetDestination(waypoints[0].GetSampledPosition());
-
-        nPRoom.isEmpty = true;
-        nPRoom = null;
+        agent.SetDestination(waypoints[0].GetRandomPointInRange());
+        quarantineRoom.patient = null;
+        quarantineRoom.isEmpty = true;
+        quarantineRoom = null;
         isWaiting = false;
         //StartCoroutine(ExitHospital());
         agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetSampledPosition());

@@ -97,4 +97,74 @@ public class QuarantineManager : MonoBehaviour
             nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(gameObject));
         }
     }
+
+    public IEnumerator QuarantineTest()
+    {
+        if (Random.Range(0, 100) <= 30)
+        {
+            //Debug.Log("증상 발견!");
+            if (gameObject.CompareTag("Outpatient") || gameObject.CompareTag("Inpatient") || gameObject.CompareTag("EmergencyPatient"))
+            {
+                PatientController patientController = gameObject.GetComponent<PatientController>();
+                Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
+                QuarantineRoom quarantineRoom = null;
+                for (int i = 0; i < 8; i++)
+                {
+                    quarantineRoom = parentTransform.Find("QuarantineRoom (" + i + ")").GetComponent<QuarantineRoom>(); // 음압실 웨이포인트 찾기
+                    if (quarantineRoom.isEmpty)
+                    {
+                        patientController.quarantineRoom = quarantineRoom;
+                        quarantineRoom.isEmpty = false;
+                        quarantineRoom.patient = patientController.gameObject;
+                        break;
+                    }
+                }
+                // 격리실이 남아있지 않을 때
+                if (patientController.quarantineRoom == null)
+                {
+                    patientController.StartCoroutine(patientController.ExitHospital());
+                }
+                else
+                {
+                    GameObject closestNurse = SearchNurse(gameObject.transform.position);
+                    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null)
+                    {
+                        Debug.Log("격리 취소");
+                        patientController.quarantineRoom = null;
+                        quarantineRoom.isEmpty = true;
+                        quarantineRoom.patient = null;
+                        yield break;
+                    }
+                    else
+                    {
+                        patientController.StopAllCoroutines();
+                        if (gameObject.CompareTag("Inpatient"))
+                        {
+                            Debug.Log("입원 환자 격리 조치 실시");
+                            patientController.StopCoroutine(patientController.HospitalizationTimeCounter());
+                        }
+                        // 간호사의 NurseController 컴포넌트를 가져옵니다.
+                        NurseController nurseController = closestNurse.GetComponent<NurseController>();
+                        if (nurseController == null)
+                        {
+                            Debug.LogError("nurseController를 찾을 수 없습니다.");
+                        }
+                        else
+                        {
+                            patientController.nurseSignal = false;
+                            patientController.StartCoroutine(patientController.WaitForNurse());
+                            // 간호사가 격리실로 가도록 지시합니다.
+                            nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(gameObject));
+                        }
+                        //Debug.Log("증상 발견으로 인한 격리 조치 중!");
+                    }
+
+                }
+            }
+        }
+        else
+        {
+            //Debug.Log("증상 미발견...");
+        }
+    }
 }

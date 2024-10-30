@@ -146,10 +146,4 @@ public class NurseCreator : MonoBehaviour
         }
     }
 
-
-    // Update는 매 프레임 호출됩니다.
-    void Update()
-    {
-
-    }
 }

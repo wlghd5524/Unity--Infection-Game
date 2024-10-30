@@ -30,7 +30,7 @@ public class DoctorController : NPCController
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (isResting)
         {

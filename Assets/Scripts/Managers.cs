@@ -35,7 +35,7 @@ public class Managers : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Infection.UpdateInfectionProbability();
         // 대기 중이 아니고, 환자 수가 최대치보다 적을 때 환자 생성

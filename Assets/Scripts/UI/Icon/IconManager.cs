@@ -61,65 +61,9 @@ public class IconManager : MonoBehaviour
                 StopCoroutine(symptomCoroutine);
             }
             symptomCoroutine = StartCoroutine(ShowRandomSymptomIcon());
+            QuarantineManager targetQuarantineManager = person.gameObject.GetComponent<QuarantineManager>();
+            targetQuarantineManager.StartCoroutine(targetQuarantineManager.QuarantineTest());
             //Debug.Log("증상 발현!");
-            if (Random.Range(0, 100) <= 30)
-            {
-                Debug.Log("증상 발견!");
-                QuarantineManager targetQuarantineManager = person.gameObject.GetComponent<QuarantineManager>();
-
-                if (person.gameObject.CompareTag("Outpatient") || person.gameObject.CompareTag("Inpatient") || person.gameObject.CompareTag("EmergencyPatient"))
-                {
-                    PatientController patientController = person.gameObject.GetComponent<PatientController>();
-                    Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
-                    for (int i = 0; i < 8; i++)
-                    {
-                        QuarantineRoom quarantineRoom = parentTransform.Find("N-PRoom (" + i + ")").GetComponent<QuarantineRoom>(); // 음압실 웨이포인트 찾기
-                        if (quarantineRoom.isEmpty)
-                        {
-                            patientController.nPRoom = quarantineRoom;
-                            quarantineRoom.isEmpty = false;
-                            quarantineRoom.patient = patientController.gameObject;
-                            break;
-                        }
-                    }
-                    // 격리실이 남아있지 않을 때
-                    if (patientController.nPRoom == null)
-                    {
-                        patientController.StartCoroutine(patientController.ExitHospital());
-                    }
-                    else
-                    {
-                        GameObject closestNurse = targetQuarantineManager.SearchNurse(person.gameObject.transform.position);
-                        try
-                        {
-                            if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor)
-                            {
-                                Debug.Log("이미 격리중인 환자입니다.");
-                            }
-                            else if (closestNurse == null)
-                            {
-                                Debug.Log("근처에 간호사가 없습니다.");
-                                return;
-                            }
-                            else
-                            {
-                                // 음압실 데려가기
-                                targetQuarantineManager.Quarantine(closestNurse);
-                                Debug.Log("증상 발견으로 인한 격리 조치 중!");
-                            }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Debug.LogError($"예외 발생: {ex.Message}");
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Debug.Log("증상 미발견...");
-            }
-
         }
         else
         {

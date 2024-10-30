@@ -30,17 +30,19 @@ public class NurseController : NPCController
     }
 
     // Update는 매 프레임 호출됩니다.
-    void Update()
+    void FixedUpdate()
     {
 
         // 애니메이션 업데이트
         Managers.NPCManager.UpdateAnimation(agent, animator);
-
+        if(isWorking)
+        {
+            Managers.NPCManager.PlayWakeUpAnimation(this);
+        }
         if (isWaiting || isRest)
         {
             return; // 기다리는 중이면 리턴
         }
-
         if (Managers.NPCManager.isArrived(agent))
         {
             if (role == NurseRole.Ward)
@@ -140,7 +142,7 @@ public class NurseController : NPCController
         //targetPatientController.nurse = gameObject; // 간호사 설정
         agent.speed = targetPatientController.agent.speed - 1.0f;
         targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
-        AutoDoorWaypoint[] inFrontOfAutoDoor = targetPatientController.nPRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
+        AutoDoorWaypoint[] inFrontOfAutoDoor = targetPatientController.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());  //격리실 자동문 앞으로 이동
 
 
@@ -165,9 +167,14 @@ public class NurseController : NPCController
 
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
         yield return new WaitForSeconds(2.0f);
-        agent.SetDestination(targetPatientController.nPRoom.GetRandomPointInRange()); // 음압실로 이동
+        if(targetPatientController.quarantineRoom == null)
+        {
+            Debug.Log("격리실 null");
+        }
+        agent.SetDestination(targetPatientController.quarantineRoom.GetRandomPointInRange()); // 음압실로 이동
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
+        targetPatientController.StopAllCoroutines();
         targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
         Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
         yield return new WaitForSeconds(2.0f);
@@ -187,7 +194,7 @@ public class NurseController : NPCController
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
-        agent.SetDestination(waypoints[0].GetSampledPosition());
+        agent.SetDestination(waypoints[0].GetMiddlePointInRange());
 
         isReturning = true;
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
