@@ -451,7 +451,7 @@ public class NurseController : NPCController
         }
         if (waypoints.Count > 0)
         {
-            if (0 <= num && num <= 12) //중앙 카운터 간호사들
+            if (0 <= num && num <= 10) //중앙 카운터 간호사들
             {
                 if (chair.transform.parent.parent.eulerAngles == new Vector3(0, 0, 0))
                 {
@@ -475,6 +475,29 @@ public class NurseController : NPCController
                 yield return new WaitForSeconds(2.0f);
                 isWaiting = false;
             }
+            else //환자 보러다니는 간호사들
+            {
+                while (doctor.isWorking)
+                {
+                    agent.SetDestination(doctor.transform.position - doctor.transform.forward * 0.5f);
+                    yield return new WaitForSeconds(0.1f);
+                }
+                int random = Random.Range(0, waypoints.Count);
+                if (!waypoints[random].isEmpty && waypoints[random] is BedWaypoint bed)
+                {
+                    agent.SetDestination(waypoints[random].GetMiddlePointInRange());
+                }
+                else
+                {
+                    agent.SetDestination(waypoints[0].GetRandomPointInRange());
+                }
+                if (doctor.isWorking)
+                {
+                    yield break;
+                }
+                yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+            }
         }
+        isWaiting = false;
     }
 }

@@ -12,6 +12,7 @@ TagManager:
   - Bed
   - Chair
   - AutoDoor
+  - ICUPatient
   layers:
   - Default
   - TransparentFX

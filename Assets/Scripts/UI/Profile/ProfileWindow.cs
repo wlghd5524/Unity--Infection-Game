@@ -114,11 +114,17 @@ public class ProfileWindow : MonoBehaviour
         if (currentJob == "입원 환자") RefreshProfiles();
     }
 
-    public void AddEmerpatientProfile(GameObject inpatientObject)
+    public void AddEmerpatientProfile(GameObject emergencyPatientObject)
     {
-        AddPersonProfile(inpatientObject, "응급 환자", Role.EmergencyPatient, PersonManager.Instance.GetPersonCountByJob("응급 환자") + 1);
+        AddPersonProfile(emergencyPatientObject, "응급 환자", Role.EmergencyPatient, PersonManager.Instance.GetPersonCountByJob("응급 환자") + 1);
         if (currentJob == "응급 환자") RefreshProfiles();
     }
+    public void AddICUPateintProfile(GameObject ICUPatientObject)
+    {
+        AddPersonProfile(ICUPatientObject, "중환자", Role.ICUPatient, PersonManager.Instance.GetPersonCountByJob("중환자") + 1);
+        if (currentJob == "중환자") RefreshProfiles();
+    }
+
 
     private void AddPersonProfile(GameObject personObject, string job, Role role, int index)
     {
@@ -381,7 +387,7 @@ public class ProfileWindow : MonoBehaviour
             currentFloor = floorName; // 현재 층 정보를 갱신
         }
 
-    
+
         // 현재 선택된 병동 정보를 가져옴
         Ward nowWard = Ward.wards.Find(w => w.WardName == floorName);
 

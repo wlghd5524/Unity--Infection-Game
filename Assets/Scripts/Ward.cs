@@ -73,6 +73,10 @@ public class Ward : MonoBehaviour
         {
             waypointsTransform = transform.Find("EmergencyPatientWaypoints");
         }
+        else if (num == 9)
+        {
+            waypointsTransform = transform.Find("DoctorWaypoints");
+        }
         else
         {
             waypointsTransform = transform.Find("InpatientWaypoints");

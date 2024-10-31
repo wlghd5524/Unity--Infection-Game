@@ -8,6 +8,7 @@ public class PatientCreator
     public int numberOfInpatient;
     public int numberOfOutpatient;
     public int numberOfEmergencyPatient;
+    public int numberOfICUPatient;
     public List<Waypoint> spawnAreas = new List<Waypoint>();
 
     public float infectionRate = 0.03f; // 감염 확률
@@ -80,6 +81,32 @@ public class PatientCreator
             profileWindow.AddInpatientProfile(newInpatient);
             numberOfInpatient++;
         }
+
+        for (int i = 0; i < Managers.ObjectPooling.maxOfICUPateint * 0.7; i++)
+        {
+            int ward = 9;
+            BedWaypoint spawnArea = Managers.NPCManager.waypointDictionary[(ward, "DoctorWaypoints")].Find("BedWaypoint (" + i + ")").gameObject.GetComponent<BedWaypoint>();
+            GameObject newICUPatient = Managers.ObjectPooling.ActiveICUPatient(spawnArea.GetMiddlePointInRange());
+            newICUPatient.name = $"ICUPatient {i}";
+
+            if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
+            {
+                Managers.LayerChanger.SetLayerRecursively(newICUPatient, LayerMask.NameToLayer(Managers.LayerChanger.layers[ward]));
+            }
+
+            spawnArea.patient = newICUPatient;
+            PatientController newICUPatientController = newICUPatient.GetComponent<PatientController>();
+            newICUPatientController.waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "DoctorWaypoints")];
+            newICUPatientController.ward = ward;
+            newICUPatientController.num = i;
+            newICUPatientController.bedWaypoint = spawnArea;
+            newICUPatientController.bedWaypoint.isEmpty = false;
+            Transform waypointTransform = newICUPatientController.bedWaypoint.transform.parent;
+            newICUPatientController.wardComponent = waypointTransform.parent.GetComponent<Ward>();
+            newICUPatientController.wardComponent.inpatients.Add(newICUPatientController);
+            profileWindow.AddICUPateintProfile(newICUPatient);
+            numberOfICUPatient++;
+        }
     }
     public IEnumerator SpawnOutpatient()
     {
@@ -149,7 +176,7 @@ public class PatientCreator
         BedWaypoint nextBed = null;
         foreach (BedWaypoint bed in Ward.wards[8].beds)
         {
-            if(bed.isEmpty == true)
+            if (bed.isEmpty == true)
             {
                 nextBed = bed;
                 nextBed.isEmpty = false;
@@ -157,7 +184,7 @@ public class PatientCreator
             }
         }
 
-        if(nextBed == null)
+        if (nextBed == null)
         {
             yield break;
         }
@@ -197,7 +224,7 @@ public class PatientCreator
             Debug.LogError("새 응급 환자를 활성화하는 데 실패했습니다.");
         }
 
-        
+
         emergencyPatientWaiting = false; // 대기 상태 해제
 
     }

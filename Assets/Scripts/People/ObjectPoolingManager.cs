@@ -9,11 +9,12 @@ public class ObjectPoolingManager
     public int maxOfOutpatient = 50;
     public int maxOfInpatient = 50;
     public int maxOfEmergencyPatient = 28;
+    public int maxOfICUPateint = 18;
 
 
     public int maxOfWardDoctor = 24;
     public int maxOfERDoctor = 1;
-
+    public int maxOfICUDoctor = 1;
 
     public int maxOfWardNurse = 64;
     public int maxOfERNurse = 10;
@@ -106,6 +107,7 @@ public class ObjectPoolingManager
             // 프리팹 리스트에서 랜덤으로 하나 선택하여 생성
             GameObject newDoctor = Object.Instantiate(DoctorPrefabs[Random.Range(0, DoctorPrefabs.Length)], spawnArea.GetRandomPointInRange(), Quaternion.identity);
             newDoctor.name = "ERDoctor " + i;
+            Managers.LayerChanger.SetLayerRecursively(newDoctor, LayerMask.NameToLayer(Managers.LayerChanger.layers[8]));
 
             DoctorController doctorController = newDoctor.GetComponent<DoctorController>();
             doctorController.waypoints.Add(spawnArea);
@@ -114,6 +116,23 @@ public class ObjectPoolingManager
             doctorController.wardComponent = Managers.NPCManager.waypointDictionary[(8, "NurseWaypoints")].GetComponentInParent<Ward>();
             newDoctor.GetComponent<Person>().role = Role.Doctor;
             doctorController.role = DoctorRole.ER;
+        }
+        for (int i = 0; i < maxOfICUDoctor; i++)
+        {
+            // 의사 스폰 위치 설정
+            Waypoint spawnArea = Managers.NPCManager.waypointDictionary[(9, "DoctorWaypoints")].Find("Counter").GetComponent<Waypoint>();
+
+            // 프리팹 리스트에서 랜덤으로 하나 선택하여 생성
+            GameObject newDoctor = Object.Instantiate(DoctorPrefabs[Random.Range(0, DoctorPrefabs.Length)], spawnArea.GetRandomPointInRange(), Quaternion.identity);
+            newDoctor.name = "ICUDoctor " + i;
+            Managers.LayerChanger.SetLayerRecursively(newDoctor, LayerMask.NameToLayer(Managers.LayerChanger.layers[9]));
+            DoctorController doctorController = newDoctor.GetComponent<DoctorController>();
+            doctorController.waypoints.Add(spawnArea);
+            doctorController.num = i;
+            doctorController.ward = 9;
+            doctorController.wardComponent = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")].GetComponentInParent<Ward>();
+            newDoctor.GetComponent<Person>().role = Role.Doctor;
+            doctorController.role = DoctorRole.ICU;
         }
     }
 
@@ -197,7 +216,7 @@ public class ObjectPoolingManager
         for (int i = 0; i < maxOfICUNurse; i++)
         {
             int ward = 9;
-            Waypoint spawnArea = Managers.NPCManager.waypointDictionary[(ward, "NurseWaypoints")].Find("Counter").gameObject.GetComponent<Waypoint>();
+            Waypoint spawnArea = Managers.NPCManager.waypointDictionary[(ward, "DoctorWaypoints")].Find("Counter").gameObject.GetComponent<Waypoint>();
             GameObject newNurse = Object.Instantiate(NursePrefabs[Random.Range(0, NursePrefabs.Length)], spawnArea.GetRandomPointInRange(), Quaternion.identity);
             newNurse.name = "ICUNurse " + i;
 
@@ -214,7 +233,15 @@ public class ObjectPoolingManager
             newNurse.GetComponent<Person>().role = Role.Nurse;
         }
     }
-
+    public GameObject ActiveICUPatient(Vector3 position)
+    {
+        GameObject newPatient = patientQueue.Dequeue();
+        newPatient.transform.position = position;
+        newPatient.SetActive(true);
+        newPatient.GetComponent<Person>().role = Role.ICUPatient;
+        newPatient.tag = "ICUPatient";
+        return newPatient;
+    }
     public GameObject ActivateInpatient(Vector3 position)
     {
         GameObject newPatient = patientQueue.Dequeue();

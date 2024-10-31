@@ -5,7 +5,8 @@ public enum DoctorRole
 {
     ER,
     Ward,
-    InpatientWard
+    InpatientWard,
+    ICU
 }
 public class DoctorController : NPCController
 {
@@ -19,7 +20,8 @@ public class DoctorController : NPCController
     public GameObject nurse;
     public bool isWorking = false;
 
-    public static List<PatientController> ERwaitingList = new List<PatientController>();
+    public static List<PatientController> ERWaitingList = new List<PatientController>();
+    //public static List<PatientController> ICUWaitingList = new List<PatientController>();
 
     private void Start()
     {
@@ -64,6 +66,10 @@ public class DoctorController : NPCController
             else if (role == DoctorRole.ER)
             {
                 StartCoroutine(ERDoctorMove());
+            }
+            else if(role==DoctorRole.ICU)
+            {
+                StartCoroutine(ICUDoctorMove());
             }
         }
 
@@ -119,18 +125,18 @@ public class DoctorController : NPCController
     public IEnumerator ERDoctorMove()
     {
         isWaiting = true;
-        if (ERwaitingList.Count > 0)
+        if (ERWaitingList.Count > 0)
         {
             isWorking = true;
-            int random = Random.Range(0, ERwaitingList.Count);
-            patient = ERwaitingList[random].gameObject;
-            agent.SetDestination(ERwaitingList[random].bedWaypoint.GetRandomPointInRange());
+            int random = Random.Range(0, ERWaitingList.Count);
+            patient = ERWaitingList[random].gameObject;
+            agent.SetDestination(ERWaitingList[random].bedWaypoint.GetRandomPointInRange());
             yield return new WaitForSeconds(2.0f);
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            transform.LookAt(ERwaitingList[random].bedWaypoint.bedGameObject.transform);
+            transform.LookAt(ERWaitingList[random].bedWaypoint.bedGameObject.transform);
             yield return new WaitForSeconds(2.0f);
-            ERwaitingList[random].doctorSignal = true;
-            ERwaitingList.RemoveAt(random);
+            ERWaitingList[random].doctorSignal = true;
+            ERWaitingList.RemoveAt(random);
             isWaiting = false;
             yield break;
         }
@@ -139,6 +145,30 @@ public class DoctorController : NPCController
             isWorking = false;
             agent.SetDestination(waypoints[0].GetRandomPointInRange());
             yield return new WaitForSeconds(2.0f);
+        }
+        isWaiting = false;
+    }
+
+    public IEnumerator ICUDoctorMove()
+    {
+        isWaiting = true;
+        yield return new WaitForSeconds(2.0f);
+        int randomBed = Random.Range(2, waypoints.Count);
+        if (waypoints[randomBed] is BedWaypoint bed)
+        {
+            if(bed.patient != null)
+            {
+                isWorking = true;
+                agent.SetDestination(waypoints[randomBed].GetRandomPointInRange());
+                yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+                transform.LookAt(bed.patient.transform);
+                yield return new WaitForSeconds(2.0f);
+            }
+            else
+            {
+                isWorking = false;
+                agent.SetDestination(waypoints[Random.Range(0, 2)].GetRandomPointInRange());
+            }
         }
         isWaiting = false;
     }

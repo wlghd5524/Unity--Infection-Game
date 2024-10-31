@@ -38,6 +38,11 @@ public class NPCMovementManager
                 waypointsGameObject = wardTransform.Find("EmergencyPatientWaypoints").transform;
                 waypointDictionary.Add((i, "EmergencyPatientWaypoints"), waypointsGameObject);
             }
+            else if(i == 9)
+            {
+                waypointsGameObject = wardTransform.Find("DoctorWaypoints");
+                waypointDictionary.Add((i, "DoctorWaypoints"), waypointsGameObject);
+            }
             waypointsGameObject = wardTransform.Find("NurseWaypoints");
             waypointDictionary.Add((i, "NurseWaypoints"), waypointsGameObject);
         }

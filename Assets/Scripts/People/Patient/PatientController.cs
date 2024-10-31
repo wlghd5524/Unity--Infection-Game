@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
-
 public class PatientController : NPCController
 {
     // 웨이포인트 관련 변수
@@ -66,6 +65,10 @@ public class PatientController : NPCController
         if (personComponent.role == Role.EmergencyPatient)
         {
             StartCoroutine(EmergencyPatientMove());
+        }
+        if(personComponent.role == Role.ICUPatient)
+        {
+            StartCoroutine(ICUPateintMove());
         }
     }
 
@@ -185,6 +188,14 @@ public class PatientController : NPCController
                     transform.eulerAngles = Vector3.zero;
                 }
                 //Managers.NPCManager.PlayLayDownAnimation(this);
+            }
+        }
+        if (personComponent.role == Role.ICUPatient)
+        {
+            if (standingState == StandingState.LayingDown)
+            {
+                agent.radius = 0;
+                transform.eulerAngles = new Vector3(bedWaypoint.bedGameObject.transform.parent.eulerAngles.x, bedWaypoint.bedGameObject.transform.parent.eulerAngles.y + 90, bedWaypoint.bedGameObject.transform.parent.eulerAngles.z);
             }
         }
     }
@@ -307,6 +318,7 @@ public class PatientController : NPCController
                         officeSignal = false;
                         doctorSignal = false;
                         wardComponent.outpatients.Remove(this);
+                        gameObject.tag = "Inpatient";
                         profileWindow.RemoveProfile(personComponent.ID);
                         Managers.PatientCreator.numberOfOutpatient--;
                         ward = bedWaypoint.ward;
@@ -458,7 +470,7 @@ public class PatientController : NPCController
         agent.SetDestination(bedWaypoint.GetBedPoint());
         yield return new WaitForSeconds(2.0f);
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        DoctorController.ERwaitingList.Add(this);
+        DoctorController.ERWaitingList.Add(this);
         bedWaypoint.isEmpty = false;
         standingState = StandingState.LayingDown;
         Managers.NPCManager.PlaySittingAnimation(this);
@@ -546,7 +558,20 @@ public class PatientController : NPCController
             personComponent.role = Role.Inpatient;
         }
     }
+    public IEnumerator ICUPateintMove()
+    {
+        agent.stoppingDistance = 0f;
+        agent.SetDestination(bedWaypoint.GetBedPoint());
+        yield return new WaitForSeconds(2.0f);
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        bedWaypoint.isEmpty = false;
+        standingState = StandingState.LayingDown;
+        Managers.NPCManager.PlaySittingAnimation(this);
+        yield return new WaitForSeconds(0.5f);
 
+        Managers.NPCManager.PlayLayDownAnimation(this);
+        yield return new WaitForSeconds(5.0f);
+    }
 
     // 다음 웨이포인트 추가 메서드
     private void AddOutpatientWaypoint()

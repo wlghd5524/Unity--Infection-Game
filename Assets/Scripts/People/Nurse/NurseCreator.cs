@@ -73,7 +73,6 @@ public class NurseCreator : MonoBehaviour
             }
             else if (i == 9)
             {
-
                 newNurseController.doctor = GameObject.Find("ERDoctor " + (i - 9)).GetComponent<DoctorController>();
             }
 
@@ -118,7 +117,7 @@ public class NurseCreator : MonoBehaviour
             GameObject newNurse = GameObject.Find("ICUNurse " + i);
             Managers.ObjectPooling.ActivateNurse(newNurse);
             NurseController newNurseController = newNurse.GetComponent<NurseController>();
-            newNurseController.waypoints.AddRange(Managers.NPCManager.waypointDictionary[(newNurseController.ward, "NurseWaypoints")].GetComponentsInChildren<Waypoint>());
+            newNurseController.waypoints.AddRange(Managers.NPCManager.waypointDictionary[(newNurseController.ward, "DoctorWaypoints")].GetComponentsInChildren<Waypoint>());
             if (0 <= newNurseController.num && newNurseController.num <= 5)
             {
                 for (int j = 0; j < newNurseController.waypoints[0].chairsDictionary.Count; j++)
@@ -131,7 +130,7 @@ public class NurseCreator : MonoBehaviour
                     }
                 }
             }
-            else if (6 <= newNurseController.num && newNurseController.num <= 11)
+            else if (6 <= newNurseController.num && newNurseController.num <= 10)
             {
                 for (int j = 0; j < newNurseController.waypoints[1].chairsDictionary.Count; j++)
                 {
@@ -142,6 +141,10 @@ public class NurseCreator : MonoBehaviour
                         break;
                     }
                 }
+            }
+            else if(newNurseController.num == 11)
+            {
+                newNurseController.doctor = GameObject.Find("ICUDoctor 0").GetComponent<DoctorController>();
             }
         }
     }
