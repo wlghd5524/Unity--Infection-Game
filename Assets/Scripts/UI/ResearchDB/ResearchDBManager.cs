@@ -13,12 +13,12 @@ public class ResearchDBManager : MonoBehaviour
     public string userName;
     public string currentDate;
 
-    // 메뉴 모드에 따라 버튼(누름, 누른 시간) 기록을 저장할 목록
-    public Dictionary<ResearchMode, List<string>> researchRecords = new Dictionary<ResearchMode, List<string>>()
+    // 연구 메뉴에 따른 모드에 대한 리스트
+    public Dictionary<ResearchMode, List<(int, string)>> researchRecords = new Dictionary<ResearchMode, List<(int, string)>>()
     {
-        {ResearchMode.medical, new List<string>() },
-        {ResearchMode.patient, new List<string>() },
-        {ResearchMode.hospital, new List<string>() }
+        {ResearchMode.medical, new List<(int, string)>() },
+        {ResearchMode.patient, new List<(int, string)>() },
+        {ResearchMode.hospital, new List<(int, string)>() }
     };
 
     private string urlUpdateResearch = "http://220.69.209.164:3333/update_research";
@@ -45,11 +45,11 @@ public class ResearchDBManager : MonoBehaviour
     }
 
     // 리스트 생성 및 DB 저장
-    public void AddResearchData(ResearchMode mode)
+    public void AddResearchData(ResearchMode mode, int index)
     {
         string currentMoment = System.DateTime.Now.ToString("mm:ss");
-        researchRecords[mode].Add(currentMoment);    // 각 연구 메뉴별로 연구 버튼을 누른 시간 저장
-        SendResearchDataToServer();                  // DB 전송
+        researchRecords[mode].Add((index, currentMoment));  // 연구 메뉴별 버튼의 인덱스와 누른 시간을 튜플 저장
+        SendResearchDataToServer();                         // DB 전송
     }
 
     // POST 요청으로 서버에 데이터 보내기
@@ -58,9 +58,9 @@ public class ResearchDBManager : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("userNum", userNum);
         form.AddField("userName", userName);
-        form.AddField("medicalResearch", FormatDataForDB(researchRecords[ResearchMode.medical]));
+        form.AddField("gearResearch", FormatDataForDB(researchRecords[ResearchMode.medical]));
         form.AddField("patientResearch", FormatDataForDB(researchRecords[ResearchMode.patient]));
-        form.AddField("hospitalResearch", FormatDataForDB(researchRecords[ResearchMode.hospital]));
+        form.AddField("advancedResearch", FormatDataForDB(researchRecords[ResearchMode.hospital]));
         form.AddField("playingDate", currentDate);
 
         //Debug.Log($"ResearchDB: {userNum}, {userName}, {FormatDataForDB(researchRecords[ResearchMode.medical])}, {FormatDataForDB(researchRecords[ResearchMode.patient])}, {FormatDataForDB(researchRecords[ResearchMode.hospital])}, {currentDate}");
@@ -69,11 +69,11 @@ public class ResearchDBManager : MonoBehaviour
     }
 
     // DB에 보낼 수 있게 리스트->문자열 형변환
-    private string FormatDataForDB(List<string> records)
+    private string FormatDataForDB(List<(int, string)> records)
     {
         if (records != null && records.Count > 0)
         {
-            return string.Join(", ", records);
+            return string.Join(", ", records.Select(r => $"{r.Item1}:{r.Item2}"));
         }
         return " ";
     }
@@ -91,7 +91,7 @@ public class ResearchDBManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Request successfully sent: " + www.downloadHandler.text);
+                //Debug.Log("Request successfully sent: " + www.downloadHandler.text);
             }
         }
     }

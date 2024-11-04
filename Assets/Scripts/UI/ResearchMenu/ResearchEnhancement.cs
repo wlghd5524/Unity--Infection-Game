@@ -159,7 +159,7 @@ public class ResearchEnhancement : MonoBehaviour
         RectTransform rectTransform = researchItem_2.GetComponent<RectTransform>();
 
         // research DB에 버튼 누른 기록 저장
-        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.medical);
+        //ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.medical);
 
         // 현재 위치를 가져옴
         Vector2 currentPosition = rectTransform.anchoredPosition;
