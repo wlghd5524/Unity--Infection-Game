@@ -38,22 +38,17 @@ public class NurseController : NPCController
         if(isWorking)
         {
             Managers.NPCManager.PlayWakeUpAnimation(this);
+            return;
         }
         if (isWaiting || isRest)
         {
-            return; // 기다리는 중이면 리턴
+            return;
         }
         if (Managers.NPCManager.isArrived(agent))
         {
             if (role == NurseRole.Ward)
             {
-                if (isWorking)
-                    return;
-
-                if (!isWorking)
-                {
-                    StartCoroutine(WardNurseMove()); // 다음 작업을 위해 대기 후 이동
-                }
+                StartCoroutine(WardNurseMove());
             }
             else if (role == NurseRole.ER)
             {
@@ -123,18 +118,9 @@ public class NurseController : NPCController
         Managers.NPCManager.FaceEachOther(gameObject, patientGameObject); // 간호사와 환자가 서로를 바라보게 설정
         if (targetPatientController.isWaiting)
         {
-            if (targetPatientController.personComponent.role == Role.Outpatient)
-            {
-                targetPatientController.StopCoroutine(targetPatientController.OutpatientMove());
-            }
-            else if (targetPatientController.personComponent.role == Role.Inpatient)
-            {
-                targetPatientController.StopCoroutine(targetPatientController.InpatientMove());
-            }
-            else if (targetPatientController.personComponent.role == Role.EmergencyPatient)
-            {
-                targetPatientController.StopCoroutine(targetPatientController.EmergencyPatientMove());
-            }
+            targetPatientController.StopCoroutine(targetPatientController.OutpatientMove());
+            targetPatientController.StopCoroutine(targetPatientController.InpatientMove());
+            targetPatientController.StopCoroutine(targetPatientController.EmergencyPatientMove());
         }
 
 
@@ -145,11 +131,7 @@ public class NurseController : NPCController
         AutoDoorWaypoint[] inFrontOfAutoDoor = targetPatientController.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());  //격리실 자동문 앞으로 이동
 
-
-        if (targetPatientController.personComponent.role == Role.Inpatient)
-        {
-            targetPatientController.StopCoroutine(targetPatientController.HospitalizationTimeCounter());
-        }
+        targetPatientController.StopCoroutine(targetPatientController.HospitalizationTimeCounter());
 
         while (!Managers.NPCManager.isArrived(agent))
         {

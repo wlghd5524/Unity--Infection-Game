@@ -138,11 +138,6 @@ public class QuarantineManager : MonoBehaviour
                     else
                     {
                         patientController.StopAllCoroutines();
-                        if (gameObject.CompareTag("Inpatient"))
-                        {
-                            Debug.Log("입원 환자 격리 조치 실시");
-                            patientController.StopCoroutine(patientController.HospitalizationTimeCounter());
-                        }
                         // 간호사의 NurseController 컴포넌트를 가져옵니다.
                         NurseController nurseController = closestNurse.GetComponent<NurseController>();
                         if (nurseController == null)
