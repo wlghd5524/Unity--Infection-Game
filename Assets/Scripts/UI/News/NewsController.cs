@@ -15,6 +15,8 @@ public class NewsController : MonoBehaviour
 
     public NewsTicker moveTextController;
 
+    private bool virusOutbreakNewsTriggered = false;    // 감염병 발생 뉴스
+
     private void Awake()
     {
         if (moveTextController == null)
@@ -38,6 +40,16 @@ public class NewsController : MonoBehaviour
             wardDoctorStressNewsTriggered[ward.num] = false;
             wardNurseStressNewsTriggered[ward.num] = false;
             wardClosedNewsTriggered[ward.num] = false;
+        }
+    }
+
+    // 바이러스 발생 뉴스
+    public void TriggerVirusOutbreakNews()
+    {
+        if (!virusOutbreakNewsTriggered)
+        {
+            EnqueueNews("\"중국\"에서 원인불명의 바이러스 병이 발생했습니다.");
+            virusOutbreakNewsTriggered = true;
         }
     }
 

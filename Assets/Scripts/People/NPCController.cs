@@ -21,6 +21,7 @@ public class NPCController : MonoBehaviour
     public bool isWaiting = false;
 
     public Person personComponent;
+    public InfectionController infectionController;
 
     public int num;
 
@@ -28,9 +29,11 @@ public class NPCController : MonoBehaviour
     {
         // 컴포넌트 초기화
         animator = GetComponent<Animator>();
+        infectionController = GetComponent<InfectionController>();
         agent = GetComponent<NavMeshAgent>();
         agent.avoidancePriority = Random.Range(0, 100);
         agent.speed = Random.Range(3.0f, 5.0f);
+        personComponent = GetComponent<Person>();
     }
     // Start is called before the first frame update
     void Start()

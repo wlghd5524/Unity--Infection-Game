@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CameraHandler : MonoBehaviour
 {
+    public bool isPolicyMenuOpen = false; // 정책 창이 열려 있는지 여부
+
     public enum ViewMode { TopView, QuarterView }
     public ViewMode currentViewMode = ViewMode.TopView;
 
@@ -57,6 +59,8 @@ public class CameraHandler : MonoBehaviour
         HandleMouseZoom();
         LimitCameraPosition();
     }
+
+
 
     void HandleKeyboardMovement()
     {
@@ -144,10 +148,13 @@ public class CameraHandler : MonoBehaviour
 
     void HandleMouseZoom()
     {
+        if (isPolicyMenuOpen) return; // 정책 창이 열려 있을 때 줌 기능 비활성화
+
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         mainCamera.fieldOfView -= scroll * zoomSpeed;
         mainCamera.fieldOfView = Mathf.Clamp(mainCamera.fieldOfView, minFOV, maxFOV);
     }
+
 
     void ApplyMovement()
     {

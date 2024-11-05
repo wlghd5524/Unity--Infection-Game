@@ -14,7 +14,7 @@ public class ResearchManager : MonoBehaviour
     //public PanelManager panelManager;             // PanelManager 스크립트 참조
     //public DictionaryManager dictManager;         // DictionaryManager 스크립트 참조
     //public CurrentMoney currentMoneyManager;      // CurrentMoney 스크립트 참조
-    //public MonthlyReportUI monthlyReportUI;       // MonthlyReportUI 스크립트 참조
+    //public monthlyReportUI;       // MonthlyReportUI 스크립트 참조
     //public GameObject selectPanel;
     //public Button[] researchLevelButton;
     //public Button selectCloseButton;

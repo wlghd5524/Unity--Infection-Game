@@ -13,6 +13,7 @@ public class Ward : MonoBehaviour
     public List<NurseController> nurses = new List<NurseController>();
     public List<PatientController> outpatients = new List<PatientController>();
     public List<PatientController> emergencyPatients = new List<PatientController>();
+    public List<PatientController> icuPatients = new List<PatientController>();
     public List<BedWaypoint> beds = new List<BedWaypoint>();
     public float totalOfNPC = 0;
     public float infectedNPC = 0;
@@ -159,5 +160,15 @@ public class Ward : MonoBehaviour
         isWaiting = true;
         yield return new WaitForSeconds(1.0f);
         isWaiting = false;
+    }
+
+    // 의사, 간호사, 외래환자의 수를 반환하는 메서드 추가
+    public (int doctorCount, int nurseCount, int outpatientCount) GetCounts()
+    {
+        int doctorCount = doctors.Count;
+        int nurseCount = nurses.Count;
+        int outpatientCount = outpatients.Count;
+
+        return (doctorCount, nurseCount, outpatientCount);
     }
 }

@@ -23,7 +23,7 @@ public class PatientController : NPCController
 
     public GameObject nurse;
     public QuarantineRoom quarantineRoom;
-    //public MonthlyReportUI //monthlyReportUI;     //MonthlyReportUI 스크립트
+    public MonthlyReportUI monthlyReportUI;     //MonthlyReportUI 스크립트
 
     private IconManager iconManager;       // 진오 추가
 
@@ -83,6 +83,7 @@ public class PatientController : NPCController
         }
         if (isExiting)
         {
+            standingState = StandingState.Standing;
             return;
         }
         if (isQuarantined)
@@ -102,7 +103,6 @@ public class PatientController : NPCController
             else
             {
                 StartCoroutine(QuarantineMove());
-
             }
         }
         if (isWaiting)
@@ -121,7 +121,10 @@ public class PatientController : NPCController
                 excutedHC = true;
                 StartCoroutine(HospitalizationTimeCounter());
             }
-
+            if (isWaitingForNurse || isQuarantined)
+            {
+                return;
+            }
             if (standingState == StandingState.LayingDown)
             {
                 agent.radius = 0.000001f;
@@ -272,8 +275,8 @@ public class PatientController : NPCController
                 // 진료비 수입 증가 임시 위치
                 // 진료비 : 10000
                 MoneyManager.Instance.IncreaseMoney(MoneyManager.MedicalFee);
-                //monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
-                //monthlyReportUI.AddIncome(MoneyManager.MedicalFee);
+                monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
+                monthlyReportUI.AddIncomeDetail("진료비", MoneyManager.MedicalFee);
 
                 doctorController.outpatientSignal = false;
             }
@@ -831,7 +834,6 @@ public class PatientController : NPCController
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
-        agent.SetDestination(waypoints[0].GetRandomPointInRange());
         quarantineRoom.patient = null;
         quarantineRoom.isEmpty = true;
         quarantineRoom = null;

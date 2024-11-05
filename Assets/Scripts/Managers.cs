@@ -48,4 +48,8 @@ public class Managers : MonoBehaviour
             StartCoroutine(PatientCreator.SpawnEmergencyPatient());
         }
     }
+    public void ChangeGameStage(int newStage)
+    {
+        Stage.ChangeStage(newStage);
+    }
 }

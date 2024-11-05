@@ -22,7 +22,7 @@ public class TutorialButtonPress : TutorialBase
         }
         else
         {
-            Debug.LogError("Button not assigned in the inspector!");
+            //Debug.LogError("Button not assigned in the inspector!");
         }
 
         // 예외적인 Image에 대해서는 EventTrigger로 처리
@@ -32,7 +32,7 @@ public class TutorialButtonPress : TutorialBase
         }
         else
         {
-            Debug.LogError("Close button not assigned in the inspector!");
+            //Debug.LogError("Close button not assigned in the inspector!");
         }
     }
 

@@ -20,6 +20,7 @@ public class TutorialController : MonoBehaviour
     public bool hasCompletedTutorial;       
 
     private MaskController maskController;              // MaskController 참조
+    private NewsController newscontroller;
 
     // 튜토리얼 스킵 여부를 묻는 UI 창
     [SerializeField] private GameObject tutorialSkipPromptUI;
@@ -109,8 +110,10 @@ public class TutorialController : MonoBehaviour
     {
         currentTutorial = null;
         Debug.Log("Compleye All");
+        newscontroller = FindObjectOfType<NewsController>();
         Managers.PatientCreator.startSignal = true;         // 튜토리얼 끝나면 npc 생성 시작
         GoToGame.Instance.calendarManager.StartCalendar();  // 튜토리얼 끝나면 시간 흐름
+        newscontroller.TriggerVirusOutbreakNews();          // 뉴스 발생
     }
 
     // 현재 튜토리얼에서 대화가 나오면 게임을 멈춥니다.

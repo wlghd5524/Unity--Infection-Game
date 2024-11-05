@@ -26,7 +26,7 @@ public class NurseController : NPCController
     // Start는 첫 프레임 업데이트 전에 호출됩니다.
     void Start()
     {
-
+        
     }
 
     // Update는 매 프레임 호출됩니다.

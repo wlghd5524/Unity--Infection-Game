@@ -1,15 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class InfectionController : MonoBehaviour
 {
     public CreateVirus createVirusManager;
-
+    public TextMeshProUGUI selectedLevel; // 난이도 UI 텍스트
     private Person person;       //추가
     private List<Person> delayList = new List<Person>();
+    //private InfectionState activeInfectionState = InfectionState.Normal; // 현재 게임에서 활성화된 감염 상태
+
 
     Coroutine _co;
+
+    // 감염 상태 확인 프로퍼티
+    public bool isInfected => person != null && person.status != InfectionState.Normal;
+
+    // 감염 저항성 프로퍼티
+    public int infectionResistance => person != null ? person.infectionResistance : 0;
+
+    // 감염 저항성 설정 메서드
+    public void SetInfectionResistance(int infectionResistance_)
+    {
+        if (person != null)
+        {
+            person.infectionResistance += infectionResistance_;
+        }
+    }
+
+    private void Awake()
+    {
+        selectedLevel = Assign(selectedLevel, "SelectedLevel");
+    }
 
     // 감염이면 바이러스 떨어뜨리기 반복
     void Start()
@@ -17,6 +40,15 @@ public class InfectionController : MonoBehaviour
         person = GetComponent<Person>();
         createVirusManager = Assign(createVirusManager, "DisinfectionManager");
         StartCoroutine(CheckInfectionStatus());
+    }
+
+    private InfectionState ChangeNPCState()
+    {
+        if (selectedLevel.text == "Easy")
+            return InfectionState.CRE;
+        else if (selectedLevel.text == "Normal")
+            return InfectionState.Covid;
+        return InfectionState.Normal;
     }
 
     IEnumerator CheckInfectionStatus()
@@ -30,6 +62,7 @@ public class InfectionController : MonoBehaviour
             yield return new WaitForSeconds(Virus.checkInterval);
         }
     }
+
 
     //감염이면 바이러스 떨어뜨리기 시도
     IEnumerator TryDropVirus()

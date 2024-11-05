@@ -14,6 +14,12 @@ public class Item
         this.isEquipped = isEquipped;
         this.protectionRate = protectionRate;
     }
+
+    // Clone 메서드로 개별 인스턴스를 생성
+    public Item Clone()
+    {
+        return new Item(itemName, isEquipped, protectionRate);
+    }
 }
 
 public class ItemManager
@@ -34,5 +40,7 @@ public class ItemManager
             new Item("Level C",false, 7f)
         };
     }
+
+
 }
 

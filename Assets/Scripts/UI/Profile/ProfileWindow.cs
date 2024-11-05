@@ -147,9 +147,10 @@ public class ProfileWindow : MonoBehaviour
             person = personObject.AddComponent<Person>();
         }
 
-        person.Initialize(personID, $"{job} {index}", job, false, role, inventory);
+        person.Initialize(personID, $"{job} {index}", job, false, role);
         person.AssignName();
         PersonManager.Instance.AddPerson(person);
+
 
         GameObject profile = Instantiate(profilePrefab, profileContent);
         RectTransform rectTransform = profile.GetComponent<RectTransform>();

@@ -86,9 +86,7 @@ public class InfectionManager
         {
             foreach(PatientController patient in ward.inpatients)
             {
-                if (patient.personComponent == null)
-                    Debug.Log("patient 없음");
-                else if (patient.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.status != InfectionState.Normal)
                 {
                     numberOfInfectedNPC[0]++;
                 }
@@ -96,9 +94,7 @@ public class InfectionManager
             }
             foreach (PatientController patient in ward.outpatients)
             {
-                if (patient.personComponent == null)
-                    Debug.Log("patient 없음");
-                else if (patient.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.status != InfectionState.Normal)
                 {
                     numberOfInfectedNPC[1]++;
                 }
@@ -107,9 +103,7 @@ public class InfectionManager
             }
             foreach (PatientController patient in ward.emergencyPatients)
             {
-                if (patient.personComponent == null)
-                    Debug.Log("patient 없음");
-                else if (patient.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.status != InfectionState.Normal)
                 {
                     numberOfInfectedNPC[2]++;
                 }
@@ -119,9 +113,7 @@ public class InfectionManager
 
             foreach(NurseController nurse in ward.nurses)
             {
-                if (nurse.personComponent == null)
-                    Debug.Log("nurse 없음");
-                else if (nurse.personComponent.status != InfectionState.Normal)
+                if (nurse.personComponent.status != InfectionState.Normal)
                 {
                     numberOfInfectedNPC[3]++;
                 }
@@ -130,9 +122,7 @@ public class InfectionManager
 
             foreach(DoctorController doctor in ward.doctors)
             {
-                if (doctor.personComponent == null)
-                    Debug.Log("patient 없음");
-                else if (doctor.personComponent.status != InfectionState.Normal)
+                if (doctor.personComponent.status != InfectionState.Normal)
                 {
                     numberOfInfectedNPC[4]++;
                 }

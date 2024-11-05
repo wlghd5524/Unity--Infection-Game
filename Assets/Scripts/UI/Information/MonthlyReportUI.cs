@@ -8,13 +8,19 @@ using UnityEngine.EventSystems;
 public class MonthlyReportUI : MonoBehaviour
 {
     public GameObject monthlyReportCanvas;  // 월정산 UI 캔버스
-    //public TextMeshProUGUI moneyInfo;       // 현재 금액
     public TextMeshProUGUI nowMoney;        // 월정산 이후 잔여 금액
     public TextMeshProUGUI incomeMoney;     // 한달 동안의 총 수입 금액
     public TextMeshProUGUI expenseMoney;    // 한달 동안의 총 지출 금액
-    public TextMeshProUGUI netIncomeMoney;  // 순수익 금액
+    //public TextMeshProUGUI netIncomeMoney;  // 순수익 금액
     public Image exitButton;                // 월정산 나가기 버튼
-    public CurrentMoney currentMoneyManager;    //CurrentMoney 스크립트
+    public CurrentMoney currentMoneyManager; // CurrentMoney 스크립트
+
+    [SerializeField] private Transform incomeDetailContainer; // 수입 내역 컨테이너
+    [SerializeField] private Transform expenseDetailContainer; // 지출 내역 컨테이너
+    [SerializeField] private GameObject detailPrefab; // 내역을 표시할 프리팹
+
+    private Dictionary<string, int> incomeDetails = new Dictionary<string, int>();
+    private Dictionary<string, int> expenseDetails = new Dictionary<string, int>();
 
     private int month = 1;
     private int totalIncome = 0;
@@ -23,11 +29,10 @@ public class MonthlyReportUI : MonoBehaviour
     private void Start()
     {
         monthlyReportCanvas = Assign(monthlyReportCanvas, "MonthlyReportCanvas");
-        //moneyInfo = Assign(moneyInfo, "MoneyInfo");
         nowMoney = Assign(nowMoney, "NowMoney");
         incomeMoney = Assign(incomeMoney, "IncomeMoney");
         expenseMoney = Assign(expenseMoney, "ExpenseMoney");
-        netIncomeMoney = Assign(netIncomeMoney, "NetIncomeMoney");
+        //netIncomeMoney = Assign(netIncomeMoney, "NetIncomeMoney");
         exitButton = Assign(exitButton, "ExitButton");
         currentMoneyManager = Assign(currentMoneyManager, "CurrentMoneyManager");
 
@@ -42,7 +47,6 @@ public class MonthlyReportUI : MonoBehaviour
         }
     }
 
-    // 오브젝트 자동 할당
     private T Assign<T>(T obj, string objectName) where T : Object
     {
         if (obj == null)
@@ -63,93 +67,151 @@ public class MonthlyReportUI : MonoBehaviour
         return obj;
     }
 
-    // 지출 금액 추가 메서드
+    private void AddDetailToContainer(Transform container, string detailName, int amount)
+    {
+        if (detailPrefab == null) return;
+
+        GameObject detailItem = Instantiate(detailPrefab, container);
+        TextMeshProUGUI[] texts = detailItem.GetComponentsInChildren<TextMeshProUGUI>();
+
+        if (texts.Length >= 2)
+        {
+            texts[0].text = detailName;         // 첫 번째 텍스트에 detailName 설정
+            texts[1].text = $"{amount:N0} 원";  // 두 번째 텍스트에 amount 설정
+        }
+        else
+        {
+            Debug.LogError("Detail prefab does not have sufficient TextMeshProUGUI components.");
+        }
+    }
+
+    private void UpdateIncomeDetailText(string detailName, int amount)
+    {
+        foreach (Transform item in incomeDetailContainer)
+        {
+            TextMeshProUGUI[] texts = item.GetComponentsInChildren<TextMeshProUGUI>();
+            if (texts.Length >= 2 && texts[0].text == detailName)
+            {
+                texts[1].text = $"{amount:N0} 원"; // 수입 금액 갱신
+                break;
+            }
+        }
+    }
+
+    private void UpdateExpenseDetailText(string detailName, int amount)
+    {
+        foreach (Transform item in expenseDetailContainer)
+        {
+            TextMeshProUGUI[] texts = item.GetComponentsInChildren<TextMeshProUGUI>();
+            if (texts.Length >= 2 && texts[0].text == detailName)
+            {
+                texts[1].text = $"{amount:N0} 원"; // 지출 금액 갱신
+                break;
+            }
+        }
+    }
+
+    public void AddIncomeDetail(string detailName, int amount)
+    {
+        if (incomeDetails.ContainsKey(detailName))
+        {
+            incomeDetails[detailName] += amount;
+        }
+        else
+        {
+            incomeDetails[detailName] = amount;
+            AddDetailToContainer(incomeDetailContainer, detailName, incomeDetails[detailName]);
+        }
+        UpdateIncomeDetailText(detailName, incomeDetails[detailName]);
+        AddIncome(amount);
+    }
+
+    public void AddExpenseDetail(string detailName, int amount)
+    {
+        if (expenseDetails.ContainsKey(detailName))
+        {
+            expenseDetails[detailName] += amount;
+        }
+        else
+        {
+            expenseDetails[detailName] = amount;
+            AddDetailToContainer(expenseDetailContainer, detailName, expenseDetails[detailName]);
+        }
+        UpdateExpenseDetailText(detailName, expenseDetails[detailName]);
+        AddExpense(amount);
+    }
+
     public void AddExpense(int amount)
     {
-        //Debug.Log($"AddExpense 호출됨 - amount: {amount}");
         totalExpense += amount;
         UpdateExpenseText();
     }
 
-    // 수입 금액 추가 메서드
     public void AddIncome(int amount)
     {
-        //Debug.Log($"AddIncome 호출됨 - amount: {amount}");
         totalIncome += amount;
         UpdateIncomeText();
     }
 
-    // 지출 금액 텍스트 갱신
     private void UpdateExpenseText()
     {
-        //Debug.Log($"UpdateExpenseText 호출됨 - totalExpense: {totalExpense}");
         expenseMoney.text = $"{totalExpense:N0} 원";
         UpdateNetIncomeText();
     }
 
-    // 수입 금액 텍스트 갱신
     private void UpdateIncomeText()
     {
-        //Debug.Log($"UpdateIncomeText 호출됨 - totalIncome: {totalIncome}");
         incomeMoney.text = $"{totalIncome:N0} 원";
         UpdateNetIncomeText();
     }
 
-    // 순수익 텍스트 갱신
     private void UpdateNetIncomeText()
     {
         int netIncome = totalIncome - totalExpense;
-        netIncomeMoney.text = $"{netIncome:N0} 원";
+        //netIncomeMoney.text = $"{netIncome:N0} 원";
     }
 
-    // 현재 금액 업데이트 메서드
     public void UpdateNowMoney()
     {
         nowMoney.text = $"{currentMoneyManager.CurrentMoneyGetter:N0} 원";
-        /*string moneyTextValue = moneyInfo.text;
-
-        if (int.TryParse(moneyTextValue.Trim().Replace(",", ""), out int currentMoney))
-        {
-            nowMoney.text = $"{currentMoney:N0} 원";
-        }
-        else
-        {
-            Debug.LogError("Failed to parse money amount.");
-        }*/
     }
 
-
-    // 월 정산 표시 메서드
     public void ShowMonthlyReport()
     {
-        Debug.Log("월 정산을 처리합니다.");
         if (monthlyReportCanvas != null)
         {
-            UpdateNowMoney(); // 현재 금액 업데이트
-            monthlyReportCanvas.SetActive(true); // 월 정산 캔버스 활성화
-            Time.timeScale = 0; // 게임 일시 정지
+            UpdateNowMoney();
+            monthlyReportCanvas.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 
-    // 월 정산 캔버스 닫기 메서드
     private void CloseMonthlyReport()
     {
         if (monthlyReportCanvas != null)
         {
-            monthlyReportCanvas.SetActive(false); // 월 정산 캔버스 비활성화
+            monthlyReportCanvas.SetActive(false);
             month++;
-            Time.timeScale = 1; // 게임 재개
+            Time.timeScale = 1;
         }
 
-        // 월 정산 데이터 초기화
         ResetMonthlyReport();
     }
 
-    // 월 정산 데이터 초기화 메서드
     private void ResetMonthlyReport()
     {
         totalIncome = 0;
         totalExpense = 0;
+        incomeDetails.Clear();
+        expenseDetails.Clear();
+        foreach (Transform child in incomeDetailContainer)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in expenseDetailContainer)
+        {
+            Destroy(child.gameObject);
+        }
         UpdateIncomeText();
         UpdateExpenseText();
         UpdateNetIncomeText();

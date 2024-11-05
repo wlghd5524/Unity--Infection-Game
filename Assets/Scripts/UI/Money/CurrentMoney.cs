@@ -4,12 +4,12 @@ using TMPro;
 public class CurrentMoney : MonoBehaviour
 {
     public TextMeshProUGUI moneyInfo;       // 현재 금액
-    //public MonthlyReportUI monthlyReport;
+    public MonthlyReportUI monthlyReport;
 
     void Start()
     {
         moneyInfo = Assign(moneyInfo, "MoneyInfo");
-        //monthlyReport = Assign(monthlyReport, "InGameUI Manager");
+        monthlyReport = Assign(monthlyReport, "InGameUI Manager");
     }
 
     //외부에서 현재 금액을 변수처럼 사용하기
@@ -41,7 +41,7 @@ public class CurrentMoney : MonoBehaviour
         set
         {
             moneyInfo.text = $"{value:N0}";
-            //monthlyReport.UpdateNowMoney();   //금액이 변경되면 잔여 금액도 업데이트
+            monthlyReport.UpdateNowMoney();   //금액이 변경되면 잔여 금액도 업데이트
         }
     }
 

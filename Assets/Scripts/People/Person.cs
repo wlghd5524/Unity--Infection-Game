@@ -39,23 +39,18 @@ public class Person : MonoBehaviour
     public string Name { get; private set; }
     public string Job { get; private set; }
     public bool IsResting { get; private set; }
-    public Dictionary<string, Item> Inventory { get; private set; }
+    public Dictionary<string, Item> Inventory => RoleInventoryManager.GetInventoryByRole(role); // Role 기반 Inventory 참조
     public Sprite AvatarSprite { get; private set; } // 추가된 필드
     public bool IsMale { get; private set; } // 성별 필드 추가
 
 
-    public void Initialize(int id, string name, string job, bool isResting, Role role, List<Item> inventory)
+    public void Initialize(int id, string name, string job, bool isResting, Role role)
     {
         ID = id;
         Name = name;
         Job = job;
         IsResting = isResting;
         this.role = role;
-        Inventory = new Dictionary<string, Item>();
-        foreach (Item item in inventory)
-        {
-            Inventory[item.itemName] = new Item(item.itemName, item.isEquipped, item.protectionRate); // 기본 구매 및 착용 상태는 false
-        }
 
         // 성별 랜덤 설정
         IsMale = Random.Range(0, 2) == 0;

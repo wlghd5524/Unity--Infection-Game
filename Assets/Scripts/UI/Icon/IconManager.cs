@@ -62,7 +62,7 @@ public class IconManager : MonoBehaviour
             }
             symptomCoroutine = StartCoroutine(ShowRandomSymptomIcon());
             QuarantineManager targetQuarantineManager = person.gameObject.GetComponent<QuarantineManager>();
-            targetQuarantineManager.StartCoroutine(targetQuarantineManager.QuarantineTest());
+            targetQuarantineManager.StartCoroutine(targetQuarantineManager.Quarantine());
             //Debug.Log("증상 발현!");
         }
         else

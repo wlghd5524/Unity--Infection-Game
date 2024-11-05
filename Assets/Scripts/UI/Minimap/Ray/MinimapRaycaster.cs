@@ -66,7 +66,7 @@ public class MinimapRaycaster : MonoBehaviour
             }
             else
             {
-                Debug.Log("Ray did not hit anything");
+                //Debug.Log("Ray did not hit anything");
                 ResetHighlight(); // 하이라이트 초기화
             }
         }

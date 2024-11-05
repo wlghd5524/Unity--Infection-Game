@@ -24,11 +24,11 @@ public class Close : MonoBehaviour
     public GameObject minimapCanvas;
     public GameObject settingButton;
     public GameObject monthlyReportCanvas;
-    //public GameObject researchCanvas;
     public GameObject disinfectionCanvas;
     public GameObject newsTickerCanvas;
-    public GameObject researchMenuCanvas;
-    public GameObject researchPanel;
+    public GameObject policyCanvas;
+    public GameObject policyOpenButton;
+    public GameObject researchingItem;
 
     void Start()
     {
@@ -46,7 +46,7 @@ public class Close : MonoBehaviour
         profileCanvas = Assign(profileCanvas, "ProfileCanvas");
         profileOverlay = Assign(profileOverlay, "ProfileOverlay");
         infoCanvas = Assign(infoCanvas, "InfoCanvas");
-        questCanvas = Assign(questCanvas, "QuestCanvas"); 
+        questCanvas = Assign(questCanvas, "QuestCanvas");
         questDisfectCanvas = Assign(questDisfectCanvas, "QuestDisinfectCanvas");
         scoreGraphCanvas = Assign(scoreGraphCanvas, "ScoreGraphCanvas");
         settingWindow = Assign(settingWindow, "SettingWindow");
@@ -58,11 +58,10 @@ public class Close : MonoBehaviour
         minimapCanvas = Assign(minimapCanvas, "MinimapCanvas");
         settingButton = Assign(settingButton, "SettingButton");
         monthlyReportCanvas = Assign(monthlyReportCanvas, "MonthlyReportCanvas");
-        //researchCanvas = Assign(researchCanvas, "ResearchCanvas");
         disinfectionCanvas = Assign(disinfectionCanvas, "DisinfectionCanvas");
         newsTickerCanvas = Assign(newsTickerCanvas, "NewsTickerCanvas");
-        researchMenuCanvas = Assign(researchMenuCanvas, "ResearchMenuCanvas");
-        researchPanel = Assign(researchPanel, "ResearchPanel");
+        policyCanvas = Assign(policyCanvas, "PolicyCanvas");
+        researchingItem = Assign(researchingItem, "ResearchComplete");
 
         loginCanvas?.SetActive(false);
         signUpCanvas?.SetActive(false);
@@ -83,11 +82,10 @@ public class Close : MonoBehaviour
         minimapCanvas?.SetActive(false);
         settingButton?.SetActive(false);
         monthlyReportCanvas?.SetActive(false);
-        //researchCanvas?.SetActive(false);
         disinfectionCanvas?.SetActive(false);
         newsTickerCanvas?.SetActive(false);
-        researchMenuCanvas?.SetActive(false);
-        researchPanel?.SetActive(false);
+        policyCanvas?.SetActive(false);
+        researchingItem?.SetActive(false);
     }
 
     // 오브젝트 자동 할당
