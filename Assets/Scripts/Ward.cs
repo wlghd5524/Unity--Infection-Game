@@ -82,9 +82,9 @@ public class Ward : MonoBehaviour
         {
             waypointsTransform = transform.Find("InpatientWaypoints");
         }
-        if(waypointsTransform != null)
+        if (waypointsTransform != null)
         {
-            beds = waypointsTransform.GetComponentsInChildren<BedWaypoint>().ToList();  
+            beds = waypointsTransform.GetComponentsInChildren<BedWaypoint>().ToList();
         }
         StartCoroutine(WaitOneSecond());
     }
@@ -103,14 +103,9 @@ public class Ward : MonoBehaviour
         //{
         //    isClosed = true;
         //}
-
-        if (isClosed)
-        {
-            StartCoroutine(CloseWard());
-        }
     }
 
-    private IEnumerator CloseWard()
+    public void CloseWard()
     {
         isInClosePeriod = true;
         foreach (PatientController patient in outpatients)
@@ -118,7 +113,7 @@ public class Ward : MonoBehaviour
             if (patient != null)
             {
                 int index = wards.IndexOf(this);
-                if(patient.waypointIndex == 3 || patient.waypointIndex == 4)
+                if (patient.waypointIndex == 3 || patient.waypointIndex == 4)
                 {
                     continue;
                 }
@@ -150,9 +145,71 @@ public class Ward : MonoBehaviour
             }
         }
         outpatients.Clear();
-        yield return new WaitForSeconds(70);
+
+        foreach(PatientController inpatient in inpatients)
+        {
+            if (inpatient != null)
+            {
+                inpatient.StopCoroutine(inpatient.InpatientMove());
+                inpatient.StopCoroutine(inpatient.HospitalizationTimeCounter());
+                inpatient.StartCoroutine(inpatient.ExitHospital());
+            }
+        }
+
+        foreach (NurseController nurse in nurses)
+        {
+            if (nurse != null)
+            {
+                Managers.ObjectPooling.DeactivateNurse(nurse.gameObject);
+            }
+        }
+        nurses.Clear();
+
+        foreach (DoctorController doctor in doctors)
+        {
+            if (doctor != null)
+            {
+                Managers.ObjectPooling.DeactivateDoctor(doctor.gameObject);
+            }
+        }
+        doctors.Clear();
+
+    }
+    public void OpenWard()
+    {
         isClosed = false;
         isInClosePeriod = false;
+        if (0 <= num && num <= 3)
+        {
+            for (int i = num * 16; i < (num * 16) + 16; i++)
+            {
+                GameObject nurse = GameObject.Find($"WardNurse {i}");
+                Managers.ObjectPooling.ActivateNurse(nurse);
+            }
+            for (int i = num * 6; i< (num * 6)+6;i++)
+            {
+                GameObject doctor = GameObject.Find($"WardDoctor {i}");
+                Managers.ObjectPooling.ActivateDoctor(doctor);
+            }
+        }
+        else if (4 <= num && num <= 7)
+        {
+            for (int i = num * 12; i < (num * 12) + 12; i++)
+            {
+                GameObject nurse = GameObject.Find($"InpatientWardNurse {i}");
+                Managers.ObjectPooling.ActivateNurse(nurse);
+            }
+        }
+        else if(num == 8)
+        {
+            for(int i = 0;i<10;i++)
+            {
+                GameObject nurse = GameObject.Find($"ERNurse {i}");
+                Managers.ObjectPooling.ActivateNurse(nurse);
+            }
+            GameObject doctor = GameObject.Find($"ERDoctor 0");
+            Managers.ObjectPooling.ActivateDoctor(doctor);
+        }
     }
 
     private IEnumerator WaitOneSecond()

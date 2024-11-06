@@ -9,7 +9,7 @@ public class CalendarManager : MonoBehaviour
     public int currentDay = 1;
     private int currentMonth = 1;
     private Coroutine dateCoroutine;
-    private const int maxDaysInMonth = 10; // 한 달 최대 일 수
+    private const int maxDaysInMonth = 28; // 한 달 최대 일 수
 
     private MonthlyReportUI monthlyReportUI;
     private readonly string[] monthNames = { "Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec." };
