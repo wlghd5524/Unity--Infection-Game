@@ -23,11 +23,17 @@ public class GoToGame : MonoBehaviour
 
     public ProfileWindow profileWindow;
     public InfectionController infectionController;
+    public PolicyResearch policyResearch;
 
     public bool isStart = false;
 
     void Awake()
     {
+        GameObject hospital = GameObject.Find("Hospital");
+        Vector3 hospitalPosition = hospital.transform.position;
+        hospitalPosition = new Vector3(-hospitalPosition.x, hospitalPosition.y, hospitalPosition.z);
+        hospital.transform.position = hospitalPosition;
+
         // 코드 간소화를 위한 객체 할당
         startItems = Assign(startItems, "StartUI");
         profileWindowUI = Assign(profileWindowUI, "ProfileCanvas");
@@ -42,6 +48,7 @@ public class GoToGame : MonoBehaviour
         calendarManager = FindObjectOfType<CalendarManager>();
         profileWindow = FindObjectOfType<ProfileWindow>();
         infectionController = FindObjectOfType<InfectionController>();
+        policyResearch = FindObjectOfType<PolicyResearch>();
 
         if (Instance == null)
         {
@@ -83,6 +90,7 @@ public class GoToGame : MonoBehaviour
         policyPanel.SetActive(false);
         profileWindow.UpdateButtonTexts("응급실");
         SetDifficultyAndStage();
+        policyResearch.ResearchWaiting();
 
         isStart = true;
         Debug.Log("Start!!!");

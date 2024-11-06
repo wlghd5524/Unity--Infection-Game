@@ -77,7 +77,7 @@ public class MonthlyReportUI : MonoBehaviour
         if (texts.Length >= 2)
         {
             texts[0].text = detailName;         // 첫 번째 텍스트에 detailName 설정
-            texts[1].text = $"{amount:N0} 원";  // 두 번째 텍스트에 amount 설정
+            texts[1].text = $"{amount:N0} sch";  // 두 번째 텍스트에 amount 설정
         }
         else
         {
@@ -92,7 +92,7 @@ public class MonthlyReportUI : MonoBehaviour
             TextMeshProUGUI[] texts = item.GetComponentsInChildren<TextMeshProUGUI>();
             if (texts.Length >= 2 && texts[0].text == detailName)
             {
-                texts[1].text = $"{amount:N0} 원"; // 수입 금액 갱신
+                texts[1].text = $"{amount:N0} sch"; // 수입 금액 갱신
                 break;
             }
         }
@@ -105,7 +105,7 @@ public class MonthlyReportUI : MonoBehaviour
             TextMeshProUGUI[] texts = item.GetComponentsInChildren<TextMeshProUGUI>();
             if (texts.Length >= 2 && texts[0].text == detailName)
             {
-                texts[1].text = $"{amount:N0} 원"; // 지출 금액 갱신
+                texts[1].text = $"{amount:N0} sch"; // 지출 금액 갱신
                 break;
             }
         }
@@ -155,13 +155,13 @@ public class MonthlyReportUI : MonoBehaviour
 
     private void UpdateExpenseText()
     {
-        expenseMoney.text = $"{totalExpense:N0} 원";
+        expenseMoney.text = $"{totalExpense:N0} sch";
         UpdateNetIncomeText();
     }
 
     private void UpdateIncomeText()
     {
-        incomeMoney.text = $"{totalIncome:N0} 원";
+        incomeMoney.text = $"{totalIncome:N0} sch";
         UpdateNetIncomeText();
     }
 
@@ -173,7 +173,7 @@ public class MonthlyReportUI : MonoBehaviour
 
     public void UpdateNowMoney()
     {
-        nowMoney.text = $"{currentMoneyManager.CurrentMoneyGetter:N0} 원";
+        nowMoney.text = $"{currentMoneyManager.CurrentMoneyGetter:N0} sch";
     }
 
     public void ShowMonthlyReport()

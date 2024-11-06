@@ -24,6 +24,8 @@ public class PolicyResearch : MonoBehaviour
     public GameObject notResearchedTab;
     public Button researchStartButton;
     public TextMeshProUGUI researchingTimeText;
+    public TextMeshProUGUI researchWaitingTimeText;
+    public GameObject researchWaitingTab;
     public GameObject covidInfoTab;
     public GameObject CREInfoTab;
     public TextMeshProUGUI selectedLevel;
@@ -87,6 +89,8 @@ public class PolicyResearch : MonoBehaviour
         notResearchedTab = Assign(notResearchedTab, "NotResearchedTab");
         researchStartButton = Assign(researchStartButton, "ResearchStartButton");
         researchingTimeText = Assign(researchingTimeText, "ResearchingTimeText");
+        researchWaitingTimeText = Assign(researchWaitingTimeText, "ResearchWaitingTimeText");
+        researchWaitingTab = Assign(researchWaitingTab, "ResearchWaitingTab");
         covidInfoTab = Assign(covidInfoTab, "COVIDInfoTab");
         CREInfoTab = Assign(CREInfoTab, "CREInfoTab");
         selectedLevel = Assign(selectedLevel, "SelectedLevel");
@@ -143,6 +147,33 @@ public class PolicyResearch : MonoBehaviour
         AddEventTrigger(researchRightButton.gameObject, EventTriggerType.PointerClick, (data) => ChangeResearch("Right"));
 
         researchStartButton.onClick.AddListener(StartResearch);
+    }
+
+    public void ResearchWaiting()
+    {
+        if (researchCoroutine != null)
+        {
+            StopCoroutine(researchCoroutine);
+        }
+
+        researchWaitingTimeText.gameObject.SetActive(true);
+        researchCoroutine = StartCoroutine(ResearchWaitingCoroutine());
+    }
+
+    // 180초 동안 대기하는 코루틴
+    private IEnumerator ResearchWaitingCoroutine()
+    {
+        int remainingTime = 180; // 대기 시간 180초
+
+        while (remainingTime > 0)
+        {
+            researchWaitingTimeText.text = $"남은 시간 : {remainingTime}초...";
+            yield return new WaitForSeconds(1f); // 1초마다 업데이트
+            remainingTime--;
+        }
+
+        // 대기 완료 후 처리
+        researchWaitingTab.gameObject.SetActive(false); // 텍스트 비활성화
     }
 
     // 연구 탭 버튼 클릭
