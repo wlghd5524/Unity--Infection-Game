@@ -37,7 +37,7 @@ public class OneClearManager : MonoBehaviour
 
             //소독 모드 ON -> 사용자 지정 커서로 변경
             //Cursor.SetCursor(customCursor, Vector2.zero, CursorMode.Auto);        //커서 좌표는 왼쪽 상단
-            Vector2 hotspot = new Vector2(customCursor.width, customCursor.height); // 커서 중심을 이미지 크기와 동일하게
+            Vector2 hotspot = new Vector2(customCursor.width/2, customCursor.height/2); // 커서 중심을 이미지 크기와 동일하게
             //Cursor.SetCursor(customCursor, hotspot, CursorMode.Auto);
             Cursor.SetCursor(customCursor, hotspot, CursorMode.ForceSoftware);
             isCustomCursorActive = true;
