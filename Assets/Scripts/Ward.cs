@@ -104,7 +104,7 @@ public class Ward : MonoBehaviour
         //}
     }
 
-    public IEnumerator CloseWard()
+    public void CloseWard()
     {
         isClosed = true;
         foreach (PatientController patient in outpatients)
@@ -157,16 +157,19 @@ public class Ward : MonoBehaviour
             {
                 bool isFound = false;
                 BedWaypoint nextBed = null;
-                if (num == 4 || num == 6 && !wards[num+1].isClosed)
+                for (int j = 4; j <= 7; j++)
                 {
-                    foreach (BedWaypoint bed in wards[num+1].beds)
+                    if (j != num && !wards[j].isClosed) // num을 제외하고 닫히지 않은 병동을 찾음
                     {
-                        if (bed.patient == null)
+                        foreach (BedWaypoint bed in wards[j].beds)
                         {
-                            nextBed = bed;
-                            nextBed.patient = gameObject;
-                            isFound = true;
-                            break;
+                            if (bed.patient == null)
+                            {
+                                nextBed = bed;
+                                nextBed.patient = inpatient.gameObject;
+                                isFound = true;
+                                break;
+                            }
                         }
                     }
                     if (isFound)
@@ -174,25 +177,9 @@ public class Ward : MonoBehaviour
                         break;
                     }
                 }
-                if(isFound)
+                if (isFound)
                 {
-                    Managers.NPCManager.PlayWakeUpAnimation(inpatient);
-                    yield return new WaitForSeconds(5.0f);
-                    inpatient.bedWaypoint = nextBed;
-                    inpatient.agent.SetDestination(inpatient.bedWaypoint.GetBedPoint());
-                    inpatient.standingState = StandingState.Standing;
-                    inpatient.waypoints.Clear();
-
-                    inpatient.ward = inpatient.bedWaypoint.ward;
-                    inpatient.wardComponent = Managers.NPCManager.waypointDictionary[(inpatient.ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
-                    inpatient.waypointsTransform = Managers.NPCManager.waypointDictionary[(inpatient.ward, "InpatientWaypoints")];
-                    inpatient.doctorSignal = false;
-                    inpatient.nurseSignal = false;
-                    inpatient.AddInpatientWaypoints();
-
-                    inpatient.wardComponent.inpatients.Add(inpatient);
-                    //yield return new WaitUntil(() => Managers.NPCManager.isArrived(inpatient.agent));
-                    //yield return new WaitForSeconds(2.0f);
+                    StartCoroutine(TransferToAvailableWard(inpatient, nextBed));
                 }
                 else
                 {
@@ -200,8 +187,6 @@ public class Ward : MonoBehaviour
                     inpatients[i].agent.isStopped = false;
                     inpatients[i].StartCoroutine(inpatients[i].ExitHospital());
                 }
-
-                
             }
         }
 
@@ -263,6 +248,31 @@ public class Ward : MonoBehaviour
         }
     }
 
+    IEnumerator TransferToAvailableWard(PatientController inpatient, BedWaypoint nextBed)
+    {
+        Managers.NPCManager.PlayWakeUpAnimation(inpatient);
+        yield return new WaitForSeconds(5.0f);
+        inpatient.bedWaypoint = nextBed;
+        //inpatient.agent.SetDestination(inpatient.bedWaypoint.GetBedPoint());
+        inpatient.standingState = StandingState.Standing;
+
+        inpatient.ward = inpatient.bedWaypoint.ward;
+        inpatient.wardComponent = Managers.NPCManager.waypointDictionary[(inpatient.ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
+        inpatient.waypointsTransform = Managers.NPCManager.waypointDictionary[(inpatient.ward, "InpatientWaypoints")];
+        inpatient.doctorSignal = false;
+        inpatient.nurseSignal = false;
+        inpatient.waypoints.Clear();
+        inpatient.AddInpatientWaypoints();
+
+        inpatient.wardComponent.inpatients.Add(inpatient);
+
+        inpatient.StopAllCoroutines();
+        inpatient.agent.isStopped = false;
+        inpatient.agent.SetDestination(inpatient.bedWaypoint.GetMiddlePointInRange());
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(inpatient.agent));
+        inpatient.isWaiting = false;
+        //yield return new WaitForSeconds(2.0f);
+    }
     private IEnumerator WaitOneSecond()
     {
         isWaiting = true;
@@ -273,7 +283,7 @@ public class Ward : MonoBehaviour
     // 의사, 간호사, 외래환자의 수를 반환하는 메서드 추가
     public (int doctorCount, int nurseCount, int outpatientCount) GetCounts()
     {
-        int doctorCount = doctors.Count;                                       
+        int doctorCount = doctors.Count;
         int nurseCount = nurses.Count;
         int outpatientCount = outpatients.Count;
 

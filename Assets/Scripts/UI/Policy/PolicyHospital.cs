@@ -41,7 +41,7 @@ public class PolicyHospital : MonoBehaviour
                 TogglePairControl(closingtoggle[currentIndex], disinfectiontoggle[currentIndex], disinfectionText[currentIndex]);
                 if(closingtoggle[currentIndex].isOn)
                 {
-                    Ward.wards[currentIndex].StartCoroutine(Ward.wards[currentIndex].CloseWard());
+                    Ward.wards[currentIndex].CloseWard();
                 }
                 else
                 {
