@@ -13,10 +13,13 @@ namespace MyApp.UserManagement
     [System.Serializable]
     public class User
     {
-        public int nurse_id;
-        public string nurse_name;
-        public string nurse_passwd;
+        public int userId;
+        public string userName;
+        public string userPassword;
         public int tutorial;
+        public int easyCompleted;
+        public int normalCompleted;
+        public int hardCompleted;
     }
 
     public class UserManager : MonoBehaviour
@@ -81,12 +84,26 @@ namespace MyApp.UserManagement
             }
         }
 
+        // 사용자 클리어 단계 가져오기
+        public string GetUserStep(string id)
+        {
+            foreach (var user in users)
+            {
+                if (user.userId.ToString() == id)
+                {
+                    string userstep = $"{user.easyCompleted}{user.normalCompleted}{user.hardCompleted}";  //전부 클리어한 경우: 111
+                    return userstep;
+                }
+            }
+            return "000";
+        }
+
         // 로그인 정보 확인 (둘다 일치 시 true)
         public bool ValidateUser(string id, string passwd)
         {
             foreach (var user in users)
             {
-                if (user.nurse_id.ToString() == id && user.nurse_passwd == passwd)
+                if (user.userId.ToString() == id && user.userPassword == passwd)
                 {
                     return true;
                 }
@@ -100,9 +117,9 @@ namespace MyApp.UserManagement
         {
             foreach (var user in users)
             {
-                if (user.nurse_id.ToString() == id)
+                if (user.userId.ToString() == id)
                 {
-                    return user.nurse_name;
+                    return user.userName;
                 }
             }
             Debug.LogError("로그인DB에서 Name을 찾지 못했습니다.");
@@ -114,7 +131,7 @@ namespace MyApp.UserManagement
         {
             foreach (var user in users)
             {
-                if (user.nurse_id.ToString() == id)
+                if (user.userId.ToString() == id)
                 {
                     return user.tutorial;
                 }
@@ -139,7 +156,7 @@ namespace MyApp.UserManagement
         {
             foreach (var user in users)
             {
-                if (user.nurse_id.ToString() == id)
+                if (user.userId.ToString() == id)
                 {
                     return true;
                 }
@@ -152,7 +169,7 @@ namespace MyApp.UserManagement
         {
             foreach (var user in users)
             {
-                if (user.nurse_name == username)
+                if (user.userName == username)
                 {
                     return true;
                 }
@@ -162,17 +179,20 @@ namespace MyApp.UserManagement
 
         // 회원가입을 통해 로그인DB에 회원 정보 추가
         // 튜토리얼 진행 여부 업데이트
-        public void AddUser(string id, string username, string password, int istutorial)
+        public void AddUser(string id, string username, string password, int istutorial, int eazyMode, int normalMode, int hardMode)
         {
             WWWForm form = new WWWForm();
-            form.AddField("nurse_id", id);
-            form.AddField("nurse_name", username);
-            form.AddField("nurse_passwd", password);
+            form.AddField("userId", id);
+            form.AddField("userName", username);
+            form.AddField("userPassword", password);
             form.AddField("tutorial", istutorial);
+            form.AddField("easyCompleted", eazyMode);
+            form.AddField("normalCompleted", normalMode);
+            form.AddField("hardCompleted", hardMode);
 
             Debug.Log($"DB: Sending Data: nurse_id={id}, nurse_name={username}, nurse_passwd={password}");
 
-            string urlSignupData = "http://220.69.209.164:3333/signup_or_update_tutorial";
+            string urlSignupData = "http://220.69.209.164:3333/signup_or_update";
 
             StartCoroutine(PostRequest(urlSignupData, form));
         }

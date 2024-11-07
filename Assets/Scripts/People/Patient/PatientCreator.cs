@@ -126,6 +126,7 @@ public class PatientCreator
         }
         if (isClosed)
         {
+            outpatientWaiting = false;
             yield break;
         }
         Vector3 spawnPosition = spawnAreas[Random.Range(0, 2)].GetRandomPointInRange(); // 랜덤 생성 위치 설정
