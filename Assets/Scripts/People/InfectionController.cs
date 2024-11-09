@@ -59,7 +59,7 @@ public class InfectionController : MonoBehaviour
             {
                 _co = StartCoroutine(TryDropVirus());
             }
-            yield return new WaitForSeconds(Virus.checkInterval);
+            yield return YieldInstructionCache.WaitForSeconds(Virus.checkInterval);
         }
     }
 
@@ -73,7 +73,7 @@ public class InfectionController : MonoBehaviour
             {
                 DropVirus();
             }
-            yield return new WaitForSeconds(Virus.checkInterval);
+            yield return YieldInstructionCache.WaitForSeconds(Virus.checkInterval);
         }
     }
 
@@ -128,7 +128,7 @@ public class InfectionController : MonoBehaviour
 
     IEnumerator CoRemoveDelay(Person person)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return YieldInstructionCache.WaitForSeconds(0.5f);
         delayList.Remove(person);
     }
 

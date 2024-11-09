@@ -72,7 +72,7 @@ public class ResearchManager : MonoBehaviour
     //            Debug.Log("연구 건물 버튼이 활성화되었습니다.");
     //            break;
     //        }
-    //        yield return new WaitForSeconds(1); // 1초 간격으로 체크
+    //        yield return YieldInstructionCache.WaitForSeconds(1); // 1초 간격으로 체크
     //    }
     //}
 
@@ -185,7 +185,7 @@ public class ResearchManager : MonoBehaviour
     //// 연구 종료 코루틴
     //IEnumerator ResearchTimeout()
     //{
-    //    yield return new WaitForSeconds(researchDuration); // 5분 대기
+    //    yield return YieldInstructionCache.WaitForSeconds(researchDuration); // 5분 대기
 
     //    isResearchActive = false;       //연구 진행 여부
     //    panelManager.ShowWarning("check", "연구가 종료되었습니다.");

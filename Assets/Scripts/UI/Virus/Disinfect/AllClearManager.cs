@@ -119,7 +119,7 @@ public class AllClearManager : MonoBehaviour
     IEnumerator ShowCorrectPanel()
     {
         disCorrectPanel.SetActive(true);
-        yield return new WaitForSeconds(1.3f);
+        yield return YieldInstructionCache.WaitForSeconds(1.3f);
         disCorrectPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
         DisinfectAllViruses();
@@ -130,7 +130,7 @@ public class AllClearManager : MonoBehaviour
     IEnumerator ShowDisWrongPanel()
     {
         disWrongPanel.SetActive(true);
-        yield return new WaitForSeconds(1.3f);
+        yield return YieldInstructionCache.WaitForSeconds(1.3f);
         disWrongPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
         StartCoroutine(CooltimeCoroutine());

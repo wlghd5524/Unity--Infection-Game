@@ -13,6 +13,7 @@ public class Waypoint : MonoBehaviour
     public List<Vector3> sampledPositions = new List<Vector3>();
     private void Awake()
     {
+        wardComponent = GetComponentInParent<Ward>();
         GameObject[] chairsInRange = FindChairs();
         int i = 0;
         foreach (GameObject chair in chairsInRange)

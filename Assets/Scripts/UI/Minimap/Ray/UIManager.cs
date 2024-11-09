@@ -45,7 +45,7 @@ public class UIManager : MonoBehaviour
     private IEnumerator ResetIgnoreNextClick()
     {
         ignoreNextClick = true;
-        yield return new WaitForSeconds(0.2f); // 0.2초 동안 클릭 무시
+        yield return YieldInstructionCache.WaitForSeconds(0.2f); // 0.2초 동안 클릭 무시
         ignoreNextClick = false;
     }
 

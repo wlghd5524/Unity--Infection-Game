@@ -29,7 +29,7 @@ public class PanelManager : MonoBehaviour
     //private IEnumerator StartShowPanel()
     //{
     //    newsPanel.SetActive(true);
-    //    yield return new WaitForSeconds(1.0f);
+    //    yield return YieldInstructionCache.WaitForSeconds(1.0f);
     //    newsPanel.SetActive(false);
     //}
 

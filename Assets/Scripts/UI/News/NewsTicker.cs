@@ -125,7 +125,7 @@ public class NewsTicker : MonoBehaviour
         {
             iconImage.color = colors[colorIndex];
             colorIndex = (colorIndex + 1) % colors.Length;
-            yield return new WaitForSeconds(0.75f);
+            yield return YieldInstructionCache.WaitForSeconds(0.75f);
         }
     }
 }

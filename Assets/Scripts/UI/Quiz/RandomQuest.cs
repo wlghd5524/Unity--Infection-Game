@@ -297,7 +297,7 @@ public class RandomQuest : MonoBehaviour
         if (rightPanel != null)
         {
             rightPanel.SetActive(true);
-            yield return new WaitForSecondsRealtime(1.5f);
+            yield return YieldInstructionCache.WaitForSecondsRealtime(1.5f);
             rightPanel.SetActive(false);
         }
         else
@@ -315,7 +315,7 @@ public class RandomQuest : MonoBehaviour
         if (wrongPanel != null)
         {
             wrongPanel.SetActive(true);
-            yield return new WaitForSecondsRealtime(1.5f);
+            yield return YieldInstructionCache.WaitForSecondsRealtime(1.5f);
             wrongPanel.SetActive(false);
 
             if (moveToNext)
@@ -386,7 +386,7 @@ public class RandomQuest : MonoBehaviour
     IEnumerator NextQuestionDelay()
     {
         questCount[clickbtn.name]++;            //푼 문제 개수 누적
-        yield return new WaitForSecondsRealtime(0.2f);
+        yield return YieldInstructionCache.WaitForSecondsRealtime(0.2f);
         SetRandomQuest();                       // 새로운 퀘스트와 버튼 텍스트 설정
         UpdateMoneyUI();
     }

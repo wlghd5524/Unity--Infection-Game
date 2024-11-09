@@ -63,7 +63,7 @@ public class CalendarManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(10); // 10초 대기
+            yield return YieldInstructionCache.WaitForSeconds(10); // 10초 대기
             IncrementDay();
         }
     }

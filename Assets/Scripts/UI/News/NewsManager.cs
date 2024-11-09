@@ -118,7 +118,7 @@ public class NewsManager : MonoBehaviour
 
     private IEnumerator PauseGame()
     {
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return YieldInstructionCache.WaitForSecondsRealtime(0.5f);
         Time.timeScale = 0f; // 게임 멈춤
     }
 

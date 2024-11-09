@@ -201,7 +201,7 @@ public class Person : MonoBehaviour
 
     public IEnumerator SelfRecovery()
     {
-        yield return new WaitForSeconds(Random.Range(7, 15));
+        yield return YieldInstructionCache.WaitForSeconds(Random.Range(7, 15));
         //Debug.Log("자가 면역을 가져서 더 이상 감염되지 않음");
         NPCManager.Instance.UnhighlightNPC(gameObject);
         //Debug.Log("감염자 색상 풀림" + gameObject.name);
@@ -216,7 +216,7 @@ public class Person : MonoBehaviour
     {
         status = infection;
         isWaiting = true;
-        yield return new WaitForSeconds(5);
+        yield return YieldInstructionCache.WaitForSeconds(5);
         isWaiting = false;
         OnInfectionStateChanged?.Invoke(infection); // 이벤트 호출
     }

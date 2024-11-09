@@ -85,23 +85,12 @@ public class Ward : MonoBehaviour
         {
             beds = waypointsTransform.GetComponentsInChildren<BedWaypoint>().ToList();
         }
-        StartCoroutine(WaitOneSecond());
     }
 
     // Update is called once per frame
     void Update()
     {
         totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count;
-        if (isWaiting)
-        {
-            return;
-        }
-
-        //병동 폐쇄
-        //if ((infectedNPC / totalOfNPC >= 0.5) || doctors.Count == 0)
-        //{
-        //    isClosed = true;
-        //}
     }
 
     public void CloseWard()
@@ -189,6 +178,14 @@ public class Ward : MonoBehaviour
                 }
             }
         }
+        for(int i = emergencyPatients.Count - 1; i >= 0; i--)
+        {
+            PatientController patient = emergencyPatients[i];
+            if(patient != null)
+            {
+                patient.StartCoroutine(patient.ExitHospital());
+            }
+        }
 
         for (int i = nurses.Count - 1; i >= 0; i--)
         {
@@ -250,10 +247,14 @@ public class Ward : MonoBehaviour
 
     IEnumerator TransferToAvailableWard(PatientController inpatient, BedWaypoint nextBed)
     {
-        Managers.NPCManager.PlayWakeUpAnimation(inpatient);
-        yield return new WaitForSeconds(5.0f);
+        inpatient.isWaiting = true;
+        inpatient.StopCoroutine(inpatient.InpatientMove());
+        if(inpatient.standingState != StandingState.Standing)
+        {
+            Managers.NPCManager.PlayWakeUpAnimation(inpatient);
+            yield return YieldInstructionCache.WaitForSeconds(5.0f);
+        }
         inpatient.bedWaypoint = nextBed;
-        //inpatient.agent.SetDestination(inpatient.bedWaypoint.GetBedPoint());
         inpatient.standingState = StandingState.Standing;
 
         inpatient.ward = inpatient.bedWaypoint.ward;
@@ -266,18 +267,11 @@ public class Ward : MonoBehaviour
 
         inpatient.wardComponent.inpatients.Add(inpatient);
 
-        inpatient.StopAllCoroutines();
         inpatient.agent.isStopped = false;
         inpatient.agent.SetDestination(inpatient.bedWaypoint.GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(inpatient.agent));
         inpatient.isWaiting = false;
-        //yield return new WaitForSeconds(2.0f);
-    }
-    private IEnumerator WaitOneSecond()
-    {
-        isWaiting = true;
-        yield return new WaitForSeconds(1.0f);
-        isWaiting = false;
+        //yield return YieldInstructionCache.WaitForSeconds(2.0f);
     }
 
     // 의사, 간호사, 외래환자의 수를 반환하는 메서드 추가

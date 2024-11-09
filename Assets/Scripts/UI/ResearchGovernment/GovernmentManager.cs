@@ -103,7 +103,7 @@ public class GovernmentManager : MonoBehaviour
 
     //private IEnumerator COVIDWarningPanel()
     //{
-    //    yield return new WaitForSeconds(1f);
+    //    yield return YieldInstructionCache.WaitForSeconds(1f);
     //    panelManager.ShowWarning("warning", "현재 원인 균 'COVID-19'는 전염성이 높습니다. \r\n환자들이 병원 방문을 회피합니다.\r\n(외래 진료 30%↓)");
     //    DecreaseOutpatientVisitRate(30);  //외래 진료 30% 감소 기능 처리
     //}

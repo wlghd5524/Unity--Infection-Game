@@ -94,7 +94,7 @@ public class GameDataManager : MonoBehaviour
 
         while (elapsedTime < totalTime)
         {
-            yield return new WaitForSeconds(interval);  // 10초 대기
+            yield return YieldInstructionCache.WaitForSeconds(interval);  // 10초 대기
 
             float infectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);  // 현재 감염률 가져오기
             if (float.IsNaN(infectionRate))

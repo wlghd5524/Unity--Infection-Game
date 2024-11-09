@@ -64,7 +64,7 @@ public class PolicyHospital : MonoBehaviour
             {
                 UpdateWardCounts();
             }
-            yield return new WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSeconds(1f);
         }
     }
 

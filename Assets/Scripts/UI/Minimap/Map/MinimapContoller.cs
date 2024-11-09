@@ -58,7 +58,7 @@ public class MinimapController : MonoBehaviour
     // 일정 시간 후 큰 맵 패널을 닫는 메서드
     private IEnumerator CloseLargeMapWithDelay()
     {
-        yield return new WaitForSeconds(0.1f); // 0.1초 기다린 후
+        yield return YieldInstructionCache.WaitForSeconds(0.1f); // 0.1초 기다린 후
         IsAbleManager.Instance.CloseWindow(largeMapPanel);
         largeMapPanel.SetActive(false); // 큰 맵 패널 비활성화
         isLargeMapOpen = false; // 큰 맵 패널 닫힘 상태로 설정

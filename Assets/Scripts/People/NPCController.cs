@@ -35,14 +35,4 @@ public class NPCController : MonoBehaviour
         agent.speed = Random.Range(3.0f, 5.0f);
         personComponent = GetComponent<Person>();
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 }

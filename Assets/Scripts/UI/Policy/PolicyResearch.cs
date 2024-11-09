@@ -168,7 +168,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             researchWaitingTimeText.text = $"남은 시간 : {remainingTime}초...";
-            yield return new WaitForSeconds(1f); // 1초마다 업데이트
+            yield return YieldInstructionCache.WaitForSeconds(1f); // 1초마다 업데이트
             remainingTime--;
         }
 
@@ -195,7 +195,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             researchingTimeText.text = $"연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return new WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSeconds(1f);
             remainingTime--;
         }
 

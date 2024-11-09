@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class PatientCreator
@@ -165,14 +164,14 @@ public class PatientCreator
             Debug.LogError("새 외래 환자를 활성화하는 데 실패했습니다.");
         }
 
-        yield return new WaitForSeconds(spawnDelay); // 대기 시간
+        yield return YieldInstructionCache.WaitForSeconds(spawnDelay); // 대기 시간
         outpatientWaiting = false; // 대기 상태 해제
     }
     public IEnumerator SpawnEmergencyPatient()
     {
         emergencyPatientWaiting = true;
         yield return new WaitUntil(() => startSignal);
-        yield return new WaitForSeconds(spawnDelay); // 대기 시간
+        yield return YieldInstructionCache.WaitForSeconds(spawnDelay); // 대기 시간
 
         BedWaypoint nextBed = null;
         foreach (BedWaypoint bed in Ward.wards[8].beds)

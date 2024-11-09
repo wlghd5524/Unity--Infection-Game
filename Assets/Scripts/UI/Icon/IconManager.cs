@@ -95,7 +95,7 @@ public class IconManager : MonoBehaviour
         if (iconCanvas != null)
         {
             iconCanvas.SetActive(true);
-            yield return new WaitForSeconds(2f);
+            yield return YieldInstructionCache.WaitForSeconds(2f);
             iconCanvas.SetActive(false);
         }
     }
@@ -109,11 +109,11 @@ public class IconManager : MonoBehaviour
             infectionIcon.sprite = symptomSprites[randomIndex];
             iconCanvas.gameObject.SetActive(true); // Canvas 활성화
 
-            yield return new WaitForSeconds(2); // 아이콘을 2초 동안 표시
+            yield return YieldInstructionCache.WaitForSeconds(2); // 아이콘을 2초 동안 표시
 
             iconCanvas.gameObject.SetActive(false); // Canvas 비활성화
 
-            yield return new WaitForSeconds(5); // 2초 대기
+            yield return YieldInstructionCache.WaitForSeconds(5); // 2초 대기
         }
     }
 

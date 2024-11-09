@@ -142,7 +142,7 @@ public class DialogSystem : MonoBehaviour
 
 			index ++;
 
-			yield return new WaitForSecondsRealtime(typingSpeed);
+			yield return YieldInstructionCache.WaitForSecondsRealtime(typingSpeed);
 		}
 
 		isTypingEffect = false;

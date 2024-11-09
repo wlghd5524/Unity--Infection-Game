@@ -278,7 +278,7 @@ public class AuthManager : MonoBehaviour
     // 회원가입 완료 로그 1.8초 동안 보여주고 창 종료
     IEnumerator CompleteSignUp()
     {
-        yield return new WaitForSeconds(1.8f);
+        yield return YieldInstructionCache.WaitForSeconds(1.8f);
         OnBackButtonClicked(signupPopup);
     }
 
@@ -338,13 +338,13 @@ public class AuthManager : MonoBehaviour
             {
                 loginMessageText.text = "접속 중입니다..";
                 loginMessageText.color = Color.green;
-                yield return new WaitForSeconds(1);
+                yield return YieldInstructionCache.WaitForSeconds(1);
             }
             else
             {
                 loginMessageText.text = $"로그인 성공! {i}초 후에 접속됩니다..";
                 loginMessageText.color = Color.green;
-                yield return new WaitForSeconds(1);
+                yield return YieldInstructionCache.WaitForSeconds(1);
             }
         }
         GoToGame.Instance.StartGame();

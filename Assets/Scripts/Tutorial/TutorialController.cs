@@ -133,7 +133,7 @@ public class TutorialController : MonoBehaviour
     public IEnumerator Delay()
     {
         // 설정된 시간만큼 기다림
-        yield return new WaitForSecondsRealtime(0.3f);
+        yield return YieldInstructionCache.WaitForSecondsRealtime(0.3f);
 
         // 다음 튜토리얼로 이동
         SetNextTutorial();
