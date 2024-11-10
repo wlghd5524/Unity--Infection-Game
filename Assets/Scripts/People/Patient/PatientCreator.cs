@@ -58,7 +58,7 @@ public class PatientCreator
             newInpatient.name = "Inpatient " + i;
 
             // 입원 환자 위치별 Layer 설정
-
+            
 
             if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {

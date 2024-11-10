@@ -2,10 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
-using MyApp.DataAccess;
 using System;
 using System.Collections;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine.Networking;
 
 namespace MyApp.UserManagement

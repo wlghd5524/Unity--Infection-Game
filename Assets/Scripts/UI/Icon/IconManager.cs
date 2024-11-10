@@ -94,6 +94,7 @@ public class IconManager : MonoBehaviour
     {
         if (iconCanvas != null)
         {
+            iconCanvas.gameObject.layer = gameObject.layer;
             iconCanvas.SetActive(true);
             yield return YieldInstructionCache.WaitForSeconds(2f);
             iconCanvas.SetActive(false);

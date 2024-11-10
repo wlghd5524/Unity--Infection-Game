@@ -13,6 +13,7 @@ TagManager:
   - Chair
   - AutoDoor
   - ICUPatient
+  - Floor
   layers:
   - Default
   - TransparentFX

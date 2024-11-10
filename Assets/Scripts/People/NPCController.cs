@@ -35,4 +35,20 @@ public class NPCController : MonoBehaviour
         agent.speed = Random.Range(3.0f, 5.0f);
         personComponent = GetComponent<Person>();
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (standingState != StandingState.Standing)
+        {
+            return;
+        }
+        if (other.gameObject.layer == gameObject.layer)
+        {
+            return;
+        }
+        if (!other.CompareTag("Floor"))
+        {
+            return;
+        }
+        gameObject.layer = other.gameObject.layer;
+    }
 }
