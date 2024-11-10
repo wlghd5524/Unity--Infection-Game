@@ -125,6 +125,7 @@ public class NurseController : NPCController
         targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
         //targetPatientController.nurse = gameObject; // 간호사 설정
         agent.speed = targetPatientController.agent.speed - 1.0f;
+        targetPatientController.agent.stoppingDistance = 1.0f;
         targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
         AutoDoorWaypoint[] inFrontOfAutoDoor = targetPatientController.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());  //격리실 자동문 앞으로 이동
@@ -158,7 +159,7 @@ public class NurseController : NPCController
         targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
         Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
-
+        targetPatientController.agent.stoppingDistance = 0f;
         targetPatientController.isFollowingNurse = false;
         targetPatientController.isQuarantined = true;
         targetPatientController.isWaiting = false;
@@ -399,8 +400,11 @@ public class NurseController : NPCController
             {
                 while (doctor.isWorking)
                 {
+                    isWorking = true;
+                    agent.speed = doctor.agent.speed;
                     agent.SetDestination(doctor.transform.position - doctor.transform.forward * 0.5f);
                     yield return YieldInstructionCache.WaitForSeconds(0.1f);
+                    isWorking = false;
                 }
                 int random = Random.Range(0, waypoints.Count);
                 if (!waypoints[random].isEmpty && waypoints[random] is BedWaypoint bed)

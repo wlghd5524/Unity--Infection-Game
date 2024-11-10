@@ -61,7 +61,6 @@ public class PatientController : NPCController
         if (personComponent.role == Role.Inpatient)
         {
             AddInpatientWaypoints();
-
         }
         if (personComponent.role == Role.EmergencyPatient)
         {

@@ -179,13 +179,6 @@ public class Person : MonoBehaviour
         }
     }
 
-    public void ResetPerson()
-    {
-        role = Role.Outpatient;
-        status = InfectionState.Normal;
-        // 필요한 다른 속성들도 초기화
-    }
-
 
     public void ChangeStatus(InfectionState infection)
     {

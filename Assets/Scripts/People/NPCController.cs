@@ -50,5 +50,10 @@ public class NPCController : MonoBehaviour
             return;
         }
         gameObject.layer = other.gameObject.layer;
+        // 자식 오브젝트도 레이어 변경
+        foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+        {
+            child.gameObject.layer = other.gameObject.layer;
+        }
     }
 }
