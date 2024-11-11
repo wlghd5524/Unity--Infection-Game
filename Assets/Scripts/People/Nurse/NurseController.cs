@@ -121,6 +121,7 @@ public class NurseController : NPCController
             targetPatientController.StopCoroutine(targetPatientController.EmergencyPatientMove());
         }
 
+        targetPatientController.wardComponent.RemoveFromPatientList(targetPatientController);
 
         targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
         //targetPatientController.nurse = gameObject; // 간호사 설정

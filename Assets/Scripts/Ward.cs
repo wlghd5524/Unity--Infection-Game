@@ -93,6 +93,25 @@ public class Ward : MonoBehaviour
         totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count;
     }
 
+    public void RemoveFromPatientList(PatientController patient)
+    {
+        if (patient.personComponent.role == Role.Outpatient && patient.wardComponent.outpatients.Contains(patient))
+        {
+            patient.wardComponent.outpatients.Remove(patient);
+        }
+        else if (patient.personComponent.role == Role.Inpatient && patient.wardComponent.inpatients.Contains(patient))
+        {
+            patient.wardComponent.inpatients.Remove(patient);
+        }
+        else if (patient.personComponent.role == Role.EmergencyPatient && patient.wardComponent.emergencyPatients.Contains(patient))
+        {
+            patient.wardComponent.emergencyPatients.Remove(patient);
+        }
+        else if (patient.personComponent.role == Role.ICUPatient && patient.wardComponent.icuPatients.Contains(patient))
+        {
+            patient.wardComponent.icuPatients.Remove(patient);
+        }
+    }
     public void CloseWard()
     {
         isClosed = true;
@@ -114,6 +133,7 @@ public class Ward : MonoBehaviour
                 {
                     patient.ward = index + 1;
                     patient.waypointsTransform = Managers.NPCManager.waypointDictionary[(index + 1, "InpatientWaypoints")];
+                    patient.wardComponent.outpatients.Remove(patient);
                     patient.wardComponent = wards[index + 1];
                     patient.wardComponent.outpatients.Add(patient);
                     patient.waypoints.Clear();
@@ -124,6 +144,7 @@ public class Ward : MonoBehaviour
                 {
                     patient.ward = index - 1;
                     patient.waypointsTransform = Managers.NPCManager.waypointDictionary[(index - 1, "InpatientWaypoints")];
+                    patient.wardComponent.outpatients.Remove(patient);
                     patient.wardComponent = wards[index - 1];
                     patient.wardComponent.outpatients.Add(patient);
                     patient.waypoints.Clear();
@@ -227,7 +248,7 @@ public class Ward : MonoBehaviour
         }
         else if (4 <= num && num <= 7)
         {
-            for (int i = num * 12; i < (num * 12) + 12; i++)
+            for (int i = (num-4) * 12; i < ((num-4) * 12) + 12; i++)
             {
                 GameObject nurse = GameObject.Find($"InpatientWardNurse {i}");
                 Managers.ObjectPooling.ActivateNurse(nurse);
@@ -256,16 +277,16 @@ public class Ward : MonoBehaviour
         }
         inpatient.bedWaypoint = nextBed;
         inpatient.standingState = StandingState.Standing;
-
+        inpatient.wardComponent.inpatients.Remove(inpatient);
         inpatient.ward = inpatient.bedWaypoint.ward;
         inpatient.wardComponent = Managers.NPCManager.waypointDictionary[(inpatient.ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
         inpatient.waypointsTransform = Managers.NPCManager.waypointDictionary[(inpatient.ward, "InpatientWaypoints")];
+        inpatient.wardComponent.inpatients.Add(inpatient);
+
         inpatient.doctorSignal = false;
         inpatient.nurseSignal = false;
         inpatient.waypoints.Clear();
         inpatient.AddInpatientWaypoints();
-
-        inpatient.wardComponent.inpatients.Add(inpatient);
 
         inpatient.agent.isStopped = false;
         inpatient.agent.SetDestination(inpatient.bedWaypoint.GetMiddlePointInRange());

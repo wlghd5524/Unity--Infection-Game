@@ -273,6 +273,8 @@ public class ObjectPoolingManager
     public void DeactivatePatient(GameObject patient)
     {
         PatientController patientController = patient.GetComponent<PatientController>();
+        patientController.profileWindow.RemoveProfile(patientController.personComponent.ID);
+        patientController.wardComponent.RemoveFromPatientList(patientController);
         patientController.waypoints.Clear(); // 웨이포인트 초기화
         patientController.isWaiting = false; // 대기 상태 초기화
         patientController.waypointIndex = 0; // 웨이포인트 인덱스 초기화
@@ -300,6 +302,7 @@ public class ObjectPoolingManager
             outpatientPerson.status = InfectionState.Normal; // 감염 상태 초기화
             patientController.wardComponent.infectedNPC--;
         }
+        patientController.wardComponent.totalOfNPC--;
         outpatientPerson.isImmune = false;
         //outpatientController.wardComponent.outpatients.Remove(outpatientController);
         patientController.wardComponent = null;

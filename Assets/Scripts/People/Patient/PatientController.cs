@@ -330,11 +330,12 @@ public class PatientController : NPCController
                         wardComponent = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
                         waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
                         profileWindow.AddInpatientProfile(gameObject);
+                        wardComponent.inpatients.Add(this);
                         Managers.PatientCreator.numberOfInpatient++;
                         doctorSignal = false;
                         AddInpatientWaypoints();
                         personComponent.role = Role.Inpatient;
-                        agent.SetDestination(bedWaypoint.GetBedPoint());
+                        agent.SetDestination(bedWaypoint.GetRandomPointInRange());
                         isWaiting = true;
                         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                         wardComponent.inpatients.Add(this);
@@ -551,29 +552,35 @@ public class PatientController : NPCController
         //입원 환자로 전환
         else
         {
+            isWaiting = true;
             wardComponent.emergencyPatients.Remove(this);
             profileWindow.RemoveProfile(personComponent.ID);
-            Managers.PatientCreator.numberOfEmergencyPatient--;
-            Managers.NPCManager.PlayWakeUpAnimation(this);
-            yield return YieldInstructionCache.WaitForSeconds(5.0f);
-            bedWaypoint = nextBed;
-            agent.SetDestination(bedWaypoint.GetBedPoint());
-            standingState = StandingState.Standing;
             waypoints.Clear();
-            
+
+            bedWaypoint = nextBed;
             ward = bedWaypoint.ward;
             wardComponent = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
             waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
-            doctorSignal = false;
-            AddInpatientWaypoints();
 
             wardComponent.inpatients.Add(this);
             profileWindow.AddInpatientProfile(gameObject);
             Managers.PatientCreator.numberOfInpatient++;
-            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            yield return YieldInstructionCache.WaitForSeconds(2.0f);
 
+            doctorSignal = false;
+            AddInpatientWaypoints();
+
+            Managers.NPCManager.PlayWakeUpAnimation(this);
+            yield return YieldInstructionCache.WaitForSeconds(5.0f);
+            
+            agent.SetDestination(bedWaypoint.GetRandomPointInRange());
+            standingState = StandingState.Standing;
+            
+            yield return YieldInstructionCache.WaitForSeconds(2.0f);
+            Managers.PatientCreator.numberOfEmergencyPatient--;
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             personComponent.role = Role.Inpatient;
+            yield return YieldInstructionCache.WaitForSeconds(2.0f);
+            isWaiting = false;
         }
     }
     public IEnumerator ICUPateintMove()
