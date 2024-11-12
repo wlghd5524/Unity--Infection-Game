@@ -111,19 +111,7 @@ public class PatientCreator
     {
         outpatientWaiting = true; // 대기 상태로 설정
         yield return new WaitUntil(() => startSignal);
-        bool isClosed = false;
-        for (int i = 0; i < 6; i++)
-        {
-            if (!Managers.NPCManager.waypointDictionary[(i, "OutpatientWaypoints")].gameObject.GetComponentInParent<Ward>().isClosed)
-            {
-                break;
-            }
-            else
-            {
-                isClosed = true;
-            }
-        }
-        if (isClosed)
+        if (AreAllWardsClosed())
         {
             outpatientWaiting = false;
             yield break;
@@ -167,6 +155,7 @@ public class PatientCreator
         yield return YieldInstructionCache.WaitForSeconds(spawnDelay); // 대기 시간
         outpatientWaiting = false; // 대기 상태 해제
     }
+    
     public IEnumerator SpawnEmergencyPatient()
     {
         emergencyPatientWaiting = true;
@@ -228,5 +217,18 @@ public class PatientCreator
 
         emergencyPatientWaiting = false; // 대기 상태 해제
 
+    }
+
+    private bool AreAllWardsClosed()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            var ward = Managers.NPCManager.waypointDictionary[(i, "OutpatientWaypoints")].gameObject.GetComponentInParent<Ward>();
+            if (!ward.isClosed)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
