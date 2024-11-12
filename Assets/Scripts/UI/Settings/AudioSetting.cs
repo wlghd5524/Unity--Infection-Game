@@ -71,80 +71,48 @@ public class AudioSetting : MonoBehaviour
     }
 
     // 마스터 볼륨 설정 함수
-    public void SnapAndSetMasterVolume(float value)
+    void SnapAndSetMasterVolume(float value)
     {
-        if (isUpdatingSlider) return; // 슬라이더 값이 업데이트 중이면 재진입 방지
+        if (isUpdatingSlider) return;
 
         isUpdatingSlider = true;
 
-        if (masterVolumeSlider.value != value)
-        {
-            masterVolumeSlider.value = value;
-        }
+        masterVolumeSlider.value = value;
+        PlayerPrefs.SetFloat("MasterVolume", value);
 
-        PlayerPrefs.SetFloat("MasterVolume", value); // 저장
-
-        // 배경음악과 효과음 슬라이더 값을 전체 사운드 설정 슬라이더 값으로 설정
-        if (musicVolumeSlider.value > value)
-        {
-            musicVolumeSlider.value = value;
-        }
-        if (sfxVolumeSlider.value > value)
-        {
-            sfxVolumeSlider.value = value;
-        }
-
-        // 배경음악과 효과음 슬라이더를 현재 값에 맞게 조정
-        audioManager.SetMusicVolume(musicVolumeSlider.value);
-        audioManager.SetSfxVolume(sfxVolumeSlider.value);
         audioManager.SetMasterVolume(value);
 
         isUpdatingSlider = false;
     }
 
-    // 배경음악 볼륨 설정 함수
-    public void SnapAndSetMusicVolume(float value)
+    void SnapAndSetMusicVolume(float value)
     {
-        if (isUpdatingSlider) return; // 슬라이더 값이 업데이트 중이면 재진입 방지
+        if (isUpdatingSlider) return;
 
         isUpdatingSlider = true;
 
-        if (musicVolumeSlider.value != value)
-        {
-            musicVolumeSlider.value = value;
-        }
+        musicVolumeSlider.value = value;
+        PlayerPrefs.SetFloat("BGMVolume", musicVolumeSlider.value);
 
-        if (value > masterVolumeSlider.value)
-        {
-            musicVolumeSlider.value = masterVolumeSlider.value;
-        }
         audioManager.SetMusicVolume(musicVolumeSlider.value);
-        PlayerPrefs.SetFloat("BGMVolume", musicVolumeSlider.value); // 저장
 
         isUpdatingSlider = false;
     }
 
-    // 효과음 볼륨 설정 함수
-    public void SnapAndSetSfxVolume(float value)
+    void SnapAndSetSfxVolume(float value)
     {
-        if (isUpdatingSlider) return; // 슬라이더 값이 업데이트 중이면 재진입 방지
+        if (isUpdatingSlider) return;
 
         isUpdatingSlider = true;
-        
-        if (sfxVolumeSlider.value != value)
-        {
-            sfxVolumeSlider.value = value;
-        }
 
-        if (value > masterVolumeSlider.value)
-        {
-            sfxVolumeSlider.value = masterVolumeSlider.value;
-        }
+        sfxVolumeSlider.value = value;
+        PlayerPrefs.SetFloat("SfxVolume", sfxVolumeSlider.value);
+
         audioManager.SetSfxVolume(sfxVolumeSlider.value);
-        PlayerPrefs.SetFloat("SfxVolume", sfxVolumeSlider.value); // 저장
 
         isUpdatingSlider = false;
     }
+
 
     // 슬라이더 값을 스냅 간격으로 조정하는 함수
     private float SnapValue(float value)

@@ -317,13 +317,14 @@ public class PatientController : NPCController
                     {
                         //Debug.Log("외래 환자 -> 입원 환자");
                         bedWaypoint = nextBed;
+                        bedWaypoint.patient = gameObject;
                         standingState = StandingState.Standing;
                         waypoints.Clear();
 
                         officeSignal = false;
                         doctorSignal = false;
                         wardComponent.outpatients.Remove(this);
-                        gameObject.tag = "Inpatient";
+                        
                         profileWindow.RemoveProfile(personComponent.ID);
                         Managers.PatientCreator.numberOfOutpatient--;
                         ward = bedWaypoint.ward;
@@ -338,6 +339,7 @@ public class PatientController : NPCController
                         agent.SetDestination(bedWaypoint.GetRandomPointInRange());
                         isWaiting = true;
                         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+                        gameObject.tag = "Inpatient";
                         wardComponent.inpatients.Add(this);
                         waypointIndex = -1;
                         isWaiting = false;
@@ -558,6 +560,7 @@ public class PatientController : NPCController
             waypoints.Clear();
 
             bedWaypoint = nextBed;
+            bedWaypoint.patient = gameObject;
             ward = bedWaypoint.ward;
             wardComponent = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
             waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
@@ -570,6 +573,7 @@ public class PatientController : NPCController
             AddInpatientWaypoints();
 
             Managers.NPCManager.PlayWakeUpAnimation(this);
+            standingState = StandingState.Standing;
             yield return YieldInstructionCache.WaitForSeconds(5.0f);
 
             Waypoint[] passPoints = Managers.NPCManager.passPointTransform.GetComponentsInChildren<Waypoint>();
@@ -586,12 +590,12 @@ public class PatientController : NPCController
             }
 
             agent.SetDestination(bedWaypoint.GetRandomPointInRange());
-            standingState = StandingState.Standing;
 
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
             Managers.PatientCreator.numberOfEmergencyPatient--;
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             personComponent.role = Role.Inpatient;
+            gameObject.tag = "Inpatient";
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
             isWaiting = false;
         }

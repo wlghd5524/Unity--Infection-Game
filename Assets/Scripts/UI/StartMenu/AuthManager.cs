@@ -76,12 +76,12 @@ public class AuthManager : MonoBehaviour
         UpdatePasswordToggleIcon(); // 초기 아이콘 설정
 
         // 로그인 이벤트 트리거 추가
-        AddEventTrigger(loginCloseButton, (data) => OnBackButtonClicked(loginPopup));
-        AddEventTrigger(loginButton, (data) => OnAuthButtonClicked(AuthMode.Login));
+        AddEventTrigger(loginCloseButton, (data) => { OnBackButtonClicked(loginPopup); BtnSoundManager.Instance.PlayButtonSound(); });
+        AddEventTrigger(loginButton, (data) => { OnAuthButtonClicked(AuthMode.Login); BtnSoundManager.Instance.PlayButtonSound(); });
 
         // 회원가입 이벤트 트리거 추가
-        AddEventTrigger(signupCloseButton, (data) => OnBackButtonClicked(signupPopup));
-        AddEventTrigger(signupButton, (data) => OnAuthButtonClicked(AuthMode.SignUp));
+        AddEventTrigger(signupCloseButton, (data) => { OnBackButtonClicked(signupPopup); BtnSoundManager.Instance.PlayButtonSound(); });
+        AddEventTrigger(signupButton, (data) => { OnAuthButtonClicked(AuthMode.SignUp); BtnSoundManager.Instance.PlayButtonSound(); });
 
         currentMode = AuthMode.Login; // 초기 모드를 로그인으로 설정
         InitializePopup(); // 초기화
