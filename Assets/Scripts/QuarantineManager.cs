@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// QuarantineManager 클래스는 NPC(여기서는 간호사)를 검색하고, 마스크를 착용하거나 격리하는 등의 작업을 수행합니다.
+// QuarantineManager 클래스는 NPC(여기서는 간호사)를 검색하고, 격리하는 등의 작업을 수행합니다.
 public class QuarantineManager : MonoBehaviour
 {
     // 박스캐스트의 거리 설정
@@ -56,26 +56,6 @@ public class QuarantineManager : MonoBehaviour
         }
         // 가장 가까운 간호사의 게임 오브젝트를 반환합니다.
         return closestNurse.gameObject;
-    }
-
-    // 가장 가까운 간호사가 마스크를 착용하도록 지시하는 메서드
-    public void WearingMask(GameObject closestNurse)
-    {
-        // PatientController 컴포넌트를 가져와서 nurseSignal을 false로 설정하고 코루틴을 시작합니다.
-        PatientController patientController = gameObject.GetComponent<PatientController>();
-        patientController.nurseSignal = false;
-        patientController.StartCoroutine(patientController.WaitForNurse());
-        // 간호사의 NurseController 컴포넌트를 가져옵니다.
-        NurseController nurseController = closestNurse.GetComponent<NurseController>();
-        if (nurseController == null)
-        {
-            Debug.LogError("nurseController를 찾을 수 없습니다.");
-        }
-        else
-        {
-            // 간호사가 환자에게 가도록 지시합니다.
-            nurseController.StartCoroutine(nurseController.GoToPatient(gameObject));
-        }
     }
 
     public IEnumerator Quarantine()

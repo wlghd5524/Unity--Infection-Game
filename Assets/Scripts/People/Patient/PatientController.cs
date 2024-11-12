@@ -78,8 +78,13 @@ public class PatientController : NPCController
         Managers.NPCManager.UpdateAnimation(agent, animator);
         if (standingState == StandingState.Standing)
         {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
             Managers.NPCManager.PlayWakeUpAnimation(this);
             agent.radius = 0.175f;
+        }
+        else if(standingState == StandingState.LayingDown)
+        {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
         }
         if (isExiting)
         {
@@ -330,7 +335,6 @@ public class PatientController : NPCController
                         isWaiting = true;
                         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                         gameObject.tag = "Inpatient";
-                        wardComponent.inpatients.Add(this);
                         waypointIndex = -1;
                         isWaiting = false;
                         yield break;
@@ -556,6 +560,8 @@ public class PatientController : NPCController
             agent.SetDestination(passPoints[2].GetRandomPointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
+            Managers.PatientCreator.numberOfEmergencyPatient--;
+
             agent.SetDestination(passPoints[1].GetRandomPointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
@@ -566,9 +572,8 @@ public class PatientController : NPCController
             }
 
             agent.SetDestination(bedWaypoint.GetRandomPointInRange());
-
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
-            Managers.PatientCreator.numberOfEmergencyPatient--;
+            
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             personComponent.role = Role.Inpatient;
             gameObject.tag = "Inpatient";
@@ -734,22 +739,24 @@ public class PatientController : NPCController
         }
         standingState = StandingState.Standing;
 
-        if (personComponent.role == Role.Inpatient)
-        {
-            wardComponent.inpatients.Remove(this);
-            Managers.PatientCreator.numberOfInpatient--;
-        }
-        else if (personComponent.role == Role.Outpatient)
-        {
-            wardComponent.outpatients.Remove(this);
-            Managers.PatientCreator.numberOfOutpatient--;
-        }
-        else if (personComponent.role == Role.EmergencyPatient)
-        {
-            wardComponent.emergencyPatients.Remove(this);
-            Managers.PatientCreator.numberOfEmergencyPatient--;
-        }
+        wardComponent.RemoveFromPatientList(this);
         profileWindow.RemoveProfile(personComponent.ID);
+
+        if (ward >= 6 && ward <= 7)
+        {
+            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(0).GetComponent<Waypoint>().GetSampledPosition());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        }
+        else if (ward >= 4 && ward <= 5)
+        {
+            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(1).GetComponent<Waypoint>().GetSampledPosition());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        }
+        else if (ward >= 2 && ward <= 3)
+        {
+            agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(2).GetComponent<Waypoint>().GetSampledPosition());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        }
 
         if (bedWaypoint != null)
         {
@@ -757,27 +764,6 @@ public class PatientController : NPCController
             bedWaypoint.patient = null;
         }
         bedWaypoint = null;
-
-
-        //if (ward >= 6 && ward <= 7)
-        //{
-        //    agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(0).GetComponent<Waypoint>().GetSampledPosition());
-        //    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        //}
-        //else if (ward >= 4 && ward <= 5)
-        //{
-        //    agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(1).GetComponent<Waypoint>().GetSampledPosition());
-
-
-        //    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        //}
-        //else if (ward >= 2 && ward <= 3)
-        //{
-        //    agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(2).GetComponent<Waypoint>().GetSampledPosition());
-
-
-        //    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        //}
 
         agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetSampledPosition());
 

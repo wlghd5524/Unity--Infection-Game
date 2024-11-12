@@ -642,6 +642,7 @@ MonoBehaviour:
   ward: 0
   isWaiting: 0
   personComponent: {fileID: 0}
+  infectionController: {fileID: 0}
   num: 0
   role: 0
   patientCount: 0
@@ -665,6 +666,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   createVirusManager: {fileID: 0}
+  selectedLevel: {fileID: 0}
 --- !u!114 &-6061115215105654418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,4 +705,4 @@ NavMeshAgent:
   m_Height: 1
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0

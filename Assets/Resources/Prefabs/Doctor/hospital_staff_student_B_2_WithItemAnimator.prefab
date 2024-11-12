@@ -501,6 +501,7 @@ MonoBehaviour:
   ward: 0
   isWaiting: 0
   personComponent: {fileID: 0}
+  infectionController: {fileID: 0}
   num: 0
   role: 0
   patientCount: 0
@@ -524,6 +525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   createVirusManager: {fileID: 0}
+  selectedLevel: {fileID: 0}
 --- !u!114 &-261630407559958757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -562,7 +564,7 @@ NavMeshAgent:
   m_Height: 1
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!4 &4912279418344289473 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5932939333227043142, guid: c21cd1a5f1f3277489b5dfeb9ee82f19, type: 3}

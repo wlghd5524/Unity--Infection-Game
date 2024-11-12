@@ -173,6 +173,7 @@ public class Ward : MonoBehaviour
                 inpatient.StartCoroutine(inpatient.ExitHospital());
             }
         }
+        inpatients.Clear();
     }
 
     private void ClearEmergencyPatients()

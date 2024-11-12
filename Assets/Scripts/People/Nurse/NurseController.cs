@@ -24,7 +24,7 @@ public class NurseController : NPCController
     // Start는 첫 프레임 업데이트 전에 호출됩니다.
     void Start()
     {
-        
+
     }
 
     // Update는 매 프레임 호출됩니다.
@@ -33,7 +33,7 @@ public class NurseController : NPCController
 
         // 애니메이션 업데이트
         Managers.NPCManager.UpdateAnimation(agent, animator);
-        if(isWorking)
+        if (isWorking)
         {
             Managers.NPCManager.PlayWakeUpAnimation(this);
             return;
@@ -96,6 +96,11 @@ public class NurseController : NPCController
     {
         PatientController targetPatientController = patientGameObject.GetComponent<PatientController>();
         isWorking = true; // 일하는 중으로 설정
+        targetPatientController.isWaiting = true;
+        if(targetPatientController.personComponent.role == Role.EmergencyPatient && DoctorController.ERWaitingList.Contains(targetPatientController))
+        {
+            DoctorController.ERWaitingList.Remove(targetPatientController);
+        }
         Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return YieldInstructionCache.WaitForSeconds(1.0f);
         agent.avoidancePriority = targetPatientController.agent.avoidancePriority++ - 1;
@@ -114,13 +119,10 @@ public class NurseController : NPCController
         }
 
         Managers.NPCManager.FaceEachOther(gameObject, patientGameObject); // 간호사와 환자가 서로를 바라보게 설정
-        if (targetPatientController.isWaiting)
-        {
-            targetPatientController.StopCoroutine(targetPatientController.OutpatientMove());
-            targetPatientController.StopCoroutine(targetPatientController.InpatientMove());
-            targetPatientController.StopCoroutine(targetPatientController.EmergencyPatientMove());
-        }
-
+        targetPatientController.StopCoroutine(targetPatientController.OutpatientMove());
+        targetPatientController.StopCoroutine(targetPatientController.InpatientMove());
+        targetPatientController.StopCoroutine(targetPatientController.EmergencyPatientMove());
+        targetPatientController.waypoints.Clear();
         targetPatientController.wardComponent.RemoveFromPatientList(targetPatientController);
 
         targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
@@ -149,7 +151,7 @@ public class NurseController : NPCController
 
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
-        if(targetPatientController.quarantineRoom == null)
+        if (targetPatientController.quarantineRoom == null)
         {
             Debug.Log("격리실 null");
         }
@@ -327,7 +329,7 @@ public class NurseController : NPCController
                     isWaiting = false;
                     yield break;
                 }
-                transform.LookAt(bed.patient.transform);
+                transform.LookAt(bed.transform);
                 if (Random.Range(0, 100) <= 50)
                 {
                     //if (targetInpatientController.standingState == StandingState.LayingDown)

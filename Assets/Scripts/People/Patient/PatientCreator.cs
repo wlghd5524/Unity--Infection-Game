@@ -202,7 +202,7 @@ public class PatientCreator
                         newEmergencyPatientPerson.ChangeStatus(InfectionState.Covid);
                     }
                 }
-                numberOfEmergencyPatient++; // 외래 환자 수 증가
+                numberOfEmergencyPatient++;
             }
             else
             {

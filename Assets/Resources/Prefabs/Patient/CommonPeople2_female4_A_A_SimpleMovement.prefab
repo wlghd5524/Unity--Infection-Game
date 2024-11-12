@@ -608,6 +608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   createVirusManager: {fileID: 0}
+  selectedLevel: {fileID: 0}
 --- !u!195 &-7929841772604263271
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -629,7 +630,7 @@ NavMeshAgent:
   m_Height: 1
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!114 &6460432380803512107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,6 +687,7 @@ MonoBehaviour:
   ward: 0
   isWaiting: 0
   personComponent: {fileID: 0}
+  infectionController: {fileID: 0}
   num: 0
   waypointIndex: 0
   isQuarantined: 0
@@ -697,7 +699,8 @@ MonoBehaviour:
   nurseSignal: 0
   doctorSignal: 0
   nurse: {fileID: 0}
-  nPRoom: {fileID: 0}
+  quarantineRoom: {fileID: 0}
+  monthlyReportUI: {fileID: 0}
   bedWaypoint: {fileID: 0}
   prevWaypointIndex: -1
   waypointsTransform: {fileID: 0}
