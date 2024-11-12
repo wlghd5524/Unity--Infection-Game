@@ -66,7 +66,7 @@ public class PatientController : NPCController
         {
             StartCoroutine(EmergencyPatientMove());
         }
-        if(personComponent.role == Role.ICUPatient)
+        if (personComponent.role == Role.ICUPatient)
         {
             StartCoroutine(ICUPateintMove());
         }
@@ -290,7 +290,7 @@ public class PatientController : NPCController
                     BedWaypoint nextBed = null;
                     foreach (Ward ward in Ward.wards)
                     {
-                        if(ward.isClosed)
+                        if (ward.isClosed)
                         {
                             continue;
                         }
@@ -349,7 +349,7 @@ public class PatientController : NPCController
                         iconManager.IsIcon();
                     }
                 }
-                if(waypoints.Count > 0)
+                if (waypoints.Count > 0)
                 {
                     if (waypoints[waypointIndex] is DoctorOffice DO)
                     {
@@ -501,7 +501,7 @@ public class PatientController : NPCController
         BedWaypoint nextBed = null;
         foreach (Ward ward in Ward.wards)
         {
-            if(ward.isClosed)
+            if (ward.isClosed)
             {
                 continue;
             }
@@ -571,10 +571,23 @@ public class PatientController : NPCController
 
             Managers.NPCManager.PlayWakeUpAnimation(this);
             yield return YieldInstructionCache.WaitForSeconds(5.0f);
-            
+
+            Waypoint[] passPoints = Managers.NPCManager.passPointTransform.GetComponentsInChildren<Waypoint>();
+            agent.SetDestination(passPoints[2].GetRandomPointInRange());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
+            agent.SetDestination(passPoints[1].GetRandomPointInRange());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
+            if (6 <= ward && ward <= 7)
+            {
+                agent.SetDestination(passPoints[0].GetRandomPointInRange());
+                yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+            }
+
             agent.SetDestination(bedWaypoint.GetRandomPointInRange());
             standingState = StandingState.Standing;
-            
+
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
             Managers.PatientCreator.numberOfEmergencyPatient--;
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
@@ -736,7 +749,7 @@ public class PatientController : NPCController
         }
 
         //Debug.Log($"{gameObject.name} 퇴원 시작");
-        if(standingState == StandingState.LayingDown)
+        if (standingState == StandingState.LayingDown)
         {
             Managers.NPCManager.PlayWakeUpAnimation(this);
             yield return YieldInstructionCache.WaitForSeconds(5.0f);
@@ -813,8 +826,18 @@ public class PatientController : NPCController
     }
     public IEnumerator HospitalizationTimeCounter()
     {
-        yield return YieldInstructionCache.WaitForSeconds(Random.Range(20f, 100f));
+        float randomTime = Random.Range(20f, 100f);
+        int dividedTime = Mathf.FloorToInt(randomTime / 10f);
+
+        yield return YieldInstructionCache.WaitForSeconds(randomTime);
+
         isWaiting = true;
+
+        MoneyManager.Instance.IncreaseMoney(MoneyManager.HospitalizationFee * dividedTime);
+        //Debug.Log($"입원 환자 {gameObject.name} 수입: {MoneyManager.HospitalizationFee * dividedTime} 며칠 : {dividedTime})");
+        monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
+        monthlyReportUI.AddIncomeDetail("입원비", MoneyManager.HospitalizationFee * dividedTime);
+
         StopCoroutine(InpatientMove());
         StartCoroutine(ExitHospital());
     }

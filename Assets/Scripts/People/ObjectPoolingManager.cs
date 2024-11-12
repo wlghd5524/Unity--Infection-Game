@@ -250,7 +250,7 @@ public class ObjectPoolingManager
         newPatient.GetComponent<Person>().role = Role.Inpatient;
         newPatient.tag = "Inpatient";
         PatientController newPatientController = newPatient.GetComponent<PatientController>();
-
+        newPatientController.standingState = StandingState.Standing;
         return newPatient;
     }
 
@@ -263,6 +263,7 @@ public class ObjectPoolingManager
         newOutpatient.tag = "Outpatient";
         Managers.LayerChanger.SetLayerRecursively(newOutpatient, LayerMask.NameToLayer("Floor 1"));
         PatientController newPatientController = newOutpatient.GetComponent<PatientController>();
+        newPatientController.standingState = StandingState.Standing;
         newOutpatients++;
         newPatientController.Activate();
         //newOutpatientController.wardComponent.totalOfNPC++;

@@ -78,7 +78,7 @@ public class NewsController : MonoBehaviour
             int infectionRate = Mathf.RoundToInt(InfectionManager.Instance.GetInfectionRate(ward));
 
             UpdateNewsTrigger(ward.num, wardInfectionNewsTriggered, infectionRate >= threshold,
-                $"<color=#FF0000>경고!!</color> {ward.WardName} 내 감염률이 <color=#FF0000>{infectionRate}%</color>에 도달했습니다!"
+                $"<color=#FF0000>경고!!</color> {ward.WardName} 내 감염률이 <color=#FF0000>{threshold}%</color>에 도달했습니다!"
             );
         }
     }

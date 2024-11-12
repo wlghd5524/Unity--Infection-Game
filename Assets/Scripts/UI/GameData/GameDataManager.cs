@@ -105,6 +105,16 @@ public class GameDataManager : MonoBehaviour
             {
                 infectionRates.Add(infectionRate);
                 Debug.Log($"감염률 수집: {infectionRate}, 총 감염률 수집된 데이터 수: {infectionRates.Count}");
+
+                // 감염률이 80%를 초과할 시 게임 멈추기 및 그래프 표시
+                if (infectionRate > 80)
+                {
+                    //Debug.Log("전체 감염률이 80%를 초과했습니다. 게임을 멈추고 그래프를 표시합니다." + elapsedTime);
+                    Time.timeScale = 0;                 // 게임 일시 정지
+                    scoreGraphCanvas.SetActive(true);
+                    GraphSourceChangeInt();             // 그래프 생성
+                    yield break;                        // 코루틴 종료
+                }
             }
 
             // 역할별 감염률 리스트 저장
@@ -149,6 +159,7 @@ public class GameDataManager : MonoBehaviour
         Time.timeScale = 0;                 // 게임 일시 정지
         scoreGraphCanvas.SetActive(true);
         GraphSourceChangeInt();             // 그래프 생성
+        yield break;
     }
 
     // 평균 계산 및 DB 업데이트 함수

@@ -12,8 +12,8 @@ public class MoneyManager : MonoBehaviour
 
     //public TextMeshProUGUI moneyText; // 게임 재화 Text (Inspector에서 할당)
     // 병원 의료비 설정 (일단 임의값)
-    public static int MedicalFee = 1;            // 진료비
-    public static int HospitalizationFee = 30;    // 입원비 한달 비용
+    public static int MedicalFee = 50;            // 진료비
+    public static int HospitalizationFee = 100;    // 입원비 한달 비용
     public static int SurgeryFee = 20;            // 수술비
 
     // 치료제 및 백신 가격 설정
