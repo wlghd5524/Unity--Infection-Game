@@ -180,16 +180,17 @@ public class PatientCreator
         }
 
         Vector3 spawnPosition = spawnAreas[2].GetRandomPointInRange(); // 랜덤 생성 위치 설정
-        GameObject newEmaergencyPatient = Managers.ObjectPooling.ActiveEmergentcyPatient(spawnPosition, nextBed); // 응급 환자 활성화
-        newEmaergencyPatient.GetComponent<Person>().role = Role.EmergencyPatient;
-        if (newEmaergencyPatient != null)
+        GameObject newEmergencyPatient = Managers.ObjectPooling.ActiveEmergentcyPatient(spawnPosition, nextBed); // 응급 환자 활성화
+        newEmergencyPatient.gameObject.layer = LayerMask.NameToLayer("Floor 1 L");
+        newEmergencyPatient.GetComponent<Person>().role = Role.EmergencyPatient;
+        if (newEmergencyPatient != null)
         {
-            Person newEmergencyPatientPerson = newEmaergencyPatient.GetComponent<Person>(); // Person 컴포넌트 가져오기
+            Person newEmergencyPatientPerson = newEmergencyPatient.GetComponent<Person>(); // Person 컴포넌트 가져오기
             Renderer renderer = newEmergencyPatientPerson.GetComponent<Renderer>();         // Renderer 컴포넌트 가져오기
 
             if (newEmergencyPatientPerson != null)
             {
-                NPCManager.Instance.RegisterNPC(newEmaergencyPatient, newEmergencyPatientPerson, renderer);
+                NPCManager.Instance.RegisterNPC(newEmergencyPatient, newEmergencyPatientPerson, renderer);
                 // 감염 상태 설정
                 if (Random.value < infectionRate)
                 {

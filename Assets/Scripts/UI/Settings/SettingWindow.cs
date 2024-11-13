@@ -42,7 +42,7 @@ public class SettingWindow : MonoBehaviour
         // 클릭 시 메서드 호출
         EventTrigger.Entry pointerClick = new EventTrigger.Entry();
         pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((eventData) => { onClick(); });
+        pointerClick.callback.AddListener((eventData) => { onClick(); BtnSoundManager.Instance.PlayButtonSound(); });
         trigger.triggers.Add(pointerClick);
     }
 

@@ -73,8 +73,8 @@ public class AllClearManager : MonoBehaviour
             .Select(i => Assign<Button>(null, $"DisinfectAnswerButton{i}"))
             .ToArray();
 
-        allClearButton.onClick.AddListener(OpenDisinfectQuiz);      //전체 소독 버튼 이벤트
-        disinfectXButton.onClick.AddListener(CloseDisinfectQuiz);   //닫기 버튼 이벤트
+        allClearButton.onClick.AddListener(() => { OpenDisinfectQuiz(); BtnSoundManager.Instance.PlayButtonSound(); });      //전체 소독 버튼 이벤트
+        disinfectXButton.onClick.AddListener(() => { CloseDisinfectQuiz(); BtnSoundManager.Instance.PlayButtonSound(); });   //닫기 버튼 이벤트
     }
 
     //소독 퀴즈 시작

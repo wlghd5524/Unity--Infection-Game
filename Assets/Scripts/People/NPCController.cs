@@ -40,85 +40,79 @@ public class NPCController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Floor"))
+        if (other.GetComponent<WardRender>() != null && !isInCurrentWard)
         {
-            return;
+            string layerName = LayerMask.LayerToName(gameObject.layer);
+            switch (layerName)
+            {
+                case "Floor 1 L":
+                    currentWard = Ward.wards[8].WardName;
+                    UpdateWardCount(Ward.wards[8], 1);
+                    break;
+                case "Floor 1 R":
+                    currentWard = Ward.wards[9].WardName;
+                    UpdateWardCount(Ward.wards[9], 1);
+                    break;
+                case "Floor 2 L":
+                    currentWard = Ward.wards[0].WardName;
+                    UpdateWardCount(Ward.wards[0], 1);
+                    break;
+                case "Floor 2 R":
+                    currentWard = Ward.wards[1].WardName;
+                    UpdateWardCount(Ward.wards[1], 1);
+                    break;
+                case "Floor 3 L":
+                    currentWard = Ward.wards[2].WardName;
+                    UpdateWardCount(Ward.wards[2], 1);
+                    break;
+                case "Floor 3 R":
+                    currentWard = Ward.wards[3].WardName;
+                    UpdateWardCount(Ward.wards[3], 1);
+                    break;
+                case "Floor 4 L":
+                    currentWard = Ward.wards[4].WardName;
+                    UpdateWardCount(Ward.wards[4], 1);
+                    break;
+                case "Floor 4 R":
+                    currentWard = Ward.wards[5].WardName;
+                    UpdateWardCount(Ward.wards[5], 1);
+                    break;
+                case "Floor 5 L":
+                    currentWard = Ward.wards[6].WardName;
+                    UpdateWardCount(Ward.wards[6], 1);
+                    break;
+                case "Floor 5 R":
+                    currentWard = Ward.wards[7].WardName;
+                    UpdateWardCount(Ward.wards[7], 1);
+                    break;
+            }
+            isInCurrentWard = true; // 병동에 진입하면 상태를 true로 설정
         }
 
-        if (other.GetComponent<WardRender>() == null || isInCurrentWard) return;
-        gameObject.layer = other.gameObject.layer;
-        // 자식 오브젝트도 레이어 변경
-        foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+        if (other.CompareTag("Floor"))
         {
-            child.gameObject.layer = other.gameObject.layer;
+            if (standingState != StandingState.Standing)
+            {
+                return;
+            }
+            if (other.gameObject.layer == gameObject.layer)
+            {
+                return;
+            }
+            gameObject.layer = other.gameObject.layer;
+            // 자식 오브젝트도 레이어 변경
+            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                child.gameObject.layer = other.gameObject.layer;
+            }
         }
 
-        string layerName = LayerMask.LayerToName(gameObject.layer);
-        switch (layerName)
-        {
-            case "Floor 1 L":
-                currentWard = Ward.wards[8].WardName;
-                UpdateWardCount(Ward.wards[8], 1);
-                break;
-            case "Floor 1 R":
-                currentWard = Ward.wards[9].WardName;
-                UpdateWardCount(Ward.wards[9], 1);
-                break;
-            case "Floor 2 L":
-                currentWard = Ward.wards[0].WardName;
-                UpdateWardCount(Ward.wards[0], 1);
-                break;
-            case "Floor 2 R":
-                currentWard = Ward.wards[1].WardName;
-                UpdateWardCount(Ward.wards[1], 1);
-                break;
-            case "Floor 3 L":
-                currentWard = Ward.wards[2].WardName;
-                UpdateWardCount(Ward.wards[2], 1);
-                break;
-            case "Floor 3 R":
-                currentWard = Ward.wards[3].WardName;
-                UpdateWardCount(Ward.wards[3], 1);
-                break;
-            case "Floor 4 L":
-                currentWard = Ward.wards[4].WardName;
-                UpdateWardCount(Ward.wards[4], 1);
-                break;
-            case "Floor 4 R":
-                currentWard = Ward.wards[5].WardName;
-                UpdateWardCount(Ward.wards[5], 1);
-                break;
-            case "Floor 5 L":
-                currentWard = Ward.wards[6].WardName;
-                UpdateWardCount(Ward.wards[6], 1);
-                break;
-            case "Floor 5 R":
-                currentWard = Ward.wards[7].WardName;
-                UpdateWardCount(Ward.wards[7], 1);
-                break;
-        }
-        isInCurrentWard = true; // 병동에 진입하면 상태를 true로 설정
-        if (standingState != StandingState.Standing)
-        {
-            return;
-        }
-        if (other.gameObject.layer == gameObject.layer)
-        {
-            return;
-        }
+
     }
 
     private void OnTriggerExit(Collider other)
     {
-
-        if (!other.CompareTag("Floor")) return;
         if (other.GetComponent<WardRender>() == null || !isInCurrentWard) return;
-        gameObject.layer = other.gameObject.layer;
-        // 자식 오브젝트도 레이어 변경
-        foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
-        {
-            child.gameObject.layer = other.gameObject.layer;
-        }
         string layerName = LayerMask.LayerToName(gameObject.layer);
         switch (layerName)
         {
@@ -180,12 +174,6 @@ public class NPCController : MonoBehaviour
         }
         isInCurrentWard = false; // 병동에서 나가면 상태를 false로 설정
         currentWard = null;
-        Debug.Log("Exited Ward, isInWard set to false");
-
-        if (standingState != StandingState.Standing)
-        {
-            return;
-        }
     }
 
     private void UpdateWardCount(Ward ward, int countChange)

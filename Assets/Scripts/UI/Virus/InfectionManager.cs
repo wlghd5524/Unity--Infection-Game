@@ -26,7 +26,7 @@ public class InfectionManager
 
         allClearButton = Assign(allClearButton, "AllClearButton");
 
-        allClearButton.onClick.AddListener(() => DisinfectAllViruses());
+        allClearButton.onClick.AddListener(() => { DisinfectAllViruses(); BtnSoundManager.Instance.PlayButtonSound(); });
     }
     public void UpdateInfectionProbability()
     {

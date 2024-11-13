@@ -72,7 +72,7 @@ public class MainMenuController : MonoBehaviour
     {
         EventTrigger trigger = text.gameObject.GetComponent<EventTrigger>() ?? text.gameObject.AddComponent<EventTrigger>();
         var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
-        entry.callback.AddListener((eventData) => { if (!isPopupActive) action(); });
+        entry.callback.AddListener((eventData) => { if (!isPopupActive) action(); BtnSoundManager.Instance.PlayButtonSound(); });
         trigger.triggers.Add(entry);
     }
 
@@ -121,6 +121,7 @@ public class MainMenuController : MonoBehaviour
     private void OnStartGameClicked()
     {
         Debug.Log("Start Game Clicked");
+        BtnSoundManager.Instance.PlayButtonSound();
         loginCanvas.SetActive(true);    // 로그인 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정
     }
@@ -129,6 +130,7 @@ public class MainMenuController : MonoBehaviour
     private void OnAccountCreationClicked()
     {
         Debug.Log("Account Creation Clicked");
+        BtnSoundManager.Instance.PlayButtonSound();
         signupCanvas.SetActive(true);  // 회원가입 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정
     }
@@ -137,6 +139,7 @@ public class MainMenuController : MonoBehaviour
     private void OnSettingsClicked()
     {
         Debug.Log("Settings Clicked");
+        BtnSoundManager.Instance.PlayButtonSound();
         settingWindow.SetActive(true);// 설정 창 실행
     }
 
@@ -144,6 +147,7 @@ public class MainMenuController : MonoBehaviour
     private void OnQuitGameClicked()
     {
         Debug.Log("Quit Game Clicked");
+        BtnSoundManager.Instance.PlayButtonSound();
         exitGameCanvas.SetActive(true); // 게임종료 확인 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정
     }
@@ -153,6 +157,7 @@ public class MainMenuController : MonoBehaviour
     public void ClosePopup(GameObject popupCanvas)
     {
         popupCanvas.SetActive(false);
+        BtnSoundManager.Instance.PlayButtonSound();
         isPopupActive = false; // 팝업 비활성 상태로 설정
     }
 

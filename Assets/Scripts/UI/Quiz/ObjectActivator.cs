@@ -25,12 +25,12 @@ public class ObjectActivator : MonoBehaviour
 
         if (activateButton != null)
         {
-            activateButton.onClick.AddListener(OnActivateButtonClick);
+            activateButton.onClick.AddListener(() => { OnActivateButtonClick(); BtnSoundManager.Instance.PlayButtonSound(); });
         }
 
         if (quizCloseButton != null)
         {
-            quizCloseButton.onClick.AddListener(OnDisactivateButtonClick);
+            quizCloseButton.onClick.AddListener(() => { OnDisactivateButtonClick(); BtnSoundManager.Instance.PlayButtonSound(); });
         }
     }
 

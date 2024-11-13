@@ -93,6 +93,7 @@ public class MinimapRaycaster : MonoBehaviour
         {
             Debug.Log("Mouse button down detected on: " + clickable.name);
             clickable.OnMouseDown(); // 오브젝트 클릭 처리
+            BtnSoundManager.Instance.PlayButtonSound();
         }
     }
 

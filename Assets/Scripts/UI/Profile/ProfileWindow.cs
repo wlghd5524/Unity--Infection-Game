@@ -94,9 +94,9 @@ public class ProfileWindow : MonoBehaviour
 
 
         // 버튼 클릭 이벤트에 메서드 추가
-        profileWindowButton.onClick.AddListener(ToggleBigPanel);
-        profileWindowButtonMinus.onClick.AddListener(ToggleBigPanel);
-        profileWindowButtonPlus.onClick.AddListener(ToggleBigPanel);
+        profileWindowButton.onClick.AddListener(() => { ToggleBigPanel(); BtnSoundManager.Instance.PlayButtonSound(); });
+        profileWindowButtonMinus.onClick.AddListener(() => { ToggleBigPanel(); BtnSoundManager.Instance.PlayButtonSound(); });
+        profileWindowButtonPlus.onClick.AddListener(() => { ToggleBigPanel(); BtnSoundManager.Instance.PlayButtonSound(); });
 
         // 각 이미지를 버튼으로 설정
         SetupButton(doctorWindowButton, OnDoctorClick);
@@ -266,7 +266,7 @@ public class ProfileWindow : MonoBehaviour
             button = image.gameObject.AddComponent<Button>();
         }
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => onClick());
+        button.onClick.AddListener(() => {onClick(); BtnSoundManager.Instance.PlayButtonSound(); });
     }
 
     private void OnProfileClosePanelClick()

@@ -37,6 +37,7 @@ public class ProfileClickHandler : MonoBehaviour, IPointerClickHandler, IPointer
             
             if (person != null)
             {
+                BtnSoundManager.Instance.PlayButtonSound();
                 // 인벤토리 표시
                 profileUI.ShowProfileUI(personID);
                 inventoryManager.ShowInventory(personID);

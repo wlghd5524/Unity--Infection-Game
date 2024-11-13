@@ -122,30 +122,29 @@ public class PolicyResearch : MonoBehaviour
 
 
         // Add SetMedicineCount button listeners
-        setMediCountZero.onClick.AddListener(() => SetMedicineCount(0));
-        setMediCountTen.onClick.AddListener(() => SetMedicineCount(medicineCount + 10));
-        setMediCountMax.onClick.AddListener(() => SetMedicineCount(GetCurrentWardInfectedCount()));
-        countDicisionButton.onClick.AddListener(ApplyMedicine);
-        usePanelCloseButton.onClick.AddListener(CloseMedicineUsePanelWithoutSaving);
+        setMediCountZero.onClick.AddListener(() => { SetMedicineCount(0); BtnSoundManager.Instance.PlayButtonSound(); });
+        setMediCountTen.onClick.AddListener(() => { SetMedicineCount(medicineCount + 10); BtnSoundManager.Instance.PlayButtonSound(); });
+        setMediCountMax.onClick.AddListener(() => { SetMedicineCount(GetCurrentWardInfectedCount()); BtnSoundManager.Instance.PlayButtonSound(); });
+        countDicisionButton.onClick.AddListener(() => { ApplyMedicine(); BtnSoundManager.Instance.PlayButtonSound(); });
+        usePanelCloseButton.onClick.AddListener(() => { CloseMedicineUsePanelWithoutSaving(); BtnSoundManager.Instance.PlayButtonSound(); });
 
-        setVaccineCountZero.onClick.AddListener(() => UpdateVaccineCount(0));
-        setVaccineCountTen.onClick.AddListener(() => UpdateVaccineCount(vaccineCount + 10));
-        setVaccineCountMax.onClick.AddListener(() => UpdateVaccineCount(GetCurrentWardUninfectedCount()));
-        vaccineUseDicisionButton.onClick.AddListener(ApplyVaccine);
-        vaccineUsePanelClose.onClick.AddListener(CloseVaccineUsePanelWithoutSaving);
+        setVaccineCountZero.onClick.AddListener(() => { UpdateVaccineCount(0); BtnSoundManager.Instance.PlayButtonSound(); });
+        setVaccineCountTen.onClick.AddListener(() => { UpdateVaccineCount(vaccineCount + 10); BtnSoundManager.Instance.PlayButtonSound(); });
+        setVaccineCountMax.onClick.AddListener(() => { UpdateVaccineCount(GetCurrentWardUninfectedCount()); BtnSoundManager.Instance.PlayButtonSound(); });
+        vaccineUseDicisionButton.onClick.AddListener(() => { ApplyVaccine(); BtnSoundManager.Instance.PlayButtonSound(); });
+        vaccineUsePanelClose.onClick.AddListener(() => {CloseVaccineUsePanelWithoutSaving(); BtnSoundManager.Instance.PlayButtonSound(); });
 
         // 이벤트 트리거 추가
-        AddEventTrigger(medicinePlusButton.gameObject, EventTriggerType.PointerClick, (data) => UpdateMedicineCount(1));
-        AddEventTrigger(medicineMinusButton.gameObject, EventTriggerType.PointerClick, (data) => UpdateMedicineCount(-1));
+        AddEventTrigger(medicinePlusButton.gameObject, EventTriggerType.PointerClick, (data) => { UpdateMedicineCount(1); BtnSoundManager.Instance.PlayButtonSound(); });
+        AddEventTrigger(medicineMinusButton.gameObject, EventTriggerType.PointerClick, (data) => { UpdateMedicineCount(-1); BtnSoundManager.Instance.PlayButtonSound(); });
 
-        AddEventTrigger(vaccinePlusButton.gameObject, EventTriggerType.PointerClick, (data) => UpdateVaccineCount(1));
-        AddEventTrigger(vaccineMinusButton.gameObject, EventTriggerType.PointerClick, (data) => UpdateVaccineCount(-1));
+        AddEventTrigger(vaccinePlusButton.gameObject, EventTriggerType.PointerClick, (data) => { UpdateVaccineCount(1); BtnSoundManager.Instance.PlayButtonSound(); });
+        AddEventTrigger(vaccineMinusButton.gameObject, EventTriggerType.PointerClick, (data) => { UpdateVaccineCount(-1); BtnSoundManager.Instance.PlayButtonSound(); });
 
+        AddEventTrigger(researchLeftButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangeResearch("Left"); BtnSoundManager.Instance.PlayButtonSound(); });
+        AddEventTrigger(researchRightButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangeResearch("Right"); BtnSoundManager.Instance.PlayButtonSound(); });
 
-        AddEventTrigger(researchLeftButton.gameObject, EventTriggerType.PointerClick, (data) => ChangeResearch("Left"));
-        AddEventTrigger(researchRightButton.gameObject, EventTriggerType.PointerClick, (data) => ChangeResearch("Right"));
-
-        researchStartButton.onClick.AddListener(StartResearch);
+        researchStartButton.onClick.AddListener(() => { StartResearch(); BtnSoundManager.Instance.PlayButtonSound(); });
     }
 
     // 첫 감염자 발생 시 연구 시작 가능
@@ -546,7 +545,7 @@ public class PolicyResearch : MonoBehaviour
             Debug.Log($"{ward.WardName} 에서 입원 환자 수 : {inpatientCount}, 감염 환자 수 : {infectedInpatientCount}(비감염 : {uninfectedInpatientCount}) 로 측정되었습니다.");
             // WardButton 클릭 시 MedicineUsePanel 열기
             Button wardButton = wardItem.transform.Find("WardButton").GetComponent<Button>();
-            wardButton.onClick.AddListener(() => OpenMedicineUsePanel(ward));
+            wardButton.onClick.AddListener(() => { OpenMedicineUsePanel(ward); BtnSoundManager.Instance.PlayButtonSound(); });
         }
     }
 

@@ -45,15 +45,30 @@ public class ResearchMenu : MonoBehaviour
         researchItem_3 = Assign(researchItem_3, "ResearchItem_3");
 
         // 버튼 클릭 시 패널 활성화 설정
-        researchOpenButton.onClick.AddListener(OpenResearchPanel);
+        researchOpenButton.onClick.AddListener(() => {
+            OpenResearchPanel();
+            BtnSoundManager.Instance.PlayButtonSound(); // 클릭 사운드 추가
+        });
 
         // 이미지(닫기 버튼) 클릭 이벤트 설정
-        AddEventTrigger(researchPanelCloseButton.gameObject, EventTriggerType.PointerClick, CloseResearchPanel);
+        AddEventTrigger(researchPanelCloseButton.gameObject, EventTriggerType.PointerClick, (data) => {
+            CloseResearchPanel(data);
+            BtnSoundManager.Instance.PlayButtonSound(); // 클릭 사운드 추가
+        });
 
         // 각 연구 버튼 클릭 시 연구 변경
-        AddEventTrigger(medicalResearchButton.gameObject, EventTriggerType.PointerClick, (data) => ChangeResearch("Medical", medicalResearchButton));
-        AddEventTrigger(patientResearchButton.gameObject, EventTriggerType.PointerClick, (data) => ChangeResearch("Patient", patientResearchButton));
-        AddEventTrigger(hospitalResearchButton.gameObject, EventTriggerType.PointerClick, (data) => ChangeResearch("Hospital", hospitalResearchButton));
+        AddEventTrigger(medicalResearchButton.gameObject, EventTriggerType.PointerClick, (data) => {
+            ChangeResearch("Medical", medicalResearchButton);
+            BtnSoundManager.Instance.PlayButtonSound(); // 클릭 사운드 추가
+        });
+        AddEventTrigger(patientResearchButton.gameObject, EventTriggerType.PointerClick, (data) => {
+            ChangeResearch("Patient", patientResearchButton);
+            BtnSoundManager.Instance.PlayButtonSound(); // 클릭 사운드 추가
+        });
+        AddEventTrigger(hospitalResearchButton.gameObject, EventTriggerType.PointerClick, (data) => {
+            ChangeResearch("Hospital", hospitalResearchButton);
+            BtnSoundManager.Instance.PlayButtonSound(); // 클릭 사운드 추가
+        });
 
         // 각 버튼에 마우스 오버 및 클릭 효과 추가
         AddHoverEffect(medicalResearchButton);
@@ -147,7 +162,10 @@ public class ResearchMenu : MonoBehaviour
     {
         originalColor = button.color;
 
-        AddEventTrigger(button.gameObject, EventTriggerType.PointerEnter, (data) => OnHover(button));
+        AddEventTrigger(button.gameObject, EventTriggerType.PointerEnter, (data) => {
+            OnHover(button);
+            BtnSoundManager.Instance.PlayButtonSound(); // 호버 사운드 추가
+        });
         AddEventTrigger(button.gameObject, EventTriggerType.PointerExit, (data) => OnHoverExit(button));
     }
 

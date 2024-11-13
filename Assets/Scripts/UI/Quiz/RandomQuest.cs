@@ -119,7 +119,7 @@ public class RandomQuest : MonoBehaviour
 
         foreach (var button in levelButton)
         {
-            button.onClick.AddListener(() => OnLevelButtonClicked(button));         // 버튼 클릭 이벤트 등록  
+            button.onClick.AddListener(() => { OnLevelButtonClicked(button); BtnSoundManager.Instance.PlayButtonSound(); });         // 버튼 클릭 이벤트 등록  
         }
     }
 
@@ -144,6 +144,8 @@ public class RandomQuest : MonoBehaviour
             Debug.LogError("현재 선택된 오브젝트가 없습니다");
             return;
         }
+
+        BtnSoundManager.Instance.PlayButtonSound();
 
         //레벨별 문제 인덱스 리스트 선택
         int selectedLevel = System.Array.IndexOf(levelButton, clickedButton);
@@ -297,6 +299,7 @@ public class RandomQuest : MonoBehaviour
         if (rightPanel != null)
         {
             rightPanel.SetActive(true);
+            BtnSoundManager.Instance.PlayButtonSound();
             yield return YieldInstructionCache.WaitForSecondsRealtime(1.5f);
             rightPanel.SetActive(false);
         }
@@ -315,6 +318,7 @@ public class RandomQuest : MonoBehaviour
         if (wrongPanel != null)
         {
             wrongPanel.SetActive(true);
+            BtnSoundManager.Instance.PlayButtonSound();
             yield return YieldInstructionCache.WaitForSecondsRealtime(1.5f);
             wrongPanel.SetActive(false);
 
@@ -348,6 +352,7 @@ public class RandomQuest : MonoBehaviour
         }
 
         coolTimePanel.SetActive(true);
+        BtnSoundManager.Instance.PlayButtonSound();
         coolTimeScript.StartCooldown(cooldownTimers[levelName], maxCooldown, () => OnCooldownComplete(levelName));
         countdownTimer.StopTimer();
         countdownTimer.SetTimerText(TimerDuration().ToString());

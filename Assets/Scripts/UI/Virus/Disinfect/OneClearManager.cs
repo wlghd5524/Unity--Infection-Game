@@ -24,7 +24,7 @@ public class OneClearManager : MonoBehaviour
         }
 
         guidGreenImage.SetActive(false);
-        oneClearButton.onClick.AddListener(ToggleDisinfection);  //버튼 상태 전환
+        oneClearButton.onClick.AddListener(() => { ToggleDisinfection(); BtnSoundManager.Instance.PlayButtonSound(); });  //버튼 상태 전환
     }
 
     void ToggleDisinfection()

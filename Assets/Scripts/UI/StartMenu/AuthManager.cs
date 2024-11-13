@@ -217,6 +217,7 @@ public class AuthManager : MonoBehaviour
     private void OnBackButtonClicked(GameObject popup)
     {
         Debug.Log("Back Button Clicked");
+        BtnSoundManager.Instance.PlayButtonSound();
         InitializePopup(); // 팝업 초기화 (적혀있는 내용 삭제)
         popup.SetActive(false);
         mainMenuController.EnableMenuInteraction(); // 메뉴 버튼 상호작용 가능하게 설정
@@ -228,6 +229,7 @@ public class AuthManager : MonoBehaviour
     {
         currentMode = mode;
         Debug.Log($"{mode} Button Clicked");
+        BtnSoundManager.Instance.PlayButtonSound();
 
         // 입력된 ID 및 이름 가져오기
         if (mode == AuthMode.Login)
@@ -393,6 +395,7 @@ public class AuthManager : MonoBehaviour
         EventTrigger trigger = image.gameObject.GetComponent<EventTrigger>() ?? image.gameObject.AddComponent<EventTrigger>();
         var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
         entry.callback.AddListener(action);
+        BtnSoundManager.Instance.PlayButtonSound();
         trigger.triggers.Add(entry);
     }
 

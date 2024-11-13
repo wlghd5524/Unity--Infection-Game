@@ -50,18 +50,21 @@ public class ExitGame : MonoBehaviour
         EventTrigger trigger = image.gameObject.GetComponent<EventTrigger>() ?? image.gameObject.AddComponent<EventTrigger>();
         var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
         entry.callback.AddListener((eventData) => action());
+        BtnSoundManager.Instance.PlayButtonSound();
         trigger.triggers.Add(entry);
     }
 
     // "예" 버튼 클릭 시
     private void OnYesClicked()
     {
+        BtnSoundManager.Instance.PlayButtonSound();
         StartCoroutine(FadeInAndQuit());   // 페이드인과 함께 종료
     }
 
     // "아니오" 버튼 클릭 시
     private void OnNoClicked()
     {
+        BtnSoundManager.Instance.PlayButtonSound();
         mainMenuController.ClosePopup(gameObject); // 팝업 닫기 호출
     }
 

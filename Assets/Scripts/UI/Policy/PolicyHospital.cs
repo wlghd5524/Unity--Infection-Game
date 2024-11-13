@@ -59,6 +59,7 @@ public class PolicyHospital : MonoBehaviour
             closingButton[index].onClick.AddListener(() =>
             {
                 Debug.Log($"PolicyHospital: {index}");
+                BtnSoundManager.Instance.PlayButtonSound();
                 if (isClosed[index])
                 {
                     Ward.wards[index].CloseWard();
@@ -74,10 +75,11 @@ public class PolicyHospital : MonoBehaviour
             disinfectionButton[index].onClick.AddListener(() =>
             {
                 ToggleDisinfection(index);
+                BtnSoundManager.Instance.PlayButtonSound();
             });
         }
 
-        updateButton.onClick.AddListener(() => OnUpdateCount());
+        updateButton.onClick.AddListener(() => { OnUpdateCount(); BtnSoundManager.Instance.PlayButtonSound(); });
         UpdateWardCountsPeriodically();
     }
 

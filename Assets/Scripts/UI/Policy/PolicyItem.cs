@@ -171,6 +171,8 @@ public class PolicyItem : MonoBehaviour
         Slider itemSwitch = itemInstance.transform.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
         bool isEquipping = itemSwitch.value == 1;
 
+        BtnSoundManager.Instance.PlayButtonSound();
+
         // 직업별 착용 상태 업데이트
         if (equippedStatesByJob.ContainsKey(itemName))
         {

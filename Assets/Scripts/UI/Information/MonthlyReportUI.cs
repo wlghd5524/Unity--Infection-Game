@@ -44,6 +44,7 @@ public class MonthlyReportUI : MonoBehaviour
             entry.eventID = EventTriggerType.PointerClick;
             entry.callback.AddListener((eventData) => { CloseMonthlyReport(); });
             trigger.triggers.Add(entry);
+            BtnSoundManager.Instance.PlayButtonSound();
         }
     }
 
