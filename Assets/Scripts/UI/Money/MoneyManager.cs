@@ -17,8 +17,8 @@ public class MoneyManager : MonoBehaviour
     public static int SurgeryFee = 20;            // 수술비
 
     // 치료제 및 백신 가격 설정
-    public static int MedicinePrice = 2;         // 치료제 가격
-    public static int VaccinePrice = 1;          // 백신 가격
+    public static int MedicinePrice = 200;         // 치료제 가격
+    public static int VaccinePrice = 100;          // 백신 가격
 
 
     private void Awake()
