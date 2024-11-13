@@ -133,10 +133,15 @@ public class PolicyItem : MonoBehaviour
                 for (int j = 0; j < itemSwitches.Length; j++)
                 {
                     int switchIndex = j;
+                    int toggleNumber = i + 1; // 현재 선택한 토글 번호(1~8s)
 
                     string switchPath = $"ItemWearToggle/ItemToggle{j + 1}/Outline/ItemSwitch";
                     Slider itemSwitch = itemInstance.transform.Find(switchPath).GetComponent<Slider>();
-                    itemSwitch.onValueChanged.AddListener(delegate { OnSwitchValueChanged(itemName, jobNames[switchIndex], itemInstance); });
+                    itemSwitch.onValueChanged.AddListener(delegate (float value) {
+                        int toggleState = value == 1 ? 1 : 0;
+                        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.gear, toggleNumber, switchIndex + 1, toggleState);
+                        OnSwitchValueChanged(itemName, jobNames[switchIndex], itemInstance); 
+                    });
                     itemSwitches[j] = itemSwitch;
 
                     // 10초 동안 상호작용 비활성화 처리

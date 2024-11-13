@@ -38,9 +38,9 @@ public class AuthManager : MonoBehaviour
     public UserManager userManager;
     public TutorialController tutorialController;
 
-    private string id;
-    private string username;
-    private string password;
+    public string id;
+    public string username;
+    public string password;
     private string checkPassword;
 
     private enum AuthMode { Login, SignUp }
@@ -287,19 +287,18 @@ public class AuthManager : MonoBehaviour
         if (userManager.ValidateUser(id, password))
         {
             // 게임 데이터에 유저 정보 저장
-            string username = userManager.GetNameById(id);
+            string name = userManager.GetNameById(id);
             gameDataMager.userId = id;
-            gameDataMager.userName = username;
+            gameDataMager.userName = name;
             researchDBManager.userNum = id;
-            researchDBManager.userName = username;
+            researchDBManager.userName = name;
 
             // 유저의 튜토리얼 진행 여부 반환
             int tutorialStatus = userManager.GetUserTutorialStatus(id);
             if (tutorialStatus == 0)
             {
                 tutorialController.SetTutorialCompletionStatus(false);
-                string step = UserManager.Instance.GetUserStep(id);   // DB 업데이트 시 필요한 데이터
-                UserManager.Instance.AddUser(id, username, password, 1, step[0], step[1], step[2]);      // 튜토리얼은 진행됐을 테니 미리 1로 전환
+                UserManager.Instance.AddUser(id, name, password, 1, " ", " ", "  ");      // 튜토리얼은 진행됐을 테니 미리 1로 전환
             }
             else
             {
@@ -351,7 +350,7 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        UserManager.Instance.AddUser(id, username, password, 0, 0, 0, 0);
+        UserManager.Instance.AddUser(id, username, password, 0, " ", " ", " ");
         DisplayMessage("회원가입 성공!\n로그인 화면으로 이동해주세요.", Color.green);
         StartCoroutine(CompleteSignUp());
     }

@@ -157,6 +157,9 @@ public class PolicyResearch : MonoBehaviour
     // 연구 탭 버튼 클릭
     private void StartResearch()
     {
+        // 연구 버튼에 대한 데이터 저장
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.research, 1, 0, 1);
+
         // 연구 시작 버튼 클릭 시 코루틴 시작
         if (researchCoroutine != null)
         {
@@ -347,6 +350,9 @@ public class PolicyResearch : MonoBehaviour
             remainingCount--;
         }
 
+        // 연구 버튼에 대한 데이터 저장
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.research, 3, medSelectedWard.num + 1, medicineCount);
+
         medicineCount = 0; // 사용한 후 설정된 사용량 초기화
         medicineUsePanel.SetActive(false);
         UpdateMedicineCountUI();
@@ -457,6 +463,11 @@ public class PolicyResearch : MonoBehaviour
                 remainingCount--;
             }
         }
+
+        // 연구 버튼에 대한 데이터 저장
+        //Debug.Log($"백신개수: {vaccineWard.num+1}, {vaccineCount}");
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.research, 2, vaccineWard.num + 1, vaccineCount);
+
         vaccineCount = 0;
         UpdateVaccineCountUI();
         UpdateTabUI();
