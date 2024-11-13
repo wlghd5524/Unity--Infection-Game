@@ -12,7 +12,9 @@ using UnityEditor;
 // 프로필 창 관리 및 표시 스크립트
 public class ProfileWindow : MonoBehaviour
 {
-    public Button profileWindowButton; // 왼쪽 위 버튼
+    public Button profileWindowButton; // ICU와 응급실 버튼
+    public Button profileWindowButtonMinus; // 일반 병동에서 사용하는 버튼
+    public Button profileWindowButtonPlus; // 옥
     public GameObject windowPanel; // 큰 창 패널
     public Image profileCloseButton;
     public GameObject profileOverlay;
@@ -22,6 +24,7 @@ public class ProfileWindow : MonoBehaviour
     public Image outpatientWindowButton; // 외래환자 이미지 버튼
     public Image inpatientWindowButton; // 입원환자 이미지 버튼
     public Image emergencypatientWindowButton; // 응급환자 이미지 버튼
+    public Image icupatientWindowButton;
 
     public GameObject profilePrefab; // 프로필 프리팹
     public Transform profileContent; // 프로필을 추가할 스크롤 뷰의 콘텐츠 영역
@@ -38,6 +41,18 @@ public class ProfileWindow : MonoBehaviour
     public TextMeshProUGUI OutpatientCountText;// 외래 환자 수
     public TextMeshProUGUI InpatientCountText; // 입원 환자 수
     public TextMeshProUGUI EmergencypatientCountText; // 응급 환자 수
+    public TextMeshProUGUI ICUpatientCountText; // 중환자 수 
+
+    public GameObject doctorInfo;
+    public GameObject nurseInfo;
+    public GameObject outpatientInfo;
+    public GameObject inpatientInfo;
+    public GameObject emergencyInfo;
+    public GameObject icupatientInfo;
+
+    public Image changeImage;
+    public Sprite emerIcon;
+    public Sprite icuIcon;
 
     private string currentJob = "의사";
 
@@ -47,6 +62,8 @@ public class ProfileWindow : MonoBehaviour
     {
         profileCloseButton = Assign(profileCloseButton, "ProfileCloseButton");
         profileWindowButton = Assign(profileWindowButton, "ProfileWindowButton");
+        profileWindowButtonMinus = Assign(profileWindowButtonMinus, "ProfileWindowButtonMinus");
+        profileWindowButtonPlus = Assign(profileWindowButtonPlus, "ProfileWindowButtonPlus");
         windowPanel = Assign(windowPanel, "WindowPanel");
         profileOverlay = Assign(profileOverlay, "ProfileOverlay");
         doctorWindowButton = Assign(doctorWindowButton, "DoctorWindowButton");
@@ -54,6 +71,7 @@ public class ProfileWindow : MonoBehaviour
         outpatientWindowButton = Assign(outpatientWindowButton, "OutPatientWindowButton");
         inpatientWindowButton = Assign(inpatientWindowButton, "InPatientWindowButton");
         emergencypatientWindowButton = Assign(emergencypatientWindowButton, "EmergencyPatientWindowButton");
+        icupatientWindowButton = Assign(icupatientWindowButton, "ICUPatientWindowButton");
         profilePrefab = Assign(profilePrefab, "ProfilePrefab");
         profileContent = Assign(profileContent, "ProfileContent");
         profileInventoryManager = Assign(profileInventoryManager, "Inventory");
@@ -64,10 +82,21 @@ public class ProfileWindow : MonoBehaviour
         OutpatientCountText = Assign(OutpatientCountText, "OutpatientCountText");
         InpatientCountText = Assign(InpatientCountText, "InpatientCountText");
         EmergencypatientCountText = Assign(EmergencypatientCountText, "EmergencypatientCountText");
+        ICUpatientCountText = Assign(ICUpatientCountText, "ICUpatientCountText");
+
+        doctorInfo = Assign(doctorInfo, "ProfileButtonInfoDoctor");
+        nurseInfo = Assign(nurseInfo, "ProfileButtonInfoNurse");
+        outpatientInfo = Assign(outpatientInfo, "ProfileButtonInfoOutpatient");
+        inpatientInfo = Assign(inpatientInfo, "ProfileButtonInfoInpatient");
+        emergencyInfo = Assign(emergencyInfo, "ProfileButtonInfoEmerpatient");
+        icupatientInfo = Assign(icupatientInfo, "ProfileButtonInfoICUpatient");
+        changeImage = Assign(changeImage, "ChangeImage");
 
 
         // 버튼 클릭 이벤트에 메서드 추가
         profileWindowButton.onClick.AddListener(ToggleBigPanel);
+        profileWindowButtonMinus.onClick.AddListener(ToggleBigPanel);
+        profileWindowButtonPlus.onClick.AddListener(ToggleBigPanel);
 
         // 각 이미지를 버튼으로 설정
         SetupButton(doctorWindowButton, OnDoctorClick);
@@ -75,7 +104,9 @@ public class ProfileWindow : MonoBehaviour
         SetupButton(outpatientWindowButton, OnOutpatientClick);
         SetupButton(inpatientWindowButton, OnInpatientClick);
         SetupButton(emergencypatientWindowButton, OnEmerpatientClick);
+        SetupButton(icupatientWindowButton, OnICUpatientClick);
         SetupButton(profileCloseButton, OnProfileClosePanelClick);
+
 
         // GridLayoutGroup 설정
         GridLayoutGroup gridLayoutGroup = profileContent.GetComponent<GridLayoutGroup>();
@@ -89,6 +120,7 @@ public class ProfileWindow : MonoBehaviour
             gridLayoutGroup.padding = new RectOffset(10, 10, 10, 10); // 스크롤 뷰와의 간격
         }
     }
+
 
     public void AddDoctorProfile(GameObject doctorObject)
     {
@@ -135,7 +167,7 @@ public class ProfileWindow : MonoBehaviour
         {
             inventory = Managers.Item.items; // 모든 아이템을 인벤토리에 추가
         }
-        if (role == Role.Outpatient || role == Role.Inpatient || role == Role.EmergencyPatient)
+        if (role == Role.Outpatient || role == Role.Inpatient || role == Role.EmergencyPatient || role == Role.ICUPatient)
         {
             inventory.Add(Managers.Item.items[0]);
             inventory.Add(Managers.Item.items[1]);
@@ -181,6 +213,12 @@ public class ProfileWindow : MonoBehaviour
         }
 
         if (currentJob == "응급 환자")
+        {
+            UpdateProfile(profile, $"{job} {index}", person.Name, person.ID, person.gameObject.activeSelf);
+            RefreshProfiles();
+        }
+
+        if (currentJob == "중환자")
         {
             UpdateProfile(profile, $"{job} {index}", person.Name, person.ID, person.gameObject.activeSelf);
             RefreshProfiles();
@@ -276,6 +314,13 @@ public class ProfileWindow : MonoBehaviour
         ShowProfiles(currentJob);
     }
 
+    private void OnICUpatientClick()
+    {
+        currentJob = "중환자";
+        profileInventoryManager.ClearInventory();
+        ShowProfiles(currentJob);
+    }
+
     private void ShowProfiles(string job)
     {
         currentJob = job;
@@ -339,7 +384,7 @@ public class ProfileWindow : MonoBehaviour
         //     }
         // }
 
-        // 새로운 RestingText와 RestingImage 활성화 상태 설정
+        //// 새로운 RestingText와 RestingImage 활성화 상태 설정
         if (restingText != null)
         {
             restingText.gameObject.SetActive(person.IsResting);
@@ -388,39 +433,90 @@ public class ProfileWindow : MonoBehaviour
             currentFloor = floorName; // 현재 층 정보를 갱신
         }
 
-
         // 현재 선택된 병동 정보를 가져옴
         Ward nowWard = Ward.wards.Find(w => w.WardName == floorName);
 
-        if (floorName == "옥상")
+
+
+        if (currentFloor == "옥상")
         {
-            // 옥상에 대한 특별한 처리가 필요한 경우 여기서 처리
+            // 옥상일 경우 모든 직업의 인원 수를 표시
+            profileWindowButtonPlus.gameObject.SetActive(true);
+            profileWindowButton.gameObject.SetActive(false);
+            profileWindowButtonMinus.gameObject.SetActive(false);
+            emergencyInfo.SetActive(true);
+            icupatientInfo.SetActive(true);
+            changeImage.sprite = emerIcon;
             NowWard.text = "옥상";
             DoctorCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("의사")}";
             NurseCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("간호사")}";
             OutpatientCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("외래 환자")}";
             InpatientCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("입원 환자")}";
             EmergencypatientCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("응급 환자")}";
+            ICUpatientCountText.text = $"{PersonManager.Instance.GetPersonCountByJob("중환자")}";
+        }
+        else if (currentFloor == "응급실")
+        {
+            if (nowWard != null)
+            {
+                // 응급실일 경우 응급 환자 표시
+                profileWindowButtonPlus.gameObject.SetActive(false);
+                profileWindowButton.gameObject.SetActive(true);
+                profileWindowButtonMinus.gameObject.SetActive(false);
+                emergencyInfo.SetActive(true);
+                icupatientInfo.SetActive(false);
+                changeImage.sprite = emerIcon;
+                NowWard.text = $"{nowWard.WardName}";
+                DoctorCountText.text = $"{nowWard.doctorCount}";
+                NurseCountText.text = $"{nowWard.nurseCount}";
+                OutpatientCountText.text = $"{nowWard.outpatientCount}";
+                InpatientCountText.text = $"{nowWard.inpatientCount}";
+                EmergencypatientCountText.text = $"{nowWard.emergencypatientCount}";
+            }
+            else
+            {
+                Debug.LogWarning("해당하는 병동을 찾을 수 없습니다: " + floorName);
+            }
+
+        }
+        else if (currentFloor == "중환자실")
+        {
+            if (nowWard != null)
+            {
+                // 중환자실일 경우 중환자 표시
+                profileWindowButtonPlus.gameObject.SetActive(false);
+                profileWindowButton.gameObject.SetActive(true);
+                profileWindowButtonMinus.gameObject.SetActive(false);
+                emergencyInfo.SetActive(true);
+                icupatientInfo.SetActive(false);
+                changeImage.sprite = icuIcon;
+                NowWard.text = $"{nowWard.WardName}";
+                DoctorCountText.text = $"{nowWard.doctorCount}";
+                NurseCountText.text = $"{nowWard.nurseCount}";
+                OutpatientCountText.text = $"{nowWard.outpatientCount}";
+                InpatientCountText.text = $"{nowWard.inpatientCount}";
+                EmergencypatientCountText.text = $"{nowWard.icupatientCount}";
+            }
+            else
+            {
+                Debug.LogWarning("해당하는 병동을 찾을 수 없습니다: " + floorName);
+            }
         }
         else
         {
-
-            // 병동이 존재할 경우 직업별 인원 수를 업데이트
+            // 그 외 병동일 경우 직업별 인원 수를 업데이트
             if (nowWard != null)
             {
-                int doctorCount = nowWard.doctors.Count;
-                int nurseCount = nowWard.nurses.Count;
-                int outpatientCount = nowWard.outpatients.Count;
-                int inpatientCount = nowWard.inpatients.Count;
-                int emergencyCount = (nowWard.num == 8) ? nowWard.emergencyPatients.Count : 0; // 응급환자는 num == 8 (응급실)에서만 처리
-
-                // UI 요소에 인원 수 업데이트
+                profileWindowButtonPlus.gameObject.SetActive(false);
+                profileWindowButton.gameObject.SetActive(false);
+                profileWindowButtonMinus.gameObject.SetActive(true);
+                emergencyInfo.SetActive(false);
+                icupatientInfo.SetActive(false);
                 NowWard.text = $"{nowWard.WardName}";
-                DoctorCountText.text = $"{doctorCount}";
-                NurseCountText.text = $"{nurseCount}";
-                OutpatientCountText.text = $"{outpatientCount}";
-                InpatientCountText.text = $"{inpatientCount}";
-                EmergencypatientCountText.text = $"{emergencyCount}";
+                DoctorCountText.text = $"{nowWard.doctorCount}";
+                NurseCountText.text = $"{nowWard.nurseCount}";
+                OutpatientCountText.text = $"{nowWard.outpatientCount}";
+                InpatientCountText.text = $"{nowWard.inpatientCount}";
             }
             else
             {
@@ -428,7 +524,6 @@ public class ProfileWindow : MonoBehaviour
             }
         }
     }
-
 
 
 

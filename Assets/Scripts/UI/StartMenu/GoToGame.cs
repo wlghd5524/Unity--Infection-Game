@@ -20,6 +20,7 @@ public class GoToGame : MonoBehaviour
     public GameObject policyCanvas;
     public GameObject policyPanel;
     public TextMeshProUGUI selectedLevel;
+    public GameObject researchStartButton;
 
     public ProfileWindow profileWindow;
     public InfectionController infectionController;
@@ -45,6 +46,7 @@ public class GoToGame : MonoBehaviour
         policyCanvas = Assign(policyCanvas, "PolicyCanvas");
         policyPanel = Assign(policyPanel, "PolicyPanel");
         selectedLevel = Assign(selectedLevel, "SelectedLevel");
+        researchStartButton = Assign(researchStartButton, "ResearchStartButton");
         calendarManager = FindObjectOfType<CalendarManager>();
         profileWindow = FindObjectOfType<ProfileWindow>();
         infectionController = FindObjectOfType<InfectionController>();
@@ -60,6 +62,8 @@ public class GoToGame : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+
 
     private T Assign<T>(T obj, string objectName) where T : Object
     {
@@ -88,9 +92,9 @@ public class GoToGame : MonoBehaviour
         newsTickerCanvas.SetActive(true);
         policyCanvas.SetActive(true);
         policyPanel.SetActive(false);
+        researchStartButton.SetActive(false);
         profileWindow.UpdateButtonTexts("응급실");
         SetDifficultyAndStage();
-        policyResearch.ResearchWaiting();
 
         isStart = true;
         Debug.Log("Start!!!");
@@ -108,6 +112,12 @@ public class GoToGame : MonoBehaviour
         else if (levelText == "Normal")
         {
             Managers.Instance.ChangeGameStage(2); // 스테이지를 2로 설정
+        }
+        else if (levelText == "Hard")
+        {
+            Managers.Instance.ChangeGameStage(2);
+            //InfectionManager.Instance.infectionProbability = InfectionManager.Instance.infectionProbability *1.5; // 나중에 double 형식으로 변경
+            InfectionManager.Instance.infectionProbability = 45; // Hard 모드일때는 감염률 1.5배 (하드코딩)
         }
         else
         {

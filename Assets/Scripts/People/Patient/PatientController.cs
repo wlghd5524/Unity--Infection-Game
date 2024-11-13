@@ -334,7 +334,7 @@ public class PatientController : NPCController
                         agent.SetDestination(bedWaypoint.GetRandomPointInRange());
                         isWaiting = true;
                         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-                        gameObject.tag = "Inpatient";
+                        //gameObject.tag = "Inpatient";
                         waypointIndex = -1;
                         isWaiting = false;
                         yield break;

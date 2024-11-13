@@ -203,7 +203,15 @@ public class Person : MonoBehaviour
     }
     public void Recover()
     {
+        NPCManager.Instance.UnhighlightNPC(gameObject);
         status = InfectionState.Normal;
+        isImmune = true;
+        StartCoroutine(SetImmune());
+    }
+    private IEnumerator SetImmune()
+    {
+        yield return new WaitForSeconds(5);
+        isImmune = false;
     }
     private IEnumerator IncubationPeriod(InfectionState infection)
     {

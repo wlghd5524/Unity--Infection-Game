@@ -66,6 +66,12 @@ public class ProfileInventoryManager : MonoBehaviour
         }
         foreach (var item in person.Inventory)
         {
+            if (person.role != Role.Doctor && person.role != Role.Nurse)
+            {
+                if (item.Key != "Dental 마스크" && item.Key != "N95 마스크")
+                    continue;
+            }
+
             GameObject itemObj = Instantiate(itemPrefab, inventoryContainer);
             TextMeshProUGUI itemNameText = itemObj.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI itemStatusText = itemObj.transform.Find("ItemStatusText").GetComponent<TextMeshProUGUI>();

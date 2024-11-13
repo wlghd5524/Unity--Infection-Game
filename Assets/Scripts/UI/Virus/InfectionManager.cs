@@ -79,8 +79,8 @@ public class InfectionManager
     public Dictionary<string,float> GetInfectionRateByRole()
     {
         Dictionary<string, float> infectionRateByRoleDictionary = new Dictionary<string, float>();
-        float[] numberOfInfectedNPC = new float[5];
-        float[] numberOfNPC = new float[5];
+        float[] numberOfInfectedNPC = new float[6];
+        float[] numberOfNPC = new float[6];
 
         foreach (Ward ward in Ward.wards)
         {
@@ -110,30 +110,41 @@ public class InfectionManager
                 numberOfNPC[2]++;
 
             }
-
-            foreach(NurseController nurse in ward.nurses)
+            foreach (PatientController patient in ward.icuPatients)
             {
-                if (nurse.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.status != InfectionState.Normal)
                 {
                     numberOfInfectedNPC[3]++;
                 }
                 numberOfNPC[3]++;
+
+            }
+
+            foreach (NurseController nurse in ward.nurses)
+            {
+                if (nurse.personComponent.status != InfectionState.Normal)
+                {
+                    numberOfInfectedNPC[4]++;
+                }
+                numberOfNPC[4]++;
             }
 
             foreach(DoctorController doctor in ward.doctors)
             {
                 if (doctor.personComponent.status != InfectionState.Normal)
                 {
-                    numberOfInfectedNPC[4]++;
+                    numberOfInfectedNPC[5]++;
                 }
-                numberOfNPC[4]++;
+                numberOfNPC[5]++;
             }
         }
         infectionRateByRoleDictionary.Add("inpatients", numberOfInfectedNPC[0] / numberOfNPC[0]);
         infectionRateByRoleDictionary.Add("outpatients", numberOfInfectedNPC[1] / numberOfNPC[1]);
         infectionRateByRoleDictionary.Add("emergencyPatients", numberOfInfectedNPC[2] / numberOfNPC[2]);
-        infectionRateByRoleDictionary.Add("nurse", numberOfInfectedNPC[3] / numberOfNPC[3]);
-        infectionRateByRoleDictionary.Add("doctor", numberOfInfectedNPC[4] / numberOfNPC[4]);
+        infectionRateByRoleDictionary.Add("icuPatients", numberOfInfectedNPC[2] / numberOfNPC[2]);
+        infectionRateByRoleDictionary.Add("nurse", numberOfInfectedNPC[4] / numberOfNPC[4]);
+        infectionRateByRoleDictionary.Add("doctor", numberOfInfectedNPC[5] / numberOfNPC[5]);
+
 
         return infectionRateByRoleDictionary;
     }

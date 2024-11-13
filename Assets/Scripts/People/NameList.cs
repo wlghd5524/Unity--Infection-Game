@@ -53,6 +53,10 @@ public class NameList : MonoBehaviour
     public static List<string> MaleEmergencypatientNames = MaleNames;
     public static List<string> FemaleEmergencypatientNames = FemaleNames;
 
+    // 중환자 직업별 남자/여자 이름 리스트
+    public static List<string> MaleICUpatientNames = MaleNames;
+    public static List<string> FemaleICUpatientNames = FemaleNames;
+
     // 인덱스
     private static int maleDoctorIndex = 0;
     private static int femaleDoctorIndex = 0;
@@ -64,6 +68,8 @@ public class NameList : MonoBehaviour
     private static int femaleInpatientIndex = 0;
     private static int maleEmergencypatientIndex = 0;
     private static int femaleEmergencypatientIndex = 0;
+    private static int maleICUpatientIndex = 0;
+    private static int femaleICUpatientIndex = 0;
 
     // 성별에 따른 이름 선택
     public static string GetUniqueName(Role role, bool isMale)
@@ -87,6 +93,9 @@ public class NameList : MonoBehaviour
                 case Role.EmergencyPatient:
                     maleEmergencypatientIndex = maleEmergencypatientIndex % MaleEmergencypatientNames.Count;
                     return MaleEmergencypatientNames[maleEmergencypatientIndex++];
+                case Role.ICUPatient:
+                    maleICUpatientIndex = maleICUpatientIndex % MaleICUpatientNames.Count;
+                    return MaleICUpatientNames[maleICUpatientIndex++];
                 default:
                     return "NoName";
             }
@@ -110,6 +119,9 @@ public class NameList : MonoBehaviour
                 case Role.EmergencyPatient:
                     femaleEmergencypatientIndex = femaleEmergencypatientIndex % FemaleEmergencypatientNames.Count;
                     return FemaleEmergencypatientNames[femaleEmergencypatientIndex++];
+                case Role.ICUPatient:
+                    femaleICUpatientIndex = femaleICUpatientIndex % FemaleICUpatientNames.Count;
+                    return FemaleICUpatientNames[femaleICUpatientIndex++];
                 default:
                     return "NoName";
             }

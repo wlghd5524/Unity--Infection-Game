@@ -33,7 +33,7 @@ public class PolicyItem : MonoBehaviour
     // 각 아이템별 직업별 착용 상태 관리
     private Dictionary<string, Dictionary<string, bool>> equippedStatesByJob = new Dictionary<string, Dictionary<string, bool>>();
 
-    private string[] jobNames = { "Doctor", "Nurse", "Outpatient", "Inpatient", "EmergencyPatient" }; // 직업명
+    private string[] jobNames = { "Doctor", "Nurse", "Outpatient", "Inpatient", "EmergencyPatient", "ICUPatient" }; // 직업명
 
     private void Awake()
     {
@@ -108,6 +108,8 @@ public class PolicyItem : MonoBehaviour
             {
                 GameObject itemInstance = Instantiate(itemInfoPrefab, itemScrollViewContent);
 
+                itemInstance.name = $"ItemInfoPrefab_{i + 1}";
+
                 string itemName = itemDetails[0];
                 string itemPrice = itemDetails[1];
                 string itemEffect = itemDetails[2];
@@ -126,7 +128,7 @@ public class PolicyItem : MonoBehaviour
                 itemInformationText.text = itemInformation;
                 itemIcon.sprite = itemSprite;
 
-                Slider[] itemSwitches = new Slider[5];
+                Slider[] itemSwitches = new Slider[6];
 
                 for (int j = 0; j < itemSwitches.Length; j++)
                 {
@@ -136,11 +138,15 @@ public class PolicyItem : MonoBehaviour
                     Slider itemSwitch = itemInstance.transform.Find(switchPath).GetComponent<Slider>();
                     itemSwitch.onValueChanged.AddListener(delegate { OnSwitchValueChanged(itemName, jobNames[switchIndex], itemInstance); });
                     itemSwitches[j] = itemSwitch;
+
+                    // 10초 동안 상호작용 비활성화 처리
+                    itemSwitch.interactable = false;
+                    StartCoroutine(ReenableSwitchAfterCooldown(itemSwitch, 10f)); // 10초 후 다시 활성화
                 }
 
                 if (itemName != "Dental 마스크" && itemName != "N95 마스크")
                 {
-                    for (int k = 2; k <= 4; k++)
+                    for (int k = 2; k <= 5; k++)
                     {
                         Image switchBackground = itemInstance.transform.Find($"ItemWearToggle/ItemToggle{k + 1}/Outline/ItemSwitch/Background").GetComponent<Image>();
                         itemSwitches[k].interactable = false;
@@ -166,7 +172,6 @@ public class PolicyItem : MonoBehaviour
             equippedStatesByJob[itemName][jobName] = isEquipping;
         }
 
-        // 특정 직업군의 Person 객체의 Inventory 상태를 갱신
         List<Person> persons = PersonManager.Instance.GetAllPersons();
         foreach (Person person in persons)
         {
@@ -175,19 +180,98 @@ public class PolicyItem : MonoBehaviour
                 if (person.Inventory.TryGetValue(itemName, out Item item))
                 {
                     item.isEquipped = isEquipping;
+
+                    // 겹치는 아이템 해제 처리
+                    HandleItemExclusivity(person, itemName, jobName, isEquipping, itemInstance);
+
+                    // Level C 장착 시 나머지 아이템 해제
+                    if (isEquipping && itemName == "Level C")
+                    {
+                        UnequipAllExcept(person, "Level C", jobName, itemInstance);
+                    }
                 }
             }
         }
 
-        // 10초 동안 상호작용 비활성화 처리
-        itemSwitch.interactable = false;
-        StartCoroutine(ReenableSwitchAfterCooldown(itemSwitch, 10f)); // 10초 후 다시 활성화
+        Canvas.ForceUpdateCanvases();
     }
+
+    // 겹치는 아이템 해제 함수
+    void HandleItemExclusivity(Person person, string itemName, string jobName, bool isEquipping, GameObject itemInstance)
+    {
+        // 마스크와 장갑의 겹침 방지 규칙 정의
+        Dictionary<string, string> exclusiveItems = new Dictionary<string, string>
+    {
+        { "Dental 마스크", "N95 마스크" },
+        { "N95 마스크", "Dental 마스크" },
+        { "일회용 장갑", "라텍스 장갑" },
+        { "라텍스 장갑", "일회용 장갑" }
+    };
+
+        // 만약 착용 상태 변경 시 겹치는 아이템이 존재하면 해제
+        if (isEquipping && exclusiveItems.ContainsKey(itemName))
+        {
+            string conflictingItemName = exclusiveItems[itemName];
+
+            if (person.Inventory.TryGetValue(conflictingItemName, out Item conflictingItem))
+            {
+                conflictingItem.isEquipped = false;
+                equippedStatesByJob[conflictingItemName][jobName] = false;
+
+                // 다른 ItemInfoPrefab에서 해당 스위치를 찾아서 끄기
+                Transform contentTransform = itemInstance.transform.parent;
+                foreach (Transform itemPrefab in contentTransform)
+                {
+                    if (itemPrefab.name.Contains("ItemInfoPrefab_") && itemPrefab != itemInstance.transform)
+                    {
+                        Transform conflictingSwitchTransform = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch");
+                        if (conflictingSwitchTransform != null)
+                        {
+                            Slider conflictingSwitch = conflictingSwitchTransform.GetComponent<Slider>();
+                            conflictingSwitch.value = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Level C 장착 시 다른 아이템 모두 해제
+    void UnequipAllExcept(Person person, string exclusiveItemName, string jobName, GameObject itemInstance)
+    {
+        foreach (var itemEntry in person.Inventory)
+        {
+            string itemName = itemEntry.Key;
+            Item item = itemEntry.Value;
+
+            if (itemName != exclusiveItemName && item.isEquipped)
+            {
+                item.isEquipped = false;
+                equippedStatesByJob[itemName][jobName] = false;
+
+                // UI에서 해당 아이템의 토글 상태 해제
+                Transform contentTransform = itemInstance.transform.parent;
+                foreach (Transform itemPrefab in contentTransform)
+                {
+                    if (itemPrefab.name.Contains("ItemInfoPrefab_") && itemPrefab != itemInstance.transform)
+                    {
+                        Transform itemSwitchTransform = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch");
+                        if (itemSwitchTransform != null)
+                        {
+                            Slider itemSwitch = itemSwitchTransform.GetComponent<Slider>();
+                            itemSwitch.value = 0; // 이벤트 없이 UI 슬라이더 값 설정
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 
     private IEnumerator ReenableSwitchAfterCooldown(Slider itemSwitch, float cooldownTime)
     {
-        yield return YieldInstructionCache.WaitForSeconds(cooldownTime);
+        yield return new WaitForSeconds(cooldownTime);
         itemSwitch.interactable = true;
     }
 
@@ -200,6 +284,7 @@ public class PolicyItem : MonoBehaviour
             "Outpatient" => Role.Outpatient,
             "Inpatient" => Role.Inpatient,
             "EmergencyPatient" => Role.EmergencyPatient,
+            "ICUPatient" => Role.ICUPatient,
             _ => throw new System.ArgumentException("Invalid job name")
         };
     }

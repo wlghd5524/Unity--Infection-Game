@@ -21,6 +21,13 @@ public class Ward : MonoBehaviour
 
     public bool isWaiting = false;
 
+    public int doctorCount = 0;
+    public int nurseCount = 0;
+    public int outpatientCount = 0;
+    public int inpatientCount = 0;
+    public int emergencypatientCount = 0;
+    public int icupatientCount = 0;
+
     // Start is called before the first frame update
     void Awake()
     {

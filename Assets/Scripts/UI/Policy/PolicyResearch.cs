@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System.Linq;
+using OpenCover.Framework.Model;
 
 public class PolicyResearch : MonoBehaviour
 {
@@ -19,17 +20,16 @@ public class PolicyResearch : MonoBehaviour
     public Image researchLeftButton;
     public Image researchRightButton;
 
-
     public GameObject notResearchedTab;
     public Button researchStartButton;
     public TextMeshProUGUI researchingTimeText;
-    public TextMeshProUGUI researchWaitingTimeText;
-    public GameObject researchWaitingTab;
     public GameObject covidInfoTab;
     public GameObject CREInfoTab;
     public TextMeshProUGUI selectedLevel;
     public GameObject medicineLockPanel;
+    public TextMeshProUGUI medicineTimeText;
     public GameObject vaccineLockPanel;
+    public TextMeshProUGUI vaccineTimeText;
     public GameObject researchComplete;
 
 
@@ -88,13 +88,13 @@ public class PolicyResearch : MonoBehaviour
         notResearchedTab = Assign(notResearchedTab, "NotResearchedTab");
         researchStartButton = Assign(researchStartButton, "ResearchStartButton");
         researchingTimeText = Assign(researchingTimeText, "ResearchingTimeText");
-        researchWaitingTimeText = Assign(researchWaitingTimeText, "ResearchWaitingTimeText");
-        researchWaitingTab = Assign(researchWaitingTab, "ResearchWaitingTab");
         covidInfoTab = Assign(covidInfoTab, "COVIDInfoTab");
         CREInfoTab = Assign(CREInfoTab, "CREInfoTab");
         selectedLevel = Assign(selectedLevel, "SelectedLevel");
         medicineLockPanel = Assign(medicineLockPanel, "MedicineLockPanel");
+        medicineTimeText = Assign(medicineTimeText, "MedicineTimeText");
         vaccineLockPanel = Assign(vaccineLockPanel, "VaccineLockPanel");
+        vaccineTimeText = Assign(vaccineTimeText, "VaccineTimeText");
         researchComplete = Assign(researchComplete, "ResearchComplete");
 
         researchLeftButton = Assign(researchLeftButton, "ResearchLeftButton");
@@ -148,31 +148,10 @@ public class PolicyResearch : MonoBehaviour
         researchStartButton.onClick.AddListener(StartResearch);
     }
 
-    public void ResearchWaiting()
+    // 첫 감염자 발생 시 연구 시작 가능
+    public void FirstInfectedAppear()
     {
-        if (researchCoroutine != null)
-        {
-            StopCoroutine(researchCoroutine);
-        }
-
-        researchWaitingTimeText.gameObject.SetActive(true);
-        researchCoroutine = StartCoroutine(ResearchWaitingCoroutine());
-    }
-
-    // 180초 동안 대기하는 코루틴
-    private IEnumerator ResearchWaitingCoroutine()
-    {
-        int remainingTime = 180; // 대기 시간 180초
-
-        while (remainingTime > 0)
-        {
-            researchWaitingTimeText.text = $"남은 시간 : {remainingTime}초...";
-            yield return YieldInstructionCache.WaitForSeconds(1f); // 1초마다 업데이트
-            remainingTime--;
-        }
-
-        // 대기 완료 후 처리
-        researchWaitingTab.gameObject.SetActive(false); // 텍스트 비활성화
+        researchStartButton.gameObject.SetActive(true);
     }
 
     // 연구 탭 버튼 클릭
@@ -193,17 +172,12 @@ public class PolicyResearch : MonoBehaviour
         int remainingTime = 10; // 연구 시간 10초
         while (remainingTime > 0)
         {
-            researchingTimeText.text = $"연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return YieldInstructionCache.WaitForSeconds(1f);
+            researchingTimeText.text = $"바이러스 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
+            yield return new WaitForSeconds(1f);
             remainingTime--;
         }
 
-        // 연구 완료 시 락 패널과 notResearchedTab 비활성화
-        if (medicineLockPanel != null)
-            medicineLockPanel.SetActive(false);
-
-        if (vaccineLockPanel != null)
-            vaccineLockPanel.SetActive(false);
+        // 연구 완료 시 notResearchedTab 비활성화
 
         if (notResearchedTab != null)
             notResearchedTab.SetActive(false);
@@ -225,7 +199,7 @@ public class PolicyResearch : MonoBehaviour
         else if (level == "Hard")
         {
             CREInfoTab.SetActive(false);
-            covidInfoTab.SetActive(false);
+            covidInfoTab.SetActive(true);
         }
 
         // 연구 완료 알림 활성화
@@ -235,8 +209,48 @@ public class PolicyResearch : MonoBehaviour
             StartCoroutine(DeactivateResearchCompleteAfterDelay());
         }
 
-        Debug.Log("Research completed, lock panels and notResearchedTab are now disabled.");
+        StartCoroutine(UnlockVaccine());
     }
+
+    private IEnumerator UnlockVaccine()
+    {
+
+        int remainingTime = 10; // 연구 시간 10초
+        while (remainingTime > 0)
+        {
+            vaccineTimeText.text = $"백신 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
+            yield return new WaitForSeconds(1f);
+            remainingTime--;
+        }
+        if (vaccineLockPanel != null)
+        {
+            vaccineLockPanel.SetActive(false); // 백신 패널 해금
+            if (vaccineLockPanel != null)
+                vaccineLockPanel.SetActive(false);
+        }
+
+        // 10초 후 치료제 해금을 위해 UnlockMedicine 코루틴 시작
+        StartCoroutine(UnlockMedicine());
+    }
+
+    private IEnumerator UnlockMedicine()
+    {
+        int remainingTime = 15; // 연구 시간 10초
+        while (remainingTime > 0)
+        {
+            medicineTimeText.text = $"치료제 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
+            yield return new WaitForSeconds(1f);
+            remainingTime--;
+        }
+        if (medicineLockPanel != null)
+        {
+            medicineLockPanel.SetActive(false); // 치료제 패널 해금
+            if (medicineLockPanel != null)
+                medicineLockPanel.SetActive(false);
+        }
+        UpdateTabUI();
+    }
+
     private IEnumerator DeactivateResearchCompleteAfterDelay()
     {
         float elapsedTime = 0f;
@@ -336,6 +350,7 @@ public class PolicyResearch : MonoBehaviour
         medicineCount = 0; // 사용한 후 설정된 사용량 초기화
         medicineUsePanel.SetActive(false);
         UpdateMedicineCountUI();
+        UpdateTabUI();
         Debug.Log($"Medicine applied. Total cost: {totalCost}");
     }
 
@@ -444,6 +459,7 @@ public class PolicyResearch : MonoBehaviour
         }
         vaccineCount = 0;
         UpdateVaccineCountUI();
+        UpdateTabUI();
         vaccineUsePanel.SetActive(false);
     }
 
@@ -496,9 +512,8 @@ public class PolicyResearch : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        var sortedWards = Ward.wards.Where(w => w.num >= 4 && w.num <= 7) // 입원병동 1 ~ 입원병동 4 
-                            .OrderByDescending(w => w.infectedNPC)
-                            .ToList();
+        var sortedWards = Ward.wards.Where(w => w.num >= 4 && w.num <= 7)
+            .OrderByDescending(w => w.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == w.WardName)).ToList(); ;
 
         foreach (var ward in sortedWards) // 입원병동 1 ~ 입원병동 4에 해당
         {
@@ -509,13 +524,15 @@ public class PolicyResearch : MonoBehaviour
             TextMeshProUGUI wardInfectedPatientCount = wardItem.transform.Find("WardInfectedPatientCount").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI researchWardName = wardItem.transform.Find("ResearchWardName").GetComponent<TextMeshProUGUI>();
 
-            int inpatientCount = ward.inpatients.Count;
-            int infectedInpatientCount = ward.inpatients.Count(p => p.infectionController.isInfected);
+            int inpatientCount = ward.inpatientCount;
+            int infectedInpatientCount = ward.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == ward.WardName);
+            int uninfectedInpatientCount = ward.inpatientCount - ward.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == ward.WardName);
 
             wardInPatientCount.text = inpatientCount.ToString();
             wardInfectedPatientCount.text = infectedInpatientCount.ToString();
             researchWardName.text = ward.WardName;
 
+            Debug.Log($"{ward.WardName} 에서 입원 환자 수 : {inpatientCount}, 감염 환자 수 : {infectedInpatientCount}(비감염 : {uninfectedInpatientCount}) 로 측정되었습니다.");
             // WardButton 클릭 시 MedicineUsePanel 열기
             Button wardButton = wardItem.transform.Find("WardButton").GetComponent<Button>();
             wardButton.onClick.AddListener(() => OpenMedicineUsePanel(ward));
@@ -529,8 +546,13 @@ public class PolicyResearch : MonoBehaviour
             Destroy(child.gameObject);
         }
         var sortedWards = Ward.wards.Where(w => w.num >= 0 && w.num <= 9)
-                    .OrderByDescending(w => w.infectedNPC)
-                    .ToList();
+            .OrderByDescending(w => w.doctors.Count(d => d.infectionController.isInfected && d.isInCurrentWard && d.currentWard == w.WardName) +
+                w.nurses.Count(n => n.infectionController.isInfected && n.isInCurrentWard && n.currentWard == w.WardName) +
+                w.outpatients.Count(o => o.infectionController.isInfected && o.isInCurrentWard && o.currentWard == w.WardName) +
+                w.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == w.WardName) +
+                w.emergencyPatients.Count(e => e.infectionController.isInfected && e.isInCurrentWard && e.currentWard == w.WardName) +
+                w.icuPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == w.WardName))
+                    .ToList(); ;
 
         foreach (var ward in sortedWards)
         {
@@ -539,10 +561,23 @@ public class PolicyResearch : MonoBehaviour
             TextMeshProUGUI wardInPatientCount = wardItem.transform.Find("VaccineWardPatient").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI wardInfectedPatientCount = wardItem.transform.Find("VaccineWardInfectedPatient").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI researchWardName = wardItem.transform.Find("VaccineWardName").GetComponent<TextMeshProUGUI>();
-            int allCount = ward.doctors.Count + ward.nurses.Count + ward.emergencyPatients.Count + ward.outpatients.Count + ward.inpatients.Count;
+            int allCount = ward.doctors.Count + ward.nurses.Count + ward.emergencyPatients.Count + ward.outpatients.Count + ward.inpatients.Count + ward.icuPatients.Count;
+            int infectedCount = ward.doctors.Count(d => d.infectionController.isInfected && d.isInCurrentWard && d.currentWard == ward.WardName) +
+                ward.nurses.Count(n => n.infectionController.isInfected && n.isInCurrentWard && n.currentWard == ward.WardName) +
+                ward.outpatients.Count(o => o.infectionController.isInfected && o.isInCurrentWard && o.currentWard == ward.WardName) +
+                ward.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName) +
+                ward.emergencyPatients.Count(e => e.infectionController.isInfected && e.isInCurrentWard && e.currentWard == ward.WardName) +
+                ward.icuPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName);
+            int unInfectedCount = ward.doctors.Count(d => !d.infectionController.isInfected && d.isInCurrentWard && d.currentWard == ward.WardName) +
+                ward.nurses.Count(n => !n.infectionController.isInfected && n.isInCurrentWard && n.currentWard == ward.WardName) +
+                ward.outpatients.Count(o => !o.infectionController.isInfected && o.isInCurrentWard && o.currentWard == ward.WardName) +
+                ward.inpatients.Count(i => !i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName) +
+                ward.emergencyPatients.Count(e => !e.infectionController.isInfected && e.isInCurrentWard && e.currentWard == ward.WardName) +
+                ward.icuPatients.Count(c => !c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName);
             wardInPatientCount.text = allCount.ToString();
-            wardInfectedPatientCount.text = ward.infectedNPC.ToString();
+            wardInfectedPatientCount.text = infectedCount.ToString();
             researchWardName.text = ward.WardName;
+            Debug.Log($"{ward.WardName} 에서 병동 인원 수 : {infectedCount}, 감염 인원 수 : {unInfectedCount}(비감염 : {unInfectedCount}) 로 측정되었습니다.");
 
             Button wardButton = wardItem.transform.Find("VaccineWardButton").GetComponent<Button>();
             wardButton.onClick.AddListener(() => OpenVaccineUsePanel(ward));
@@ -571,11 +606,11 @@ public class PolicyResearch : MonoBehaviour
         // MedicineWard 스크롤뷰 업데이트 - 탭이 2번일 때만 호출
         if (currentTabIndex == 2)
         {
-            PopulateMedicineWard();
+            PopulateVaccineWard();
         }
         if (currentTabIndex == 3)
         {
-            PopulateVaccineWard();
+            PopulateMedicineWard();
         }
     }
 
