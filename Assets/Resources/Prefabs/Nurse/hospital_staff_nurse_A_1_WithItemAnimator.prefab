@@ -83,6 +83,72 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1001 &696506183450843305
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8078986149237455990}
+    m_Modifications:
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8402798249211703157, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_Name
+      value: ProtectedGear
+      objectReference: {fileID: 0}
+    - target: {fileID: 8402798249211703157, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+--- !u!4 &5446891729737619067 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+  m_PrefabInstance: {fileID: 696506183450843305}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7756965837608065925
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -303,6 +369,9 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 1997368759842962323, guid: 48946a36098bc6e4aa778680b925d932, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1997368759842596851, guid: 48946a36098bc6e4aa778680b925d932, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 5446891729737619067}
     - targetCorrespondingSourceObject: {fileID: 1997368759842596851, guid: 48946a36098bc6e4aa778680b925d932, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4909056019966600074}
@@ -670,6 +739,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab7a2f30f9bdc4d438c10609ab7cd004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isInCurrentWard: 0
+  currentWard: 
+  meshRenderer: {fileID: 0}
   animator: {fileID: 0}
   standingState: 0
   agent: {fileID: 0}
@@ -680,6 +752,7 @@ MonoBehaviour:
   personComponent: {fileID: 0}
   infectionController: {fileID: 0}
   num: 0
+  protectedGear: {fileID: 0}
   role: 0
   isWorking: 0
   isRest: 0

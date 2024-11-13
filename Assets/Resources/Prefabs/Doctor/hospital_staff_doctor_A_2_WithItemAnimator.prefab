@@ -83,6 +83,84 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1001 &3653907631589948093
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4418382920809995125}
+    m_Modifications:
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8402798249211703157, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_Name
+      value: ProtectedGear
+      objectReference: {fileID: 0}
+    - target: {fileID: 8402798249211703157, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+--- !u!4 &8108742287111271535 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4773045415798197970, guid: cf88f33ac32349246b5e64b9f0f622d3, type: 3}
+  m_PrefabInstance: {fileID: 3653907631589948093}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6659900939212554597
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -305,6 +383,9 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7006905325773543952, guid: 81197458f9625584b9003dbc6dd222d2, type: 3}
       insertIndex: 0
+      addedObject: {fileID: 8108742287111271535}
+    - targetCorrespondingSourceObject: {fileID: 7006905325773543952, guid: 81197458f9625584b9003dbc6dd222d2, type: 3}
+      insertIndex: 1
       addedObject: {fileID: 1045413148959634772}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7006905325773244016, guid: 81197458f9625584b9003dbc6dd222d2, type: 3}
@@ -634,6 +715,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74ba80ce8a1ce5f428b5e1f8e86e8ccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isInCurrentWard: 0
+  currentWard: 
+  meshRenderer: {fileID: 0}
   animator: {fileID: 0}
   standingState: 0
   agent: {fileID: 0}
@@ -644,6 +728,7 @@ MonoBehaviour:
   personComponent: {fileID: 0}
   infectionController: {fileID: 0}
   num: 0
+  protectedGear: {fileID: 0}
   role: 0
   patientCount: 0
   isResting: 0

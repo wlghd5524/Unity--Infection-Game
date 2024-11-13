@@ -108,6 +108,10 @@ public class QuarantineManager : MonoBehaviour
                         {
                             Debug.LogError("nurseController를 찾을 수 없습니다.");
                         }
+                        else if(!nurseController.personComponent.Inventory["Level C"].isEquipped)
+                        {
+                            Debug.Log("간호사가 보호구를 입고 있지 않습니다.");
+                        }
                         else
                         {
                             patientController.nurseSignal = false;

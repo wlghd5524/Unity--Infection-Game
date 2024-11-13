@@ -195,6 +195,9 @@ public class PolicyItem : MonoBehaviour
                     if (isEquipping && itemName == "Level C")
                     {
                         UnequipAllExcept(person, "Level C", jobName, itemInstance);
+                        NPCController npcController = person.GetComponent<NPCController>();
+                        npcController.meshRenderer.enabled = !isEquipping;
+                        npcController.protectedGear.meshRenderer.enabled = isEquipping;
                     }
                 }
             }

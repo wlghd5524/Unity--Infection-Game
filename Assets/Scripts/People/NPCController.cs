@@ -14,6 +14,7 @@ public class NPCController : MonoBehaviour
     public bool isInCurrentWard = false; // 현재 병동에 있는지 확인하는 변수
     public string currentWard;
 
+    public SkinnedMeshRenderer meshRenderer;
     public Animator animator;
     public StandingState standingState = StandingState.Standing;
     public NavMeshAgent agent;
@@ -28,6 +29,8 @@ public class NPCController : MonoBehaviour
 
     public int num;
 
+    public ProtectedGearController protectedGear;
+
     private void Awake()
     {
         // 컴포넌트 초기화
@@ -37,6 +40,16 @@ public class NPCController : MonoBehaviour
         agent.avoidancePriority = Random.Range(0, 100);
         agent.speed = Random.Range(3.0f, 5.0f);
         personComponent = GetComponent<Person>();
+        if(gameObject.CompareTag("Doctor") || gameObject.CompareTag("Nurse"))
+        {
+            protectedGear = gameObject.transform.Find("ProtectedGear").GetComponent<ProtectedGearController>();
+            protectedGear.agent = agent;
+            protectedGear.animator = protectedGear.GetComponent<Animator>();
+            protectedGear.parentObject = gameObject;
+            protectedGear.meshRenderer = protectedGear.GetComponent<SkinnedMeshRenderer>();
+            protectedGear.meshRenderer.enabled = false;
+        }
+        meshRenderer = GetComponent<SkinnedMeshRenderer>();
     }
     private void OnTriggerEnter(Collider other)
     {

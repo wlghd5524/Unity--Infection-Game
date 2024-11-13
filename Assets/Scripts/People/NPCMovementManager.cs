@@ -92,6 +92,11 @@ public class NPCMovementManager
         nPCController.animator.SetBool("Sleeping", false);
         nPCController.animator.SetBool("Talking", false);
         nPCController.standingState = StandingState.Sitting;
+        if (nPCController.protectedGear == null)
+            return;
+        nPCController.protectedGear.animator.SetBool("Sitting", true);
+        nPCController.protectedGear.animator.SetBool("Sleeping", false);
+        nPCController.protectedGear.animator.SetBool("Talking", false);
     }
 
     // 눕기
@@ -101,6 +106,11 @@ public class NPCMovementManager
         nPCController.animator.SetBool("Sleeping", true);
         nPCController.animator.SetBool("Talking", false);
         nPCController.standingState = StandingState.LayingDown;
+        if (nPCController.protectedGear == null)
+            return;
+        nPCController.protectedGear.animator.SetBool("Sitting", false);
+        nPCController.protectedGear.animator.SetBool("Sleeping", true);
+        nPCController.protectedGear.animator.SetBool("Talking", false);
     }
 
 
@@ -111,6 +121,11 @@ public class NPCMovementManager
         nPCController.animator.SetBool("Sleeping", false);
         nPCController.animator.SetBool("Talking", true);
         nPCController.standingState = StandingState.Sitting;
+        if (nPCController.protectedGear == null)
+            return;
+        nPCController.protectedGear.animator.SetBool("Sitting", true);
+        nPCController.protectedGear.animator.SetBool("Sleeping", false);
+        nPCController.protectedGear.animator.SetBool("Talking", true);
     }
 
     // 누운 상태에서 일어나기
@@ -120,6 +135,11 @@ public class NPCMovementManager
         nPCController.animator.SetBool("Sleeping", false);
         nPCController.animator.SetBool("Talking", false);
         nPCController.standingState = StandingState.Standing;
+        if (nPCController.protectedGear == null)
+            return;
+        nPCController.protectedGear.animator.SetBool("Sitting", false);
+        nPCController.protectedGear.animator.SetBool("Sleeping", false);
+        nPCController.protectedGear.animator.SetBool("Talking", false);
     }
 
 
