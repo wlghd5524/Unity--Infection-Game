@@ -55,8 +55,6 @@ public class GameDataManager : MonoBehaviour
     public GameObject gameClearPanel;
     public Button gameClearNextButton;
     public TextMeshProUGUI selectedLevel;
-    AuthManager authManager;
-    UserManager userManager;
     List<string> steps = new List<string>();
     TextMeshProUGUI feedbackText;
 
@@ -92,8 +90,6 @@ public class GameDataManager : MonoBehaviour
         gameClearPanel = GameObject.Find("GameClearPanel");
         gameClearNextButton = GameObject.Find("GameClearNextButton").GetComponent<Button>();
         selectedLevel = GameObject.Find("SelectedLevel").GetComponent<TextMeshProUGUI>();
-        authManager = FindAnyObjectByType<AuthManager>();
-        userManager = FindAnyObjectByType<UserManager>();
         feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
 
         for (int i = 0; i < 15; i++)
@@ -202,16 +198,16 @@ public class GameDataManager : MonoBehaviour
     // 스테이지 클리어 기록 DB에 저장
     void SavePassStage(string pnp)
     {
-        string id = authManager.id;
-        string name = userManager.GetNameById(id);
-        List<string> steps = userManager.GetUserStep(id);
+        string id = AuthManager.Instance.id;
+        string name = UserManager.Instance.GetNameById(id);
+        List<string> steps = UserManager.Instance.GetUserStep(id);
         string clearLevel = $"{pnp}: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}";
 
         string updatedEasySteps = selectedLevel.text == "Easy" ? $"{steps[0]}, {clearLevel}" : steps[0];
         string updatedNormalSteps = selectedLevel.text == "Normal" ? $"{steps[1]}, {clearLevel}" : steps[1];
         string updatedHardSteps = selectedLevel.text == "Hard" ? $"{steps[2]}, {clearLevel}" : steps[2];
 
-        userManager.AddUser(id, name, authManager.password, 1, updatedEasySteps, updatedNormalSteps, updatedHardSteps);
+        UserManager.Instance.AddUser(id, name, AuthManager.Instance.password, 1, updatedEasySteps, updatedNormalSteps, updatedHardSteps);
     }
 
     // 평균 감염률 데이터 계산 및 DB 업데이트 함수
