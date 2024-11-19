@@ -71,14 +71,8 @@ public class OneClearManager : MonoBehaviour
         //소독 모드 OFF -> 원래 커서로 복원
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         isCustomCursorActive = false;
+        isDisinfectionOn = false;
     }
-
-    // 소독 기능 활성화 상태 확인
-    // Virus 스크립트 -> ture면 마우스 클릭으로 하나씩 소독 시작
-    /*public bool IsDisinfectionOn()
-    {
-        return isDisinfectionOn;
-    }*/
 
     // 자동 할당 코드 
     private T Assign<T>(T obj, string objectName) where T : Object

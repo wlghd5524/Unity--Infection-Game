@@ -160,6 +160,7 @@ public class GameDataManager : MonoBehaviour
                 scoreGraphCanvas.SetActive(true);
                 GraphSourceChangeInt();
                 OneClearManager.Instance.CloseDisinfectionMode();
+                SavePassStage("np");
                 yield break;
             }
 
@@ -195,25 +196,22 @@ public class GameDataManager : MonoBehaviour
         Time.timeScale = 0;
         scoreGraphCanvas.SetActive(true);
         gameClearPanel.SetActive(true);
-        SaveClearStage();
+        SavePassStage("p");
     }
 
     // 스테이지 클리어 기록 DB에 저장
-    void SaveClearStage()
+    void SavePassStage(string pnp)
     {
         string id = authManager.id;
         string name = userManager.GetNameById(id);
-        steps = userManager.GetUserStep(id);
-        string clearLevel = $"p: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}";
+        List<string> steps = userManager.GetUserStep(id);
+        string clearLevel = $"{pnp}: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}";
 
-        if (selectedLevel.text == "Easy")
-            userManager.AddUser(id, name, authManager.password, 1, clearLevel, steps[1], steps[2]);
-        else if (selectedLevel.text == "Normal")
-            userManager.AddUser(id, name, authManager.password, 1, steps[0], clearLevel, steps[2]);
-        else
-        {
-            userManager.AddUser(id, name, authManager.password, 1, steps[0], steps[1], clearLevel);
-        }
+        string updatedEasySteps = selectedLevel.text == "Easy" ? $"{steps[0]}, {clearLevel}" : steps[0];
+        string updatedNormalSteps = selectedLevel.text == "Normal" ? $"{steps[1]}, {clearLevel}" : steps[1];
+        string updatedHardSteps = selectedLevel.text == "Hard" ? $"{steps[2]}, {clearLevel}" : steps[2];
+
+        userManager.AddUser(id, name, authManager.password, 1, updatedEasySteps, updatedNormalSteps, updatedHardSteps);
     }
 
     // 평균 감염률 데이터 계산 및 DB 업데이트 함수
