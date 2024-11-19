@@ -60,7 +60,7 @@ public class PolicyHospital : MonoBehaviour
             {
                 Debug.Log($"PolicyHospital: {index}");
                 BtnSoundManager.Instance.PlayButtonSound();
-                if (isClosed[index])
+                if (!isClosed[index])
                 {
                     Ward.wards[index].CloseWard();
                 }
@@ -180,15 +180,11 @@ public class PolicyHospital : MonoBehaviour
     }
 
     // 병동별 의사, 간호사, 외래환자 수 1초마다 업데이트
-    IEnumerator UpdateWardCountsPeriodically()
+    void UpdateWardCountsPeriodically()
     {
-        while (true)
+        for (int i = 0; i < closingButton.Length; i++)
         {
-            for (int i = 0; i < 8; i++)
-            {
-                UpdateWardCounts();
-            }
-            yield return YieldInstructionCache.WaitForSeconds(1f);
+            UpdateWardCounts();
         }
     }
 
