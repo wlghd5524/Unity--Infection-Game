@@ -160,10 +160,10 @@ public class Ward : MonoBehaviour
         for (int i = inpatients.Count - 1; i >= 0; i--)
         {
             PatientController inpatient = inpatients[i];
-            if (inpatient == null) continue;
+            if (inpatient == null || inpatient.isExiting) continue;
 
             BedWaypoint nextBed = wards
-                .Where(ward => ward.num != num && ward.num >= 4 && ward.num <= 7 && !ward.isClosed)
+                .Where(ward => ward != this && ward.num >= 4 && ward.num <= 7 && !ward.isClosed)
                 .SelectMany(ward => ward.beds)
                 .FirstOrDefault(bed => bed.patient == null);
 

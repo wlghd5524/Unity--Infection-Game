@@ -73,9 +73,9 @@ public class Waypoint : MonoBehaviour
         float halfWidth = rangeSize.x / 2;
         float halfHeight = rangeSize.z / 2;
         // 사각형 영역 내의 지점을 그리드 형태로 탐색
-        for (float x = -halfWidth; x <= halfWidth; x += 1.0f)
+        for (float x = -halfWidth; x <= halfWidth; x += 0.5f)
         {
-            for (float z = -halfHeight; z <= halfHeight; z += 1.0f)
+            for (float z = -halfHeight; z <= halfHeight; z += 0.5f)
             {
                 Vector3 testPosition = new Vector3(transform.position.x + x, transform.position.y, transform.position.z + z);
                 NavMeshHit hit;
