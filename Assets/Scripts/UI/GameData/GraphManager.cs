@@ -19,6 +19,7 @@ public class GraphManager : MonoBehaviour
     public Button feedBackButton;
     public Button backButton;
     public Button graphCloseButton;
+    public Button feedbackCloseButton;
 
     public Transform feedbackContainer;
     public GameDataManager gameDataManager;
@@ -42,6 +43,7 @@ public class GraphManager : MonoBehaviour
         feedBackButton = GameObject.Find("FeedBackButton").GetComponent<Button>();
         backButton = GameObject.Find("BackButton").GetComponent<Button>();
         graphCloseButton = GameObject.Find("GraphCloseButton").GetComponent<Button>();
+        feedbackCloseButton = GameObject.Find("FeedbackCloseButton").GetComponent<Button>();
         feedbackContainer = GameObject.Find("FeedbackContainer").transform;
         gameDataManager = FindObjectOfType<GameDataManager>();
         feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
@@ -69,6 +71,7 @@ public class GraphManager : MonoBehaviour
         feedBackButton.onClick.AddListener(OpenFeedback);
         backButton.onClick.AddListener(CloseFeedback);
         graphCloseButton.onClick.AddListener(QuitGame);
+        feedbackCloseButton.onClick.AddListener(QuitGame);
     }
 
     public void DrawGraph(List<float> scores, string role, Transform container)
@@ -199,10 +202,10 @@ public class GraphManager : MonoBehaviour
 
     void QuitGame()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
             Application.Quit();
-#endif
+        #endif
     }
 }
