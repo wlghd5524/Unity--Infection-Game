@@ -10,6 +10,8 @@ using MyApp.UserManagement;
 // 로그인 및 회원가입 관련 기능 매니저
 public class AuthManager : MonoBehaviour
 {
+    public static AuthManager Instance { get; private set; }
+
     // 로그인 관련 객체들
     public TMP_InputField loginIdInputField;
     public TMP_InputField loginPasswdInputField;
@@ -45,6 +47,19 @@ public class AuthManager : MonoBehaviour
 
     private enum AuthMode { Login, SignUp }
     private AuthMode currentMode;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -300,7 +315,6 @@ public class AuthManager : MonoBehaviour
             if (tutorialStatus == 0)
             {
                 tutorialController.SetTutorialCompletionStatus(false);
-                UserManager.Instance.AddUser(id, name, password, 1, " ", " ", "  ");      // 튜토리얼은 진행됐을 테니 미리 1로 전환
             }
             else
             {

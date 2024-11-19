@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;  // UI 관련 네임스페이스 추가
 using UnityEngine.SceneManagement;
 using System.Collections;
+using MyApp.UserManagement;
 
 public class TutorialController : MonoBehaviour
 {
@@ -114,6 +115,7 @@ public class TutorialController : MonoBehaviour
         Managers.PatientCreator.startSignal = true;         // 튜토리얼 끝나면 npc 생성 시작
         GoToGame.Instance.calendarManager.StartCalendar();  // 튜토리얼 끝나면 시간 흐름
         newscontroller.TriggerVirusOutbreakNews();          // 뉴스 발생
+        UserManager.Instance.AddUser(AuthManager.Instance.id, AuthManager.Instance.username, AuthManager.Instance.password, 1, " ", " ", "  ");      // 튜토리얼은 진행됐을 테니 미리 1로 전환
     }
 
     // 현재 튜토리얼에서 대화가 나오면 게임을 멈춥니다.
