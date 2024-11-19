@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
-using UnityEngine;
-using UnityEngine.UI;
+using System.Reflection;
 using TMPro;
+using UnityEditorInternal;
+using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.UI;
+using UnityEngine.XR;
 
 public class GraphManager : MonoBehaviour
 {
@@ -78,7 +83,7 @@ public class GraphManager : MonoBehaviour
         // 점과 선 생성
         for (int i = 0; i < scores.Count; i++)
         {
-            float xPosition = i * xSpacing;                         // x축 간격 
+            float xPosition = i * xSpacing;    // x축 간격
 
             // NaN 값일 때 0으로 대체
             float yValue = float.IsNaN(scores[i]) ? 0f : scores[i];
@@ -129,6 +134,7 @@ public class GraphManager : MonoBehaviour
         }
     }
 
+    // 피드백 출력
     void OpenFeedback()
     {
         feedbackGraphPanel.SetActive(true);
@@ -148,7 +154,7 @@ public class GraphManager : MonoBehaviour
             // 제목 설정
             if (GameDataManager.Instance.difference20More[i])
             {
-                str += $"{i + 1}DAY (감염률 급상승!)\n";
+                str += $"{i + 1}DAY - 감염률 급상승!\n";
             }
             else
             {
@@ -168,15 +174,17 @@ public class GraphManager : MonoBehaviour
                     }
                 }
             }
+            //str += $"- {gameDataManager.feedbackContent[i]}\n";
             else
                 str += $"No research done\n";
 
-            str += '\n';
-        }        
+            str += "\n";
+        }
+
         feedbackText.text = str;
 
-        // 필터링 적용
-        gameDataManager.ToggleFeedbackVisibility("", true);
+        //원본 백업
+        gameDataManager.originalContent = feedbackText.text;
 
         //  레이아웃 재구성
         feedbackContainer.gameObject.SetActive(false);
@@ -191,10 +199,10 @@ public class GraphManager : MonoBehaviour
 
     void QuitGame()
     {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
             Application.Quit();
-        #endif
+#endif
     }
 }

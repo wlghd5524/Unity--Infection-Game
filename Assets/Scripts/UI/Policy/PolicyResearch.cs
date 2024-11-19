@@ -175,7 +175,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             researchingTimeText.text = $"바이러스 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return new WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSeconds(1f);
             remainingTime--;
         }
 
@@ -221,7 +221,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             vaccineTimeText.text = $"백신 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return new WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSeconds(1f);
             remainingTime--;
         }
         if (vaccineLockPanel != null)
@@ -241,7 +241,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             medicineTimeText.text = $"치료제 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return new WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSeconds(1f);
             remainingTime--;
         }
         if (medicineLockPanel != null)
