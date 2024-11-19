@@ -3,6 +3,11 @@ using System.Data;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditorInternal;
+using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.UI;
+using UnityEngine.XR;
 
 public class GraphManager : MonoBehaviour
 {
@@ -14,6 +19,7 @@ public class GraphManager : MonoBehaviour
     public Button feedBackButton;
     public Button backButton;
     public Button graphCloseButton;
+    public Button feedbackCloseButton;
 
     public Transform feedbackContainer;
     public GameDataManager gameDataManager;
@@ -37,6 +43,7 @@ public class GraphManager : MonoBehaviour
         feedBackButton = GameObject.Find("FeedBackButton").GetComponent<Button>();
         backButton = GameObject.Find("BackButton").GetComponent<Button>();
         graphCloseButton = GameObject.Find("GraphCloseButton").GetComponent<Button>();
+        feedbackCloseButton = GameObject.Find("FeedbackCloseButton").GetComponent<Button>();
         feedbackContainer = GameObject.Find("FeedbackContainer").transform;
         gameDataManager = FindObjectOfType<GameDataManager>();
         feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
@@ -64,6 +71,7 @@ public class GraphManager : MonoBehaviour
         feedBackButton.onClick.AddListener(OpenFeedback);
         backButton.onClick.AddListener(CloseFeedback);
         graphCloseButton.onClick.AddListener(QuitGame);
+        feedbackCloseButton.onClick.AddListener(QuitGame);
     }
 
     public void DrawGraph(List<float> scores, string role, Transform container)
@@ -71,22 +79,18 @@ public class GraphManager : MonoBehaviour
         RectTransform graphRectTransform = container.GetComponent<RectTransform>();
         float graphWidth = graphRectTransform.sizeDelta.x;
         float graphHeight = graphRectTransform.sizeDelta.y;
-        float yMax = 80f;                                   // y축 최댓값
-        float xSpacing = graphWidth / (scores.Count - 1);    // 점 간의 x 간격 계산
+        float yMax = 80f;  // y축 최댓값
+        float xSpacing = graphWidth / (scores.Count - 1);    
         Vector2 previousPointPosition = Vector2.zero;
 
-        // 점과 선 생성
+        // 선 생성
         for (int i = 0; i < scores.Count; i++)
         {
-            float xPosition = i * xSpacing;                         // x축 간격 
-
-            // NaN 값일 때 0으로 대체
+            float xPosition = i * xSpacing;                        
             float yValue = float.IsNaN(scores[i]) ? 0f : scores[i];
             float yPosition = (yValue / yMax) * graphHeight;
 
-            // y 값을 제한 (최대 80까지)
-            yPosition = Mathf.Min(yPosition, graphHeight);
-
+            yPosition = Mathf.Min(yPosition, graphHeight);  // y값은 최대 80
             Vector2 currentPointPosition = new Vector2(xPosition + graphWidth / 2 * (-1), yPosition - graphHeight / 2);
 
             // 이전 점과 현재 점 사이에 선 그리기
@@ -148,7 +152,7 @@ public class GraphManager : MonoBehaviour
             // 제목 설정
             if (GameDataManager.Instance.difference20More[i])
             {
-                str += $"{i + 1}DAY (감염률 급상승!)\n";
+                str += $"{i + 1}DAY - 감염률 급상승!\n";
             }
             else
             {
@@ -175,8 +179,8 @@ public class GraphManager : MonoBehaviour
         }        
         feedbackText.text = str;
 
-        // 필터링 적용
-        gameDataManager.ToggleFeedbackVisibility("", true);
+        //원본 백업
+        gameDataManager.originalContent = feedbackText.text;
 
         //  레이아웃 재구성
         feedbackContainer.gameObject.SetActive(false);

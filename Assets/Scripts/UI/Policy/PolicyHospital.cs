@@ -49,8 +49,8 @@ public class PolicyHospital : MonoBehaviour
 
             //소독 버튼을 비활성화 상태로 초기화
             disinfectionButton[index].interactable = false;
-            isClosed[index] = false;       // 모든 병동을 열림 상태로 저장
-            isDisinfected[index] = false;  // 모든 병동을 소독 안 한 상태로 저장
+            isClosed[index] = false;       // 폐쇄x 초기화
+            isDisinfected[index] = false;  // 소독 안 한 상태로 초기화
 
             closingButton[index].onClick.RemoveAllListeners(); // 기존 리스너 제거
             disinfectionButton[index].onClick.RemoveAllListeners();
@@ -58,7 +58,6 @@ public class PolicyHospital : MonoBehaviour
             // 폐쇄 버튼 클릭 시 처리
             closingButton[index].onClick.AddListener(() =>
             {
-                Debug.Log($"PolicyHospital: {index}");
                 BtnSoundManager.Instance.PlayButtonSound();
                 if (!isClosed[index])
                 {
@@ -79,7 +78,7 @@ public class PolicyHospital : MonoBehaviour
             });
         }
 
-        updateButton.onClick.AddListener(() => { OnUpdateCount(); BtnSoundManager.Instance.PlayButtonSound(); });
+        updateButton.onClick.AddListener(() => { UpdateWardCountsPeriodically(); BtnSoundManager.Instance.PlayButtonSound(); });
         UpdateWardCountsPeriodically();
     }
 
@@ -87,7 +86,6 @@ public class PolicyHospital : MonoBehaviour
     void ToggleColsing(int index)
     {
         isClosed[index] = !isClosed[index];
-        Debug.Log($"PolicyHospital: {isClosed[index]}");
         closingOutline[index].color = isClosed[index] ? HexColor("#DC0004") : HexColor("#CED4DA");       // 폐쇄 시 빨간 테두리 이미지 
         UpdateWardCounts();
 
@@ -104,22 +102,34 @@ public class PolicyHospital : MonoBehaviour
     // 소독 버튼 클릭 시 소독 상태 업데이트
     void ToggleDisinfection(int index)
     {
+        var wardCounts = GetStaffAndOutpatientCounts();
+
         if (isClosed[index] && !isDisinfected[index])
         {
-            // 소독 중일 때 비활성화하여 추가 클릭을 방지
-            disinfectionButton[index].interactable = false;
-            disinfectionOutline[index].color = HexColor("#00FF37");    // 소독 시 초록색 테두리
-            disinfectionText[index].text = "소독 중...";
+            // 병동의 인원 수 확인
+            var wardInfo = wardCounts[wards[index]];
+            if (wardInfo.doctorCount == 0 && wardInfo.nurseCount == 0 && wardInfo.outpatientCount == 0 && wardInfo.inpatientCount == 0)
+            {
+                // 소독 중일 때 비활성화하여 추가 클릭을 방지
+                disinfectionButton[index].interactable = false;
+                disinfectionOutline[index].color = HexColor("#00FF37");    // 소독 시 초록색 테두리
+                disinfectionText[index].text = "소독 중...";
 
-            // 소독 시간 대기 후 완료 텍스트로 전환
-            StartCoroutine(DisinfectionTimer(index));
+                // 소독 타이머 시작
+                StartCoroutine(DisinfectionTimer(index));
+            }
+            else
+            {
+                disinfectionText[index].text = "소독 불가: 병동에 인원이 있습니다.";
+            }
+
         }
     }
 
     IEnumerator DisinfectionTimer(int index)
     {
         float elapsedTime = 0f;
-        float disinfectionTime = 30f; // 소독 시간 30초
+        float disinfectionTime = 30f; // 소독 시간
 
         while (elapsedTime < disinfectionTime)
         {
@@ -138,7 +148,6 @@ public class PolicyHospital : MonoBehaviour
 
         // 소독 완료 처리
         isDisinfected[index] = true;
-        //disinfectionText[index].text = "소독 완료";
         disinfectionOutline[index].color = HexColor("#CED4DA");
         PrintButtonState(2, index, true); // 소독 완료 상태를 DB에 저장
         disinfectionButton[index].interactable = false;
@@ -168,15 +177,7 @@ public class PolicyHospital : MonoBehaviour
     {
         int toggleState = isOn ? 1 : 0;
         int wardNumber = wardIndex + 1; // 병동 번호 1부터 시작
-        Debug.Log($"PolicyHospital: {toggleType}.{wardNumber}.{toggleState}");
-
         researchDBManager.AddResearchData(ResearchDBManager.ResearchMode.patient, toggleType, wardNumber, toggleState);
-    }
-
-    // 버튼을 누르면 병동 데이터 업데이트
-    void OnUpdateCount()
-    {
-        UpdateWardCountsPeriodically();
     }
 
     // 병동별 의사, 간호사, 외래환자 수 1초마다 업데이트
@@ -195,27 +196,20 @@ public class PolicyHospital : MonoBehaviour
 
         for (int i = 0; i < closingButton.Length; i++)
         {
+            var wardInfo = wardCounts[wards[i]];
             if (i >= 0 && i <= 3)
             {
-                if (isClosed[i])
+                if (isClosed[i] && wardInfo.doctorCount == 0 && wardInfo.nurseCount == 0 && wardInfo.outpatientCount == 0 && wardInfo.inpatientCount == 0)
                     closingText[i].text = "의사 x0\n간호사 x0\n외래환자 x0";
                 else if (wardCounts.ContainsKey(wards[i]))
-                {
-                    // 병동이 열려있을 때 병동 정보를 출력
-                    var wardInfo = wardCounts[wards[i]];
                     closingText[i].text = $"의사 x{wardInfo.doctorCount}\n간호사 x{wardInfo.nurseCount}\n외래환자 x{wardInfo.outpatientCount}";
-                }
             }
-            else
+            else  //내원병동인 경우
             {
-                if (isClosed[i])
+                if (isClosed[i] && wardInfo.doctorCount == 0 && wardInfo.nurseCount == 0 && wardInfo.outpatientCount == 0 && wardInfo.inpatientCount == 0)
                     closingText[i].text = "의사 x0\n간호사 x0\n내원환자 x0";
                 else if (wardCounts.ContainsKey(wards[i]))
-                {
-                    // 병동이 열려있을 때 병동 정보를 출력
-                    var wardInfo = wardCounts[wards[i]];
                     closingText[i].text = $"의사 x{wardInfo.doctorCount}\n간호사 x{wardInfo.nurseCount}\n내원환자 x{wardInfo.inpatientCount}";
-                }
             }
         }
     }

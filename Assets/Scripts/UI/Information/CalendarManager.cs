@@ -79,6 +79,13 @@ public class CalendarManager : MonoBehaviour
             currentDay = 1; // 한 달 최대 일 수 초과 시 초기화
             IncrementMonth();
         }
+
+        //currentDay가 6일 증가할 때마다(=현실에서 1분) ResearchDBManager의 dayCycleCounter 변수값 증가
+        if (currentDay % 6 == 0)
+        {
+            ResearchDBManager.Instance.dayCycleCounter++;
+        }
+
         UpdateDateText();
     }
 

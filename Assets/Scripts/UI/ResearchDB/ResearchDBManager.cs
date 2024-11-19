@@ -50,7 +50,7 @@ public class ResearchDBManager : MonoBehaviour
     // 리스트 생성 및 DB 저장
     public void AddResearchData(ResearchMode mode, int btnNum, int targetNum, int toggleIsOn)
     {
-        string currentMoment = System.DateTime.Now.ToString("mm:ss");
+        string currentMoment = System.DateTime.Now.ToString("HH:mm:ss");
         string formattedData = $"{dayCycleCounter + 1}.{btnNum}.{targetNum}.{toggleIsOn}.{currentMoment}";
 
         researchRecords[mode].Add((formattedData));  // 연구 메뉴별 버튼의 인덱스와 누른 시간을 튜플 저장

@@ -10,6 +10,8 @@ using MyApp.UserManagement;
 // 로그인 및 회원가입 관련 기능 매니저
 public class AuthManager : MonoBehaviour
 {
+    public static AuthManager Instance { get; private set; }
+
     // 로그인 관련 객체들
     public TMP_InputField loginIdInputField;
     public TMP_InputField loginPasswdInputField;
@@ -35,7 +37,6 @@ public class AuthManager : MonoBehaviour
     public GameObject loginPopup;  // 로그인 팝업창
     public GameObject signupPopup; // 회원가입 팝업창
     public MainMenuController mainMenuController;
-    public UserManager userManager;
     public TutorialController tutorialController;
 
     public string id;
@@ -45,6 +46,19 @@ public class AuthManager : MonoBehaviour
 
     private enum AuthMode { Login, SignUp }
     private AuthMode currentMode;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -65,7 +79,6 @@ public class AuthManager : MonoBehaviour
         signupPopup = Assign(signupPopup, "SignUpCanvas");
         mainMenuController = Assign(mainMenuController, "MainMenuCanvas");
         tutorialController = Assign(tutorialController, "TutorialController");
-        userManager = UserManager.Instance;
 
         // ID 입력 필드와 비밀번호 입력 필드에 대해 유효성 검사를 추가할 수 있습니다
         loginIdInputField.onValidateInput += ValidateIDInput;
@@ -285,27 +298,28 @@ public class AuthManager : MonoBehaviour
     {
         GameDataManager gameDataMager = GameDataManager.Instance;
         ResearchDBManager researchDBManager = ResearchDBManager.Instance;
+        TutorialController tutorialController = FindObjectOfType<TutorialController>();
 
-        if (userManager.ValidateUser(id, password))
+        if (UserManager.Instance.ValidateUser(id, password))
         {
             // 게임 데이터에 유저 정보 저장
-            string name = userManager.GetNameById(id);
+            string name = UserManager.Instance.GetNameById(id);
             gameDataMager.userId = id;
             gameDataMager.userName = name;
             researchDBManager.userNum = id;
             researchDBManager.userName = name;
+            tutorialController.id = id;
+            tutorialController.username = name;
 
             // 유저의 튜토리얼 진행 여부 반환
-            int tutorialStatus = userManager.GetUserTutorialStatus(id);
+            int tutorialStatus = UserManager.Instance.GetUserTutorialStatus(id);
             if (tutorialStatus == 0)
             {
                 tutorialController.SetTutorialCompletionStatus(false);
-                UserManager.Instance.AddUser(id, name, password, 1, " ", " ", "  ");      // 튜토리얼은 진행됐을 테니 미리 1로 전환
             }
             else
             {
                 tutorialController.SetTutorialCompletionStatus(true);
-                Debug.Log("Tutorial: 이미 true임");
             }
 
             // 확인된 유저 정보를 바탕으로 게임 데이터 테이블에 데이터 추가
@@ -328,7 +342,7 @@ public class AuthManager : MonoBehaviour
             return;
         }
 
-        if (userManager.IsIDExists(id))
+        if (UserManager.Instance.IsIDExists(id))
         {
             DisplayMessage("이미 존재하는 사원번호입니다.", Color.red);
             return;
@@ -367,13 +381,13 @@ public class AuthManager : MonoBehaviour
     // ID 유효성 검사
     private bool IsValidID(string id)
     {
-        return id.Length >= 1 && id.Length <= 10 && userManager.IsValidID(id);
+        return id.Length >= 1 && id.Length <= 10 && UserManager.Instance.IsValidID(id);
     }
 
     // 이름 유효성 검사
     private bool IsValidUsername(string username)
     {
-        return username.Length >= 1 && username.Length <= 11 && userManager.IsValidUsername(username);
+        return username.Length >= 1 && username.Length <= 11 && UserManager.Instance.IsValidUsername(username);
     }
 
     // 비밀번호 유효성 검사
