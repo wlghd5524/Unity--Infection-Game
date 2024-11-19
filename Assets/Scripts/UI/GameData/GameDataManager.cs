@@ -159,6 +159,7 @@ public class GameDataManager : MonoBehaviour
                 Time.timeScale = 0;
                 scoreGraphCanvas.SetActive(true);
                 GraphSourceChangeInt();
+                OneClearManager.Instance.CloseDisinfectionMode();
                 yield break;
             }
 

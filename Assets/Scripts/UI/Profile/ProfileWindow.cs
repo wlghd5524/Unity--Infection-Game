@@ -94,7 +94,7 @@ public class ProfileWindow : MonoBehaviour
 
 
         // 버튼 클릭 이벤트에 메서드 추가
-        profileWindowButton.onClick.AddListener(() => { ToggleBigPanel(); BtnSoundManager.Instance.PlayButtonSound(); });
+        profileWindowButton.onClick.AddListener(() => { ToggleBigPanel(); BtnSoundManager.Instance.PlayButtonSound(); OneClearManager.Instance.CloseDisinfectionMode(); });
         profileWindowButtonMinus.onClick.AddListener(() => { ToggleBigPanel(); BtnSoundManager.Instance.PlayButtonSound(); });
         profileWindowButtonPlus.onClick.AddListener(() => { ToggleBigPanel(); BtnSoundManager.Instance.PlayButtonSound(); });
 

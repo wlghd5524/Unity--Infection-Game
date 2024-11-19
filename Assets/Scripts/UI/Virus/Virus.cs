@@ -6,16 +6,11 @@ public class Virus : MonoBehaviour
 
     private float lifetime = 5;              //바이러스 기본 수명 5초
     private InfectionState infectionState;   //감염 상태
-    private OneClearManager oneClearManager;
 
     public static float virusLifetime = 5f;                    //바이러스 수명
     public static float virusDropProbability = 0.01f;          //바이러스가 생성될 확률
     public static float checkInterval = 0.1f;                  //감염 체크 간격
     public static int currentGameLevel_1 = 1;
-    void Start()
-    {
-        oneClearManager = FindObjectOfType<OneClearManager>();
-    }
 
     // 바이러스의 수명 관리
     public void SetLifetime(float time)
@@ -55,7 +50,7 @@ public class Virus : MonoBehaviour
     //클릭 이벤트 처리 메서드
     void OnMouseDown()
     {
-        if(oneClearManager != null && oneClearManager.IsDisinfectionOn())
+        if(OneClearManager.Instance.isDisinfectionOn)
         {
             Virus clickedVirus = GetComponent<Virus>();
             if (clickedVirus != null)

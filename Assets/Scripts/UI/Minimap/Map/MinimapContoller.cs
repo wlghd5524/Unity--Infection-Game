@@ -18,7 +18,7 @@ public class MinimapController : MonoBehaviour
     void Start()
     {
         // 미니맵 클릭 시 큰 맵 패널 열기
-        miniMap.GetComponent<Button>().onClick.AddListener(OpenLargeMap);
+        miniMap.GetComponent<Button>().onClick.AddListener(() => { OpenLargeMap(); OneClearManager.Instance.CloseDisinfectionMode(); });
         // 큰 맵 패널 초기에는 비활성화
         largeMapPanel.SetActive(false);
     }

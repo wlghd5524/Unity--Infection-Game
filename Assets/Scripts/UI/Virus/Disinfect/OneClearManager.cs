@@ -5,11 +5,27 @@ using UnityEngine.UI;
 
 public class OneClearManager : MonoBehaviour
 {
+    public static OneClearManager Instance { get; private set; }
+
     public Button oneClearButton;
     public GameObject guidGreenImage;            //소독중 표지판
     public Texture2D customCursor;                  //소독 커서 이미지
-    private bool isDisinfectionOn = false;       //소독 중인지 여부
+    public bool isDisinfectionOn = false;       //소독 중인지 여부
     private bool isCustomCursorActive = false;   //현재 커서 상태 추적
+
+    void Awake()
+    {
+        // 싱글톤 초기화
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지하고 싶다면 사용
+        }
+        else
+        {
+            Destroy(gameObject); // 이미 Instance가 있다면 새로운 객체는 제거
+        }
+    }
 
     void Start()
     {
@@ -44,20 +60,25 @@ public class OneClearManager : MonoBehaviour
         }
         else
         {
-            guidGreenImage.SetActive(false);
-
-            //소독 모드 OFF -> 원래 커서로 복원
-            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            isCustomCursorActive = false;
+            CloseDisinfectionMode();
         }
+    }
+
+    public void CloseDisinfectionMode()
+    {
+        guidGreenImage.SetActive(false);
+
+        //소독 모드 OFF -> 원래 커서로 복원
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        isCustomCursorActive = false;
     }
 
     // 소독 기능 활성화 상태 확인
     // Virus 스크립트 -> ture면 마우스 클릭으로 하나씩 소독 시작
-    public bool IsDisinfectionOn()
+    /*public bool IsDisinfectionOn()
     {
         return isDisinfectionOn;
-    }
+    }*/
 
     // 자동 할당 코드 
     private T Assign<T>(T obj, string objectName) where T : Object
