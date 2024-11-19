@@ -163,15 +163,18 @@ public class Ward : MonoBehaviour
             if (inpatient == null || inpatient.isExiting) continue;
 
             BedWaypoint nextBed = wards
-                .Where(ward => ward != this && ward.num >= 4 && ward.num <= 7 && !ward.isClosed)
+                .Where(ward => ward.num >= 4 && ward.num <= 7 && !ward.isClosed)
                 .SelectMany(ward => ward.beds)
                 .FirstOrDefault(bed => bed.patient == null);
 
             if (nextBed != null)
             {
                 nextBed.patient = inpatient.gameObject;
-                inpatient.StopCoroutine(inpatient.TransferToAvailableWard(inpatient.bedWaypoint));
-                inpatient.StartCoroutine(inpatient.TransferToAvailableWard(nextBed));
+                if(inpatient.prevCoroutine != null)
+                {
+                    inpatient.StopCoroutine(inpatient.prevCoroutine);
+                }
+                inpatient.prevCoroutine = inpatient.StartCoroutine(inpatient.TransferToAvailableWard(nextBed));
             }
             else
             {

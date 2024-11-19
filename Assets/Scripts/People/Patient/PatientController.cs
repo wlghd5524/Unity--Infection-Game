@@ -37,6 +37,9 @@ public class PatientController : NPCController
     public bool excutedQC = false;  //격리 시간 재는 코루틴 실행 여부
 
     public ProfileWindow profileWindow;
+
+    public Coroutine prevCoroutine;
+    public Coroutine moveCoroutine;
     public void Activate()
     {
         do
@@ -64,11 +67,11 @@ public class PatientController : NPCController
         }
         if (personComponent.role == Role.EmergencyPatient)
         {
-            StartCoroutine(EmergencyPatientMove());
+            moveCoroutine = StartCoroutine(EmergencyPatientMove());
         }
         if (personComponent.role == Role.ICUPatient)
         {
-            StartCoroutine(ICUPateintMove());
+            moveCoroutine = StartCoroutine(ICUPateintMove());
         }
     }
 
@@ -107,7 +110,7 @@ public class PatientController : NPCController
             }
             else
             {
-                StartCoroutine(QuarantineMove());
+                moveCoroutine = StartCoroutine(QuarantineMove());
             }
         }
         if (isWaiting)
@@ -148,7 +151,7 @@ public class PatientController : NPCController
             }
             // 목적지에 도착했는지 확인
             if (Managers.NPCManager.isArrived(agent))
-                StartCoroutine(InpatientMove());
+                moveCoroutine = StartCoroutine(InpatientMove());
         }
 
         if (personComponent.role == Role.Outpatient)
@@ -178,7 +181,7 @@ public class PatientController : NPCController
                 else
                 {
                     // 다음 웨이포인트로 이동
-                    StartCoroutine(OutpatientMove());
+                    moveCoroutine = StartCoroutine(OutpatientMove());
                 }
             }
         }
@@ -331,6 +334,17 @@ public class PatientController : NPCController
                         doctorSignal = false;
                         AddInpatientWaypoints();
                         personComponent.role = Role.Inpatient;
+
+                        Waypoint[] passPoints = Managers.NPCManager.passPointTransform.GetComponentsInChildren<Waypoint>();
+                        agent.SetDestination(passPoints[1].GetSampledPosition());
+                        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
+                        if (6 <= ward && ward <= 7)
+                        {
+                            agent.SetDestination(passPoints[0].GetSampledPosition());
+                            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+                        }
+
                         agent.SetDestination(bedWaypoint.GetRandomPointInRange());
                         isWaiting = true;
                         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
@@ -725,14 +739,12 @@ public class PatientController : NPCController
         isExiting = true;
         isWaiting = true;
         waypoints.Clear();
-        StopCoroutine(OutpatientMove());
-        StopCoroutine(EmergencyPatientMove());
-        StopCoroutine(InpatientMove());
+        StopCoroutine(moveCoroutine);
         agent.ResetPath();
 
         wardComponent.RemoveFromPatientList(this);
         profileWindow.RemoveProfile(personComponent.ID);
-
+        yield return new WaitUntil(() => Time.timeScale > 0);
         //Debug.Log($"{gameObject.name} 퇴원 시작");
         if (standingState != StandingState.Standing)
         {
@@ -758,6 +770,7 @@ public class PatientController : NPCController
         // 3층에 있는 NPC
         else if (gameObject.layer == 11 || gameObject.layer == 12 || gameObject.layer == 17)
         {
+            
             agent.SetDestination(Managers.NPCManager.passPointTransform.GetChild(2).GetComponent<Waypoint>().GetSampledPosition());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         }
@@ -768,15 +781,10 @@ public class PatientController : NPCController
             bedWaypoint.patient = null;
         }
         bedWaypoint = null;
-
         agent.SetDestination(Managers.NPCManager.gatewayTransform.Find("Gateway (" + Random.Range(0, 2) + ")").GetComponent<Waypoint>().GetSampledPosition());
-
-
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
-
         Managers.ObjectPooling.DeactivatePatient(gameObject);
-
     }
 
     public void AddInpatientWaypoints()
@@ -802,7 +810,7 @@ public class PatientController : NPCController
         monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
         monthlyReportUI.AddIncomeDetail("입원비", MoneyManager.HospitalizationFee * dividedTime);
 
-        StopCoroutine(InpatientMove());
+        StopCoroutine(moveCoroutine);
         StartCoroutine(ExitHospital());
     }
     public IEnumerator QuarantineTimeCounter()
@@ -836,19 +844,18 @@ public class PatientController : NPCController
         isWaiting = true;
         StopCoroutine(InpatientMove());
         bedWaypoint = nextBed;
-
-        if (standingState != StandingState.Standing)
-        {
-            Managers.NPCManager.PlayWakeUpAnimation(this);
-            yield return YieldInstructionCache.WaitForSeconds(5.0f);
-        }
-
-        standingState = StandingState.Standing;
         wardComponent.inpatients.Remove(this);
         ward = bedWaypoint.ward;
         wardComponent = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")].GetComponentInParent<Ward>();
         waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "InpatientWaypoints")];
         wardComponent.inpatients.Add(this);
+        if (standingState != StandingState.Standing)
+        {
+            Managers.NPCManager.PlayWakeUpAnimation(this);
+            yield return YieldInstructionCache.WaitForSeconds(5.0f);
+        }
+        standingState = StandingState.Standing;
+        
         prevWaypointIndex = -1;
         doctorSignal = false;
         nurseSignal = false;
@@ -858,7 +865,7 @@ public class PatientController : NPCController
         agent.isStopped = false;
         agent.SetDestination(bedWaypoint.GetMiddlePointInRange());
         isWaiting = false;
-        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        //yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         
     }
 }
