@@ -199,6 +199,7 @@ public class Person : MonoBehaviour
         NPCManager.Instance.UnhighlightNPC(gameObject);
         //Debug.Log("감염자 색상 풀림" + gameObject.name);
         status = InfectionState.Normal;
+        gameObject.GetComponent<NPCController>().wardComponent.infectedNPC--;
         isImmune = true;
     }
     public void Recover()
