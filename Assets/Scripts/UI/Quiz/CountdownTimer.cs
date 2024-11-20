@@ -6,32 +6,25 @@ using UnityEngine.UI;
 
 public class CountdownTimer : MonoBehaviour
 {
-    //public TMP_Text timerText;        // 타이머 UI
     public TextMeshProUGUI timerText;
-    public Image shadowImage;         // Shadow 이미지
+    public Image shadowImage;
+
+    private float maxDuration;        // 최대 타이머 시간
     private float timeRemaining;      // 남은 시간
     private bool isTiming;            // 타이머 진행 중인지 확인
     private System.Action onTimerEnd; // 타이머 종료 시 호출될 콜백
-    private float maxDuration;        // 최대 타이머 시간
 
     void Start()
     {
-        //오브젝트 자동할당
-        timerText = Assign(timerText, "TimerText");
-        shadowImage = Assign(shadowImage, "TimerShadow");
-
-        if (timerText == null)
-            Debug.LogError("Timertext is null");
-        if (shadowImage == null)
-            Debug.LogError("shadowImage is null");
+        timerText = GameObject.Find("TimerText").GetComponent<TextMeshProUGUI>();
+        shadowImage = GameObject.Find("TimerShadow").GetComponent<Image>();
     }
 
     void Update()
     {
-        if (isTiming)
+        if (isTiming && timeRemaining > 0)
         {
-            timeRemaining -= Time.deltaTime;
-            UpdateTimerUI();
+            timeRemaining -= Time.unscaledDeltaTime;
 
             if (timeRemaining <= 0)
             {
@@ -39,23 +32,9 @@ public class CountdownTimer : MonoBehaviour
                 timeRemaining = 0;
                 OnTimerEnd();
             }
-        }
-    }
 
-    // 자동 할당 코드  //추가
-    private T Assign<T>(T obj, string objectName) where T : Object
-    {
-        if (obj == null)
-        {
-            GameObject foundObject = GameObject.Find(objectName);
-            if (foundObject != null)
-            {
-                if (typeof(Component).IsAssignableFrom(typeof(T))) obj = foundObject.GetComponent(typeof(T)) as T;
-                else if (typeof(GameObject).IsAssignableFrom(typeof(T))) obj = foundObject as T;
-            }
-            if (obj == null) Debug.LogError($"{objectName} 를 찾을 수 없습니다.");
+            UpdateTimerUI();
         }
-        return obj;
     }
 
     // 타이머 시작 메서드

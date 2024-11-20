@@ -83,17 +83,13 @@ public class GraphManager : MonoBehaviour
         float xSpacing = graphWidth / (scores.Count - 1);    // 점 간의 x 간격 계산
         Vector2 previousPointPosition = Vector2.zero;
 
-        // 점과 선 생성
+        // 선 생성
         for (int i = 0; i < scores.Count; i++)
         {
-            float xPosition = i * xSpacing;    // x축 간격
-
-            // NaN 값일 때 0으로 대체
+            float xPosition = i * xSpacing;   
             float yValue = float.IsNaN(scores[i]) ? 0f : scores[i];
-            float yPosition = (yValue / yMax) * graphHeight;
-
-            // y 값을 제한 (최대 80까지)
-            yPosition = Mathf.Min(yPosition, graphHeight);
+            float yPosition = (yValue / yMax) * graphHeight;  
+            yPosition = Mathf.Min(yPosition, graphHeight);  // y 값 최대 80으로 제한
 
             Vector2 currentPointPosition = new Vector2(xPosition + graphWidth / 2 * (-1), yPosition - graphHeight / 2);
 

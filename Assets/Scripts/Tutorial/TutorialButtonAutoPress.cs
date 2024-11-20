@@ -5,9 +5,20 @@ using UnityEngine.UI;
 public class TutorialButtonAutoPress : TutorialBase
 {
     [SerializeField] private Image targetImage; // 목표로 하는 Image
+    [SerializeField] private Canvas targetCanvas; // 목표 버튼이 포함된 Canvas
+    [SerializeField] private int elevatedSortingOrder = 10; // 튜토리얼 동안 사용할 높은 sortingOrder 값
+
+    private int originalSortingOrder; // 원래 sortingOrder 값을 저장
 
     public override void Enter()
     {
+        if (targetCanvas != null)
+        {
+            // 원래 sortingOrder 값을 저장하고 높은 값으로 설정
+            originalSortingOrder = targetCanvas.sortingOrder;
+            targetCanvas.sortingOrder = elevatedSortingOrder;
+        }
+
         if (targetImage != null)
         {
             // RaycastTarget이 켜져있는지 확인하고 클릭 가능하게 만듦
@@ -32,6 +43,11 @@ public class TutorialButtonAutoPress : TutorialBase
     public override void Exit()
     {
         // 필요시 종료 시 추가 로직 작성 가능
+        // 원래 sortingOrder 값으로 되돌리기
+        if (targetCanvas != null)
+        {
+            targetCanvas.sortingOrder = originalSortingOrder;
+        }
     }
 
     private void SimulateClickOnImage()

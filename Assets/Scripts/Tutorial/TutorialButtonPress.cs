@@ -6,14 +6,25 @@ public class TutorialButtonPress : TutorialBase
 {
     [SerializeField] private Button buttonToPress; // 일반 버튼
     [SerializeField] private Image closeButton;    // 예외적으로 처리할 Image 버튼
+    [SerializeField] private Canvas targetCanvas;  // 목표 버튼이 포함된 Canvas
+    [SerializeField] private int elevatedSortingOrder = 10; // 튜토리얼 동안 사용할 높은 sortingOrder 값
+
     private bool isButtonPressed = false;
     private bool tutorialCompleted = false;
+    private int originalSortingOrder; // 원래 sortingOrder 값을 저장
 
     public override void Enter()
     {
         // 상태 초기화
         isButtonPressed = false;
         tutorialCompleted = false;
+
+        // Canvas의 원래 sortingOrder 값을 저장하고 높은 값으로 설정
+        if (targetCanvas != null)
+        {
+            originalSortingOrder = targetCanvas.sortingOrder;
+            targetCanvas.sortingOrder = elevatedSortingOrder;
+        }
 
         // 일반 버튼에 클릭 이벤트 리스너 추가
         if (buttonToPress != null)
@@ -49,6 +60,12 @@ public class TutorialButtonPress : TutorialBase
 
     public override void Exit()
     {
+        // 원래 sortingOrder 값으로 되돌리기
+        if (targetCanvas != null)
+        {
+            targetCanvas.sortingOrder = originalSortingOrder;
+        }
+
         // 리스너 제거 및 상태 초기화
         if (buttonToPress != null)
         {

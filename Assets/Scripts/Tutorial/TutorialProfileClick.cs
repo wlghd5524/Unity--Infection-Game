@@ -4,10 +4,21 @@ using System.Collections;
 
 public class TutorialProfileClick : TutorialBase
 {
+    [SerializeField] private Canvas targetCanvas;  // 클릭 대상이 포함된 Canvas
+    [SerializeField] private int elevatedSortingOrder = 10; // 튜토리얼 동안 사용할 높은 sortingOrder 값
+
     private bool isClicked = false;
+    private int originalSortingOrder; // 원래 sortingOrder 값을 저장
 
     public override void Enter()
     {
+        // Canvas의 원래 sortingOrder 값을 저장하고 높은 값으로 설정
+        if (targetCanvas != null)
+        {
+            originalSortingOrder = targetCanvas.sortingOrder;
+            targetCanvas.sortingOrder = elevatedSortingOrder;
+        }
+
         Debug.Log("Click on any profile to proceed.");
     }
 
@@ -50,6 +61,10 @@ public class TutorialProfileClick : TutorialBase
 
     public override void Exit()
     {
-        // 필요 시 종료 로직 추가
+        // 원래 sortingOrder 값으로 되돌리기
+        if (targetCanvas != null)
+        {
+            targetCanvas.sortingOrder = originalSortingOrder;
+        }
     }
 }

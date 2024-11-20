@@ -31,6 +31,8 @@ public class TutorialController : MonoBehaviour
     [SerializeField] private Button yesButton;
     [SerializeField] private Button noButton;
 
+    public GameObject blockPanel; // 칸막이 역할 (버튼 막기용)
+
     // 로그인 시스템으로부터 튜토리얼 완료 여부를 받는 메서드 (가정)
     public void SetTutorialCompletionStatus(bool completed)
     {
@@ -73,6 +75,13 @@ public class TutorialController : MonoBehaviour
         // "아니요"를 선택했거나 튜토리얼을 처음 진행할 때 실행
         tutorialSkipPromptUI.SetActive(false);  // UI 창 비활성화
         maskController = GetComponent<MaskController>();
+
+        // 칸막이 활성화
+        if (blockPanel != null)
+        {
+            blockPanel.SetActive(true);
+        }
+
         SetNextTutorial();
     }
 
@@ -119,6 +128,11 @@ public class TutorialController : MonoBehaviour
         GoToGame.Instance.calendarManager.StartCalendar();  // 튜토리얼 끝나면 시간 흐름
         newscontroller.TriggerVirusOutbreakNews();          // 뉴스 발생
         UserManager.Instance.AddUser(id, username, AuthManager.Instance.password, 1, " ", " ", " ");      // 튜토리얼은 진행됐을 테니 미리 1로 전환
+        // 칸막이 비활성화
+        if (blockPanel != null)
+        {
+            blockPanel.SetActive(false);
+        }
     }
 
     // 현재 튜토리얼에서 대화가 나오면 게임을 멈춥니다.
