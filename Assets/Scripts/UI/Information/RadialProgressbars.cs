@@ -7,13 +7,10 @@ using TMPro;
 public class RadialProgressbars : MonoBehaviour
 {
     private float hospitalInfectionRate;        // 병원 내 감염률
-    private float hospitalStressAverageRate;    // 병원 내 평균 스트레스 지수
 
     public TextMeshProUGUI hospitalInfectionRateText;
-    public TextMeshProUGUI hospitalStressAverageRateText;
 
     public Image hospitalInfectionRateBar;
-    public Image hospitalStressAverageRateBar;
 
     private bool isUpdating = false; // 코루틴이 실행 중인지 체크하는 변수
     private bool isTenseBGMPlaying = false; // 긴박한 BGM 재생 여부
@@ -27,14 +24,10 @@ public class RadialProgressbars : MonoBehaviour
     void Start()
     {
         hospitalInfectionRateText = Assign(hospitalInfectionRateText, "HospitalInfectionRateText");
-        hospitalStressAverageRateText = Assign(hospitalStressAverageRateText, "HospitalStressAverageRateText");
         hospitalInfectionRateBar = Assign(hospitalInfectionRateBar, "HospitalInfectionRateBar");
-        hospitalStressAverageRateBar = Assign(hospitalStressAverageRateBar, "HospitalStressAverageRateBar");
 
         hospitalInfectionRateText.text = "0.0%";
-        hospitalStressAverageRateText.text = "0.0%";
         hospitalInfectionRateBar.fillAmount = 0;
-        hospitalStressAverageRateBar.fillAmount = 0;
 
         audioManager = FindObjectOfType<AudioManager>();
     }

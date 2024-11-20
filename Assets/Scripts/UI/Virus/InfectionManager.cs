@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,14 +10,15 @@ public class InfectionManager
     public static InfectionManager Instance { get { return _instance; } }
     public Button allClearButton;
 
-    public int infectionProbability = 30;
+
+    public int infectionProbability = 100;
 
     //스테이지 감염병 종류에 따른 감염 확률 매핑
     private Dictionary<int, float> probabilityMapping = new Dictionary<int, float>();
 
     //유니티에서 테스트를 위한 감염 확률 변수 (테스트 단계에서만 사용, 배포 단계에선 제외)
-    public int stage1InfectionProbability = 30;
-    public int stage2InfectionProbability = 20;
+    public int stage1InfectionProbability = 100;
+    public int stage2InfectionProbability = 120;
 
     public void Init()
     {
@@ -64,7 +66,12 @@ public class InfectionManager
 
         foreach (var ward in wards)
         {
-            totalInfected += ward.infectedNPC;
+            totalInfected += ward.doctors.Count(d => d.infectionController.isInfected)
+                + ward.nurses.Count(n => n.infectionController.isInfected)
+                + ward.outpatients.Count(o => o.infectionController.isInfected)
+                + ward.inpatients.Count(i => i.infectionController.isInfected)
+                + ward.emergencyPatients.Count(e => e.infectionController)
+                + ward.icuPatients.Count(c => c.infectionController.isInfected);
             totalNPCs += ward.totalOfNPC;
         }
 
@@ -72,7 +79,7 @@ public class InfectionManager
         {
             return 0f; // 병원 전체에 NPC가 없으면 감염률 0%
         }
-
+        Debug.Log($"감염률 계산 : {totalInfected} / {totalNPCs} = {totalInfected / totalNPCs} ");
         return (totalInfected / totalNPCs) * 100f; // 전체 감염률을 퍼센트로 계산
     }
 

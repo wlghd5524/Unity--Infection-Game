@@ -187,22 +187,60 @@ public class PolicyItem : MonoBehaviour
                 if (person.Inventory.TryGetValue(itemName, out Item item))
                 {
                     item.isEquipped = isEquipping;
+                    person.UpdateInfectionResistance(); // 방어율 갱신
 
                     // 겹치는 아이템 해제 처리
                     HandleItemExclusivity(person, itemName, jobName, isEquipping, itemInstance);
 
                     // Level C 장착 시 나머지 아이템 해제
+                    NPCController npcController = person.GetComponent<NPCController>();
                     if (isEquipping && itemName == "Level C")
                     {
-                        UnequipAllExcept(person, "Level C", jobName, itemInstance);
-                        NPCController npcController = person.GetComponent<NPCController>();
-                        npcController.meshRenderer.enabled = !isEquipping;
-                        npcController.protectedGear.meshRenderer.enabled = isEquipping;
+                        UnequipAllExcept(person, "Level C", jobName, itemInstance, isEquipping);
+                        Debug.Log($"Level C 해제: {person.Name}");
+                        npcController.meshRenderer.enabled = true;
+                        npcController.protectedGear.meshRenderer.enabled = false;
+
                     }
+                    else if (!isEquipping && itemName == "Level C")
+                    {
+                        // Level C 해제 시 외형 복구
+                        UnequipAllExcept(person, "Level C", jobName, itemInstance, isEquipping);
+                        Debug.Log($"Level C 착용: {person.Name}");
+                        npcController.meshRenderer.enabled = false;
+                        npcController.protectedGear.meshRenderer.enabled = true;
+
+                    }
+                    else if (itemName != "Level C" && person.Inventory.ContainsKey("Level C") && person.Inventory["Level C"].isEquipped)
+                    {
+                        person.Inventory["Level C"].isEquipped = false;
+                        equippedStatesByJob["Level C"][jobName] = false;
+
+                        // UI에서 `Level C` 토글 해제
+                        Transform contentTransform = itemInstance.transform.parent;
+                        foreach (Transform itemPrefab in contentTransform)
+                        {
+                            if (itemPrefab.name.Contains("ItemInfoPrefab_"))
+                            {
+                                TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
+                                if (itemNameText.text == "Level C")
+                                {
+                                    Slider levelCSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
+                                    levelCSwitch.value = 0; // `Level C` 해제
+                                    Debug.Log($"Level C 착용: {person.Name}");
+                                    npcController.meshRenderer.enabled = false;
+                                    npcController.protectedGear.meshRenderer.enabled = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
         }
 
+        // Canvas 갱신은 루프 바깥에서 호출
         Canvas.ForceUpdateCanvases();
     }
 
@@ -218,27 +256,30 @@ public class PolicyItem : MonoBehaviour
         { "라텍스 장갑", "일회용 장갑" }
     };
 
-        // 만약 착용 상태 변경 시 겹치는 아이템이 존재하면 해제
+        // 현재 아이템이 겹치는 아이템 목록에 존재하는 경우만 처리
         if (isEquipping && exclusiveItems.ContainsKey(itemName))
         {
             string conflictingItemName = exclusiveItems[itemName];
 
-            if (person.Inventory.TryGetValue(conflictingItemName, out Item conflictingItem))
+            // 만약 겹치는 아이템이 착용 중이면 해제
+            if (person.Inventory.TryGetValue(conflictingItemName, out Item conflictingItem) && conflictingItem.isEquipped)
             {
                 conflictingItem.isEquipped = false;
                 equippedStatesByJob[conflictingItemName][jobName] = false;
 
-                // 다른 ItemInfoPrefab에서 해당 스위치를 찾아서 끄기
+                // UI 업데이트
                 Transform contentTransform = itemInstance.transform.parent;
                 foreach (Transform itemPrefab in contentTransform)
                 {
-                    if (itemPrefab.name.Contains("ItemInfoPrefab_") && itemPrefab != itemInstance.transform)
+                    if (itemPrefab.name.Contains("ItemInfoPrefab_"))
                     {
-                        Transform conflictingSwitchTransform = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch");
-                        if (conflictingSwitchTransform != null)
+                        TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
+
+                        if (itemNameText.text == conflictingItemName)
                         {
-                            Slider conflictingSwitch = conflictingSwitchTransform.GetComponent<Slider>();
+                            Slider conflictingSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
                             conflictingSwitch.value = 0;
+                            break;
                         }
                     }
                 }
@@ -247,35 +288,60 @@ public class PolicyItem : MonoBehaviour
     }
 
     // Level C 장착 시 다른 아이템 모두 해제
-    void UnequipAllExcept(Person person, string exclusiveItemName, string jobName, GameObject itemInstance)
+    void UnequipAllExcept(Person person, string exclusiveItemName, string jobName, GameObject itemInstance, bool isEquipping)
     {
         foreach (var itemEntry in person.Inventory)
         {
             string itemName = itemEntry.Key;
             Item item = itemEntry.Value;
 
+            // Level C를 제외한 모든 아이템 해제
             if (itemName != exclusiveItemName && item.isEquipped)
             {
                 item.isEquipped = false;
                 equippedStatesByJob[itemName][jobName] = false;
 
-                // UI에서 해당 아이템의 토글 상태 해제
+                // UI 업데이트 - 해당 아이템의 토글 상태 해제
                 Transform contentTransform = itemInstance.transform.parent;
                 foreach (Transform itemPrefab in contentTransform)
                 {
-                    if (itemPrefab.name.Contains("ItemInfoPrefab_") && itemPrefab != itemInstance.transform)
+                    if (itemPrefab.name.Contains("ItemInfoPrefab_"))
                     {
-                        Transform itemSwitchTransform = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch");
-                        if (itemSwitchTransform != null)
+                        TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
+                        if (itemNameText.text == itemName)
                         {
-                            Slider itemSwitch = itemSwitchTransform.GetComponent<Slider>();
-                            itemSwitch.value = 0; // 이벤트 없이 UI 슬라이더 값 설정
+                            Slider itemSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
+                            itemSwitch.value = 0;
+                            break;
                         }
                     }
                 }
             }
         }
+        // `Level C`를 착용 중일 때 다른 아이템 착용 시 `Level C` 해제 처리
+        if (exclusiveItemName != "Level C" && person.Inventory.ContainsKey("Level C") && person.Inventory["Level C"].isEquipped)
+        {
+            person.Inventory["Level C"].isEquipped = false;
+            equippedStatesByJob["Level C"][jobName] = false;
+
+            // UI에서 `Level C` 토글 해제
+            Transform contentTransform = itemInstance.transform.parent;
+            foreach (Transform itemPrefab in contentTransform)
+            {
+                if (itemPrefab.name.Contains("ItemInfoPrefab_"))
+                {
+                    TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
+                    if (itemNameText.text == "Level C")
+                    {
+                        Slider levelCSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
+                        levelCSwitch.value = 0; // `Level C` 해제
+                        break;
+                    }
+                }
+            }
+        }
     }
+
 
 
 
@@ -299,4 +365,3 @@ public class PolicyItem : MonoBehaviour
         };
     }
 }
-

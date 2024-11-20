@@ -55,6 +55,12 @@ public class NPCController : MonoBehaviour
     {
         if (other.GetComponent<WardRender>() != null && !isInCurrentWard)
         {
+            gameObject.layer = other.gameObject.layer;
+            // 자식 오브젝트도 레이어 변경
+            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                child.gameObject.layer = other.gameObject.layer;
+            }
             string layerName = LayerMask.LayerToName(gameObject.layer);
             switch (layerName)
             {

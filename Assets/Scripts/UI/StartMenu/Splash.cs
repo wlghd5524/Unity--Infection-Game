@@ -60,7 +60,7 @@ public class Splash : MonoBehaviour
         yield return StartCoroutine(FadeText(splashText, 0f, 1f, fadeDuration));
 
         // 사용자가 클릭할 때까지 대기
-        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+        yield return YieldInstructionCache.WaitForSeconds(1f);
 
         startGameOverlay.SetActive(false);
 
