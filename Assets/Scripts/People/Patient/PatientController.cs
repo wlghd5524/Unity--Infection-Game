@@ -748,11 +748,8 @@ public class PatientController : NPCController
         profileWindow.RemoveProfile(personComponent.ID);
         yield return new WaitUntil(() => Time.timeScale > 0);
         //Debug.Log($"{gameObject.name} 퇴원 시작");
-        if (standingState != StandingState.Standing)
-        {
-            Managers.NPCManager.PlayWakeUpAnimation(this);
-            yield return YieldInstructionCache.WaitForSeconds(5.0f);
-        }
+        Managers.NPCManager.PlayWakeUpAnimation(this);
+        yield return YieldInstructionCache.WaitForSeconds(5.0f);
         Managers.NPCManager.PlayWakeUpAnimation(this);
 
         // 5층에 있는 NPC

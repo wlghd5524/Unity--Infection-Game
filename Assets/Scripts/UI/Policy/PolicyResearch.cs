@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System.Linq;
-using OpenCover.Framework.Model;
 
 public class PolicyResearch : MonoBehaviour
 {

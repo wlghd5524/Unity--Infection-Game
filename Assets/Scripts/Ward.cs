@@ -136,16 +136,12 @@ public class Ward : MonoBehaviour
         {
             PatientController patient = outpatients[i];
             if (patient == null) continue;
-
-            if (patient.waypointIndex == 3)
-            {
-                patient.StopAllCoroutines();
-                patient.agent.isStopped = false;
-            }
-            else if (patient.waypointIndex == 4)
+            if (patient.waypointIndex == 4)
             {
                 continue;
             }
+            patient.StopAllCoroutines();
+            patient.agent.isStopped = false;
             bool moved = TryMovePatientToAdjacentWard(patient, index);
             if (!moved)
             {
@@ -249,6 +245,7 @@ public class Ward : MonoBehaviour
             patient.waypoints.Clear();
             patient.isWaitingForDoctor = false;
             patient.waypointIndex = 0;
+            patient.isWaiting = false;
             return true;
         }
         return false;

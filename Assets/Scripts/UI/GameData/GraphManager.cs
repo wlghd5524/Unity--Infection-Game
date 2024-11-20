@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using TMPro;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
-using UnityEngine.XR;
 
 public class GraphManager : MonoBehaviour
 {
