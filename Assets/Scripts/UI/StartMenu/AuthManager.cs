@@ -130,7 +130,7 @@ public class AuthManager : MonoBehaviour
     private char ValidatePasswordInput(string text, int charIndex, char addedChar)
     {
         // 영어 알파벳 소문자 또는 숫자인 경우에만 입력을 허용
-        if (char.IsLower(addedChar) || char.IsDigit(addedChar))
+        if (char.IsLower(addedChar) || char.IsDigit(addedChar) || char.IsPunctuation(addedChar) || char.IsSymbol(addedChar))
         {
             return addedChar;
         }
