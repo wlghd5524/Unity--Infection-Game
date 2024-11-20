@@ -202,13 +202,21 @@ public class AuthManager : MonoBehaviour
         }
 
         // 비밀번호 입력 필드에 포커스되어 있을 때 IME 끄기
-        if (loginPasswdInputField.isFocused || signUpPasswdInputField.isFocused || signUpCheckpasswdInputField.isFocused)
+        if (loginPasswdInputField.isFocused || signUpPasswdInputField.isFocused || signUpCheckpasswdInputField.isFocused || loginIdInputField.isFocused || signupIdInputField.isFocused)
         {
             Input.imeCompositionMode = IMECompositionMode.Off;
         }
         else
         {
-            Input.imeCompositionMode = IMECompositionMode.Auto;
+            // 회원가입의 이름 입력 필드에 포커스되어 있을 때 IME를 활성화
+            if (signupUsernameInputField.isFocused)
+            {
+                Input.imeCompositionMode = IMECompositionMode.On;
+            }
+            else
+            {
+                Input.imeCompositionMode = IMECompositionMode.Auto;
+            }
         }
     }
 
@@ -300,37 +308,44 @@ public class AuthManager : MonoBehaviour
         ResearchDBManager researchDBManager = ResearchDBManager.Instance;
         TutorialController tutorialController = FindObjectOfType<TutorialController>();
 
-        if (UserManager.Instance.ValidateUser(id, password))
+        // 아이디 유효성 검사
+        if (!UserManager.Instance.IsIDExists(id))
         {
-            // 게임 데이터에 유저 정보 저장
-            string name = UserManager.Instance.GetNameById(id);
-            gameDataMager.userId = id;
-            gameDataMager.userName = name;
-            researchDBManager.userNum = id;
-            researchDBManager.userName = name;
-            tutorialController.id = id;
-            tutorialController.username = name;
+            DisplayMessage("사용자 정보가 존재하지 않습니다.", Color.red);
+            return;
+        }
 
-            // 유저의 튜토리얼 진행 여부 반환
-            int tutorialStatus = UserManager.Instance.GetUserTutorialStatus(id);
-            if (tutorialStatus == 0)
-            {
-                tutorialController.SetTutorialCompletionStatus(false);
-            }
-            else
-            {
-                tutorialController.SetTutorialCompletionStatus(true);
-            }
+        // 비밀번호 유효성 검사
+        if (!UserManager.Instance.ValidateUser(id, password))
+        {
+            DisplayMessage("비밀번호가 틀렸습니다.", Color.red);
+            return;
+        }
 
-            // 확인된 유저 정보를 바탕으로 게임 데이터 테이블에 데이터 추가
-            gameDataMager.InsertInitialData();
-            researchDBManager.SendResearchDataToServer();
-            StartCoroutine(LoginSuccessCoroutine());
+        // 게임 데이터에 유저 정보 저장
+        string name = UserManager.Instance.GetNameById(id);
+        gameDataMager.userId = id;
+        gameDataMager.userName = name;
+        researchDBManager.userNum = id;
+        researchDBManager.userName = name;
+        tutorialController.id = id;
+        tutorialController.username = name;
+
+        // 유저의 튜토리얼 진행 여부 반환
+        int tutorialStatus = UserManager.Instance.GetUserTutorialStatus(id);
+        if (tutorialStatus == 0)
+        {
+            tutorialController.SetTutorialCompletionStatus(false);
         }
         else
         {
-            DisplayMessage("사용자 정보가 존재하지 않습니다.", Color.red);
+            tutorialController.SetTutorialCompletionStatus(true);
         }
+
+        // 확인된 유저 정보를 바탕으로 게임 데이터 테이블에 데이터 추가
+        gameDataMager.InsertInitialData();
+        researchDBManager.SendResearchDataToServer();
+        StartCoroutine(LoginSuccessCoroutine());
     }
 
     // 회원가입 처리

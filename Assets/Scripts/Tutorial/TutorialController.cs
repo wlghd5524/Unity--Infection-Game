@@ -115,7 +115,8 @@ public class TutorialController : MonoBehaviour
         currentTutorial = null;
         Debug.Log("Compleye All");
         newscontroller = FindObjectOfType<NewsController>();
-        Managers.PatientCreator.startSignal = true;         // 튜토리얼 끝나면 npc 생성 시작
+        Managers.PatientCreator.startSignal = true;         // 튜토리얼 끝나면 외래환자 생성 시작
+        //Managers.PatientCreator.Init();                     // 입원환자 시작
         GoToGame.Instance.calendarManager.StartCalendar();  // 튜토리얼 끝나면 시간 흐름
         newscontroller.TriggerVirusOutbreakNews();          // 뉴스 발생
         UserManager.Instance.AddUser(id, username, AuthManager.Instance.password, 1, " ", " ", " ");      // 튜토리얼은 진행됐을 테니 미리 1로 전환
