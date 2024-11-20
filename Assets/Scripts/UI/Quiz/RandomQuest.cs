@@ -8,21 +8,19 @@ using MyApp.DataAccess;
 
 public class RandomQuest : MonoBehaviour
 {
-    // UI references
+    // UI
     public Button[] answerButton;
     public Button[] levelButton;
     public GameObject clickbtn;
-    public TextMeshProUGUI quest;              // UI_문제
+    public TextMeshProUGUI quest;              
     public GameObject wrongPanel;
     public GameObject rightPanel;
-    public TMP_Text rightText;                 //rightPanel의 텍스트
-    public Canvas questCanvas;                 //퀴즈창
+    public TMP_Text rightText;                 
+    public Canvas questCanvas;                 
     public GameObject coolTimePanel;
 
-    // Reference to MySQLConnector
     public MySQLConnector mySQLConnector;
 
-    // Other references
     public CoolTime coolTimeScript;             //coolTime 스크립트
     public MonthlyReportUI monthlyReportUI;     //MonthlyReportUI 스크립트
     public CurrentMoney currentMoneyManager;    //CurrentMoney 스크립트
@@ -30,15 +28,15 @@ public class RandomQuest : MonoBehaviour
     public TMP_Text moneyText;                  // 돈 표시 UI
     public TMP_Text timerText;                  // 쿨타임 카운트다운 텍스트
 
-    // DB data structures
+    // DB data
     List<int> availableIndices = null;                         //문제 인덱스 리스트
-    private List<User> usersDB = new List<User>();             // DB_퀴즈 및 선택지 데이터
+    private List<User> usersDB = new List<User>();             // DB_문제 및 선택지 데이터
     private List<User> answersDB = new List<User>();           // DB_정답 데이터
     private Dictionary<string, List<int>> availableIndicesByLevel = new Dictionary<string, List<int>>();
-    private Dictionary<string, float> cooldownTimers = new Dictionary<string, float>();                 // 각 레벨의 쿨타임 타이머
-    private Dictionary<string, int> questCount = new Dictionary<string, int>();                         //문제 개수 제어
-    private Dictionary<string, int> lastIndexPerLevel = new Dictionary<string, int>();                  //레벨별 마지막 인덱스
-    private Dictionary<string, bool> firstAttemptPerLevel = new Dictionary<string, bool>();             //레벨별 첫 번째 오답 여부
+    public Dictionary<string, float> cooldownTimers = new Dictionary<string, float>();           // 각 레벨의 쿨타임 타이머
+    private Dictionary<string, int> questCount = new Dictionary<string, int>();                  //문제 개수 제어
+    private Dictionary<string, int> lastIndexPerLevel = new Dictionary<string, int>();           //레벨별 마지막 인덱스
+    private Dictionary<string, bool> firstAttemptPerLevel = new Dictionary<string, bool>();      //레벨별 첫 번째 오답 여부
 
     private int currentIndex = -1, lastIndex = -1;
     private float duration = 0f;
@@ -81,7 +79,7 @@ public class RandomQuest : MonoBehaviour
         questCanvas = Assign(questCanvas, "QuestCanvas");
         monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
         currentMoneyManager = Assign(currentMoneyManager, "CurrentMoneyManager");
-        countdownTimer = Assign(countdownTimer, "Timer");
+        countdownTimer = FindObjectOfType<CountdownTimer>();    
         moneyText = Assign(moneyText, "MoneyText");
         timerText = Assign(timerText, "TimerText");
 
@@ -113,7 +111,7 @@ public class RandomQuest : MonoBehaviour
         yield return new WaitUntil(() => mySQLConnector.GetUsers() != null && mySQLConnector.GetUsers().Count > 0);
         usersDB = mySQLConnector.GetUsers();
         answersDB = mySQLConnector.GetAnswers();
-        Debug.Log($"Loaded {usersDB.Count} users and {answersDB.Count} answers from the database.");
+        //Debug.Log($"Loaded {usersDB.Count} users and {answersDB.Count} answers from the database.");
 
         OnLevelButtonClicked(levelButton[0]);                                       // 처음에 level1btn이 선택된 상태로 시작
 
@@ -138,12 +136,6 @@ public class RandomQuest : MonoBehaviour
         SaveCurrentState();
 
         clickbtn = clickedButton.gameObject;
-        Debug.Log($"{clickbtn.name}을 선택함");
-        if (clickbtn == null)
-        {
-            Debug.LogError("현재 선택된 오브젝트가 없습니다");
-            return;
-        }
 
         BtnSoundManager.Instance.PlayButtonSound();
 
@@ -159,7 +151,7 @@ public class RandomQuest : MonoBehaviour
         levelButton[selectedLevel].interactable = false;
 
         RestorePreviousState();
-        ManageCooltimePanels(clickedButton.name);
+        ManageCooltimePanels(clickbtn.name);
         SetRandomQuest();
     }
 
@@ -193,13 +185,11 @@ public class RandomQuest : MonoBehaviour
     {
         if (!questCanvas.enabled)
         {
-            Debug.Log("Quiz Canvas is not active. Skipping question setup.");
             return;
         }
 
         if (availableIndices.Count == 0)
         {
-            Debug.LogError("No available indices to select a question.");
             return;
         }
 
@@ -273,9 +263,9 @@ public class RandomQuest : MonoBehaviour
     {
         int moneyToAdd = clickbtn.name switch
         {
-            "LevelButton1" => 1000,
-            "LevelButton2" => 2000,
-            "LevelButton3" => 3000,
+            "LevelButton1" => 500,
+            "LevelButton2" => 1000,
+            "LevelButton3" => 1500,
             _ => 0
         };
 
@@ -352,7 +342,7 @@ public class RandomQuest : MonoBehaviour
         }
 
         coolTimePanel.SetActive(true);
-        BtnSoundManager.Instance.PlayButtonSound();
+        coolTimeScript.currentLevelName = levelName;
         coolTimeScript.StartCooldown(cooldownTimers[levelName], maxCooldown, () => OnCooldownComplete(levelName));
         countdownTimer.StopTimer();
         countdownTimer.SetTimerText(TimerDuration().ToString());
@@ -411,27 +401,6 @@ public class RandomQuest : MonoBehaviour
         }
 
         UpdateMoneyUI();
-    }
-
-    void Update()
-    {   //계속 쿨타임 시간 측정(유니티 기준이라 1초마다 x)
-        foreach (var level in new[] { "LevelButton1", "LevelButton2", "LevelButton3" })
-        {
-            UpdateCooldown(level);
-        }
-    }
-
-    //레벨별 쿨타임 시간 저장
-    private void UpdateCooldown(string levelName)
-    {
-        if (cooldownTimers[levelName] > 0)
-        {
-            cooldownTimers[levelName] -= Time.deltaTime;
-            if (cooldownTimers[levelName] <= 0)
-            {
-                OnCooldownComplete(levelName);
-            }
-        }
     }
 
     //레벨별 문제 카운트다운 시간 관리
