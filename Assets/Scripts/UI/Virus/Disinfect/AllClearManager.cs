@@ -3,19 +3,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using System;
 
 public class AllClearManager : MonoBehaviour
 {
-    public Button allClearButton;           // 전체 소독 버튼
-    public Image allClearCooltimeImage;     // 쿨타임을 보여줄 이미지
-    public GameObject questDisfectCanvas;   // 소독 퀴즈 캔버스
-    public TextMeshProUGUI disinfectQuest;  // 퀴즈 문제
-    public Button[] disinfectAnswers;       // 퀴즈 선택지
+    public GameObject questDisfectCanvas;  
+    public TextMeshProUGUI disinfectQuest; 
+    public Button[] disinfectAnswers;      
     public GameObject disWrongPanel;
     public GameObject disCorrectPanel;
     public Button disinfectXButton;
-    public float cooltimeDuration = 15f;    // 쿨타임 시간 (초)
-    private bool isCooldown = false;        // 쿨타임 진행 여부
+    
+    PolicyHospital policyHospital;
 
     // 퀴즈 질문
     string[] questions = {
@@ -50,44 +49,35 @@ public class AllClearManager : MonoBehaviour
 
     void Start()
     {
-        SetObject();
-        allClearCooltimeImage.fillAmount = 0;
-        allClearCooltimeImage.gameObject.SetActive(false);  //쿨타임 이미지 비활성화
-        disWrongPanel.SetActive(false);                     //정답 패널 비활성화
-        disCorrectPanel.SetActive(false);                     //오답 패널 비활성화
+        /*InitialObject();
+        disWrongPanel.SetActive(false);                     
+        disCorrectPanel.SetActive(false);*/
     }
 
     // 오브젝트 자동할당 및 클릭 이벤트 설정
-    private void SetObject()
+    /*private void InitialObject()
     {
-        allClearButton = Assign(allClearButton, "AllClearButton");
-        allClearCooltimeImage = Assign(allClearCooltimeImage, "AllClearCooltimeImage");
-        questDisfectCanvas = Assign(questDisfectCanvas, "QuestDisinfectCanvas");
-        disinfectQuest = Assign(disinfectQuest, "DisinfectQuest");
-        disWrongPanel = Assign(disWrongPanel, "DisWrongPanel");
-        disCorrectPanel = Assign(disCorrectPanel, "DisCorrectPanel");
-        disinfectXButton = Assign(disinfectXButton, "DisinfectXButton");
+        questDisfectCanvas = GameObject.Find("QuestDisinfectCanvas");
+        disinfectQuest = GameObject.Find("DisinfectQuest").GetComponent<TextMeshProUGUI>();
+        disWrongPanel = GameObject.Find("DisWrongPanel");
+        disCorrectPanel = GameObject.Find("DisCorrectPanel");
+        disinfectXButton = GameObject.Find("DisinfectXButton").GetComponent<Button>();
+        policyHospital = FindObjectOfType<PolicyHospital>();
 
         //선택지 버튼(DisinfectAnswerButton1~ DisinfectAnswerButton4)
         disinfectAnswers = Enumerable.Range(1, 4)
-            .Select(i => Assign<Button>(null, $"DisinfectAnswerButton{i}"))
+            .Select(i => GameObject.Find($"DisinfectAnswerButton{i}").GetComponent<Button>())
             .ToArray();
 
-        allClearButton.onClick.AddListener(() => { OpenDisinfectQuiz(); BtnSoundManager.Instance.PlayButtonSound(); });      //전체 소독 버튼 이벤트
-        disinfectXButton.onClick.AddListener(() => { CloseDisinfectQuiz(); BtnSoundManager.Instance.PlayButtonSound(); });   //닫기 버튼 이벤트
+        disinfectXButton.onClick.AddListener(() => { questDisfectCanvas.SetActive(false); BtnSoundManager.Instance.PlayButtonSound(); });   
     }
 
     //소독 퀴즈 시작
-    private void OpenDisinfectQuiz()
+    public void OpenDisinfectQuiz()
     {
-        if (isCooldown)
-        {
-            Debug.Log("소독 쿨타임 중");
-            return;
-        }
         questDisfectCanvas.SetActive(true);
 
-        int randomIndex = Random.Range(0, questions.Length);
+        int randomIndex = UnityEngine.Random.Range(0, questions.Length);
 
         //질문 텍스트 설정
         disinfectQuest.text = questions[randomIndex];
@@ -122,8 +112,7 @@ public class AllClearManager : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(1.3f);
         disCorrectPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
-        DisinfectAllViruses();
-        StartCoroutine(CooltimeCoroutine());
+        policyHospital.StartWardDisinfection();
     }
 
     //오답 패널 생성
@@ -133,60 +122,6 @@ public class AllClearManager : MonoBehaviour
         yield return YieldInstructionCache.WaitForSeconds(1.3f);
         disWrongPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
-        StartCoroutine(CooltimeCoroutine());
-    }
-
-    //모든 바이러스 소독
-    public void DisinfectAllViruses()
-    {
-        Virus[] viruses = Object.FindObjectsOfType<Virus>();
-        foreach (Virus virus in viruses)
-        {
-            virus.Disinfect();
-        }
-        Debug.Log("모든 바이러스 소독 완료");
-    }
-
-    // 쿨타임 코루틴
-    IEnumerator CooltimeCoroutine()
-    {
-        isCooldown = true;
-        allClearButton.interactable = false;
-        allClearCooltimeImage.gameObject.SetActive(true);
-
-        float elapsedTime = 0;
-
-        while (elapsedTime < cooltimeDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            allClearCooltimeImage.fillAmount = 1 - (elapsedTime / cooltimeDuration);
-            yield return null;
-        }
-
-        allClearCooltimeImage.fillAmount = 0;
-        allClearCooltimeImage.gameObject.SetActive(false);
-        allClearButton.interactable = true;
-        isCooldown = false;
-    }
-
-    private void CloseDisinfectQuiz()
-    {
-        questDisfectCanvas.SetActive(false);
-    }
-
-    // 자동 할당 코드
-    private T Assign<T>(T obj, string objectName) where T : Object
-    {
-        if (obj == null)
-        {
-            GameObject foundObject = GameObject.Find(objectName);
-            if (foundObject != null)
-            {
-                if (typeof(Component).IsAssignableFrom(typeof(T))) obj = foundObject.GetComponent(typeof(T)) as T;
-                else if (typeof(GameObject).IsAssignableFrom(typeof(T))) obj = foundObject as T;
-            }
-            if (obj == null) Debug.LogError($"{objectName} 를 찾을 수 없습니다.");
-        }
-        return obj;
-    }
+        policyHospital.StartCoroutine(policyHospital.DisinfectionTimer());
+    }*/
 }
