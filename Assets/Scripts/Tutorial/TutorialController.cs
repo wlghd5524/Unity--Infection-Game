@@ -67,6 +67,7 @@ public class TutorialController : MonoBehaviour
     {
         // "네"를 선택했을 때 튜토리얼을 건너뜀
         CompletedAllTutorials();
+        BtnSoundManager.Instance.PlayButtonSound();
         tutorialSkipPromptUI.SetActive(false);
     }
 
@@ -74,6 +75,7 @@ public class TutorialController : MonoBehaviour
     {
         // "아니요"를 선택했거나 튜토리얼을 처음 진행할 때 실행
         tutorialSkipPromptUI.SetActive(false);  // UI 창 비활성화
+        BtnSoundManager.Instance.PlayButtonSound();
         maskController = GetComponent<MaskController>();
 
         // 칸막이 활성화

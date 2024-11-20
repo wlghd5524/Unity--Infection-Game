@@ -125,6 +125,7 @@ public class AudioSetting : MonoBehaviour
     // 게임 종료 버튼 클릭 시 호출되는 함수
     void OnQuitButtonClicked()
     {
+        BtnSoundManager.Instance.PlayButtonSound();
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false; // 에디터에서 플레이 모드 종료
 #else
