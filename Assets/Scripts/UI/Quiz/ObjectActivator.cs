@@ -25,7 +25,7 @@ public class ObjectActivator : MonoBehaviour
 
         if (activateButton != null)
         {
-            activateButton.onClick.AddListener(() => { OnActivateButtonClick(); BtnSoundManager.Instance.PlayButtonSound(); });
+            activateButton.onClick.AddListener(() => { OnActivateButtonClick(); BtnSoundManager.Instance.PlayButtonSound(); OneClearManager.Instance.CloseDisinfectionMode(); });
         }
 
         if (quizCloseButton != null)

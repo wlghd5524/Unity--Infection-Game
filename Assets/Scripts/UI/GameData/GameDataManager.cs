@@ -7,6 +7,8 @@ using UnityEngine.Networking;
 using TMPro;
 using MyApp.UserManagement;
 using Unity.VisualScripting;
+using System.Data;
+using System.Linq;
 
 public class GameDataManager : MonoBehaviour
 {
@@ -45,21 +47,20 @@ public class GameDataManager : MonoBehaviour
 
     public bool[] difference20More = new bool[15];     // 차이가 20 이상인 인덱스 저장 => 피드백 문자열에 추가
     public Dictionary<int, string> feedbackContent = new Dictionary<int, string>();
-    public Dictionary<int, string> feedbackRoleContent = new Dictionary<int, string>();
 
     GameObject scoreGraphCanvas;
+    private DateTime gameStartTime;
     public Transform graphContainer;
-    //public Transform feedbackContainer;
+    public Transform feedbackContainer;
     public GameObject gameClearPanel;
     public Button gameClearNextButton;
     public TextMeshProUGUI selectedLevel;
-    AuthManager authManager;
-    UserManager userManager;
     List<string> steps = new List<string>();
     TextMeshProUGUI feedbackText;
 
     private string urlUpdateData = "http://220.69.209.164:3333/update_game_score";
     private int pointsPerMinute = 6;        // 1분 동안의 감염률 평균 내기(10초*6)
+    public string originalContent;
 
     private void Awake()
     {
@@ -78,36 +79,24 @@ public class GameDataManager : MonoBehaviour
     {
         scoreGraphCanvas = GameObject.Find("ScoreGraphCanvas");
         graphContainer = GameObject.Find("graphContainer").transform;
-        //feedbackContainer = GameObject.Find("FeedgraphContainer").transform;
-        /*feedbackTotalToggle = GameObject.Find("FeedbackTotalToggle").GetComponent<Toggle>();
+        feedbackContainer = GameObject.Find("FeedgraphContainer").transform;
+        feedbackTotalToggle = GameObject.Find("FeedbackTotalToggle").GetComponent<Toggle>();
         feedbackDoctorToggle = GameObject.Find("FeedbackDoctorlToggle").GetComponent<Toggle>();
         feedbackNurseToggle = GameObject.Find("FeedbackNurseToggle").GetComponent<Toggle>();
         feedbackInpatientToggle = GameObject.Find("FeedbackInpatientToggle").GetComponent<Toggle>();
         feedbackOutpatientToggle = GameObject.Find("FeedbackOutpatientToggle").GetComponent<Toggle>();
         feedbackEmergencyToggle = GameObject.Find("FeedbackEmergencyToggle").GetComponent<Toggle>();
-        feedbackIcuToggle = GameObject.Find("FeedbackIcuToggle").GetComponent<Toggle>();*/
+        feedbackIcuToggle = GameObject.Find("FeedbackIcuToggle").GetComponent<Toggle>();
         gameClearPanel = GameObject.Find("GameClearPanel");
         gameClearNextButton = GameObject.Find("GameClearNextButton").GetComponent<Button>();
         selectedLevel = GameObject.Find("SelectedLevel").GetComponent<TextMeshProUGUI>();
-        authManager = FindAnyObjectByType<AuthManager>();
-        userManager = FindAnyObjectByType<UserManager>();
-        //feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
+        feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
 
         for (int i = 0; i < 15; i++)
             difference20More[i] = false;
 
         // 각 토글에 이벤트 리스너 추가
-        feedbackTotalToggle.onValueChanged.AddListener(isOn =>
-        {
-            feedbackDoctorToggle.isOn = isOn;
-            feedbackNurseToggle.isOn = isOn;
-            feedbackInpatientToggle.isOn = isOn;
-            feedbackOutpatientToggle.isOn = isOn;
-            feedbackEmergencyToggle.isOn = isOn;
-            feedbackIcuToggle.isOn = isOn;
-
-            ToggleFeedbackVisibility("total", isOn);
-        });
+        feedbackTotalToggle.onValueChanged.AddListener(isOn => ToggleFeedbackVisibility("total", isOn));
         feedbackDoctorToggle.onValueChanged.AddListener(isOn => ToggleFeedbackVisibility("doctor", isOn));
         feedbackNurseToggle.onValueChanged.AddListener(isOn => ToggleFeedbackVisibility("nurse", isOn));
         feedbackInpatientToggle.onValueChanged.AddListener(isOn => ToggleFeedbackVisibility("inpatients", isOn));
@@ -117,7 +106,11 @@ public class GameDataManager : MonoBehaviour
 
         //게임 클리어창 설정
         gameClearPanel.SetActive(false);
-        gameClearNextButton.onClick.AddListener(() => ShowFinishedGraph());
+        gameClearNextButton.onClick.AddListener(() =>
+        {
+            gameClearPanel.SetActive(false);
+            GraphSourceChangeInt();             // 그래프 생성
+        });
     }
 
     // 초기 데이터 삽입 (Flask API로 전송)
@@ -147,60 +140,40 @@ public class GameDataManager : MonoBehaviour
         float totalTime = 900f;      // 전체 실행 시간 (초)
         float interval = 10f;        // 간격 (초)
         float elapsedTime = 0f;      // 경과 시간 (초)
-        int dataCount = 0;           // 현재까지 모은 데이터 개수  //수정
+        int dataCount = 0;           // 현재까지 모은 데이터 개수 
 
         while (elapsedTime < totalTime)
         {
-            yield return YieldInstructionCache.WaitForSeconds(interval);  // 10초 대기
+            yield return YieldInstructionCache.WaitForSecondsRealtime(interval);
 
             float infectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);  // 현재 감염률 가져오기
-            if (float.IsNaN(infectionRate))
-            {
-                Debug.LogError("InfectionManager에서 유효한 감염률을 가져오지 못했습니다.");
-            }
-            else
-            {
-                infectionRates.Add(infectionRate);
-                Debug.Log($"감염률 수집: {infectionRate}, 총 감염률 수집된 데이터 수: {infectionRates.Count}");
+            infectionRates.Add(infectionRate);
 
-                // 감염률이 80%를 초과할 시 게임 멈추기 및 그래프 표시
-                if (infectionRate > 80)
-                {
-                    //Debug.Log("전체 감염률이 80%를 초과했습니다. 게임을 멈추고 그래프를 표시합니다." + elapsedTime);
-                    Time.timeScale = 0;                 // 게임 일시 정지
-                    scoreGraphCanvas.SetActive(true);
-                    GraphSourceChangeInt();             // 그래프 생성
-                    yield break;                        // 코루틴 종료
-                }
+            // 감염률이 80%를 초과할 시 게임 오버
+            if (infectionRate > 80)
+            {
+                Time.timeScale = 0;
+                scoreGraphCanvas.SetActive(true);
+                GraphSourceChangeInt();
+                OneClearManager.Instance.CloseDisinfectionMode();
+                SavePassStage("np");
+                yield break;
             }
 
             // 역할별 감염률 리스트 저장
             infectionRoleDictionary = InfectionManager.Instance.GetInfectionRateByRole();
-            if (infectionRoleDictionary == null || !infectionRoleDictionary.ContainsKey("doctor") || !infectionRoleDictionary.ContainsKey("nurse")
-                || !infectionRoleDictionary.ContainsKey("inpatients") || !infectionRoleDictionary.ContainsKey("outpatients")
-                || !infectionRoleDictionary.ContainsKey("emergencyPatients") || !infectionRoleDictionary.ContainsKey("icuPatients"))
-            {
-                Debug.LogError("InfectionManager에서 역할별 감염률 데이터를 제대로 가져오지 못했습니다.");
-            }
-            else
-            {
-                doctorInfectionRates.Add(infectionRoleDictionary["doctor"] * 100);
-                nurseInfectionRates.Add(infectionRoleDictionary["nurse"] * 100);
-                inpatientsRates.Add(infectionRoleDictionary["inpatients"] * 100);
-                outpatientsRates.Add(infectionRoleDictionary["outpatients"] * 100);
-                icuPatientsRates.Add(infectionRoleDictionary["icuPatients"] * 100);
-                emergencyPatientsRates.Add(infectionRoleDictionary["emergencyPatients"] * 100);
-
-                Debug.Log($"의사 감염률: {infectionRoleDictionary["doctor"] * 100}, 간호사 감염률: {infectionRoleDictionary["nurse"] * 100}, 내원환자 감염률: {infectionRoleDictionary["inpatients"] * 100}, 외래환자 감염률: {infectionRoleDictionary["outpatients"] * 100}, 응급환자 감염률: {infectionRoleDictionary["emergencyPatients"] * 100}, 중환자 감염률: {infectionRoleDictionary["icuPatients"] * 100}");
-            }
+            doctorInfectionRates.Add(infectionRoleDictionary["doctor"] * 100);
+            nurseInfectionRates.Add(infectionRoleDictionary["nurse"] * 100);
+            inpatientsRates.Add(infectionRoleDictionary["inpatients"] * 100);
+            outpatientsRates.Add(infectionRoleDictionary["outpatients"] * 100);
+            icuPatientsRates.Add(infectionRoleDictionary["icuPatients"] * 100);
+            emergencyPatientsRates.Add(infectionRoleDictionary["emergencyPatients"] * 100);
 
             dataCount++;
 
             // 6개의 데이터를 모으면 평균 계산하고 DB에 업데이트
             if (dataCount == pointsPerMinute)
             {
-                Debug.Log($"DB_ 리스트 데이터 6개 모임. 현재 데이터: 감염률={infectionRates.Count}, 의사 감염률={doctorInfectionRates.Count}, 간호사 감염률={nurseInfectionRates.Count}, 내원환자 감염률={inpatientsRates.Count}, 외래환자 감염률={outpatientsRates.Count}, 응급환자 감염률={emergencyPatientsRates.Count}, 중환자 감염률={icuPatientsRates.Count}");
-
                 CalculateAndSaveAverage(infectionRates, "totalScores", averagedInfectionRates);
                 CalculateAndSaveAverage(doctorInfectionRates, "doctorScore", avgDoctorRate);
                 CalculateAndSaveAverage(nurseInfectionRates, "nurseScore", avgNurseRate);
@@ -212,87 +185,76 @@ public class GameDataManager : MonoBehaviour
                 dataCount = 0; // 데이터 수 초기화
             }
 
-            elapsedTime += interval;    // 경과 시간 업데이트   
+            elapsedTime += interval;
         }
 
-        Time.timeScale = 0;                 // 게임 일시 정지
+        // 게임 클리어 시
+        Time.timeScale = 0;
         scoreGraphCanvas.SetActive(true);
-        gameClearPanel.SetActive(true);     // 최종 클리어 창 활성화
-
-        // 해당 스테이지 클리어 기록 DB에 저장하기
-        string id = authManager.id;
-        string name = userManager.GetNameById(id);
-        steps = userManager.GetUserStep(id);
-        string clearLevel = $"p: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}";
-        Debug.Log($"toggletoggle: {id}, {name}, {authManager.password}");
-
-
-        if (selectedLevel.text == "Easy")
-            userManager.AddUser(id, name, authManager.password, 1, clearLevel, steps[1], steps[2]);
-        else if (selectedLevel.text == "Normal")
-            userManager.AddUser(id, name, authManager.password, 1, steps[0], clearLevel, steps[2]);
-        else
-        {
-            userManager.AddUser(id, name, authManager.password, 1, steps[0], steps[1], clearLevel);
-        }
-
-        yield break;
+        gameClearPanel.SetActive(true);
+        SavePassStage("p");
     }
 
-    // 평균 계산 및 DB 업데이트 함수
+    // 스테이지 클리어 기록 DB에 저장
+    void SavePassStage(string pnp)
+    {
+        string id = AuthManager.Instance.id;
+        string name = UserManager.Instance.GetNameById(id);
+        List<string> steps = UserManager.Instance.GetUserStep(id);
+        string clearLevel = $"{pnp}: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}";
+
+        string updatedEasySteps = selectedLevel.text == "Easy" ? $"{steps[0]}, {clearLevel}" : steps[0];
+        string updatedNormalSteps = selectedLevel.text == "Normal" ? $"{steps[1]}, {clearLevel}" : steps[1];
+        string updatedHardSteps = selectedLevel.text == "Hard" ? $"{steps[2]}, {clearLevel}" : steps[2];
+
+        UserManager.Instance.AddUser(id, name, AuthManager.Instance.password, 1, updatedEasySteps, updatedNormalSteps, updatedHardSteps);
+    }
+
+    // 평균 감염률 데이터 계산 및 DB 업데이트 함수
     private void CalculateAndSaveAverage(List<float> ratesList, string scoreType, List<float> avgList)
     {
-        // 마지막 6개의 데이터를 가져와 평균을 계산
-        List<float> lastSixData;
-        if (ratesList.Count >= pointsPerMinute)
+        if (ratesList.Count < pointsPerMinute) return;
+
+        List<float> lastSixData = ratesList.GetRange(ratesList.Count - pointsPerMinute, pointsPerMinute);
+        float average = CalculateAverage(lastSixData);
+        avgList.Add(average);
+
+        // 차이가 20 이상인 경우
+        float previousAverage = avgList.Count > 0 ? avgList[avgList.Count - 1] : 0f;
+        float difference = Mathf.Abs(average - previousAverage);
+        if (difference >= 20)
         {
-            lastSixData = ratesList.GetRange(ratesList.Count - pointsPerMinute, pointsPerMinute);
-            float average = CalculateAverage(lastSixData);
-            float previousAverage = avgList.Count > 0 ? avgList[avgList.Count - 1] : 0f;
-            float difference = Mathf.Abs(average - previousAverage);
-
-            // 차이가 20 이상인 경우
-            if (difference >= 20)
-            {
-                // 모든 감염률 데이터 리스트에 대해 앞뒤 차이가 20 이상인 구간이 있으면 true로 저장
-                difference20More[avgList.Count] = true;
-            }
-
-            // 각 구간에서 진행된 모든 연구 데이터 출력
-            FindTimeInResearchRecords(avgList.Count);
-
-            // 평균을 리스트에 추가
-            avgList.Add(average);
-
-            // 실수형 감염률 리스트를 정수형 문자열로 변환하여 적절한 컬럼에 업데이트
-            switch (scoreType)
-            {
-                case "totalScores":
-                    totalScores += average.ToString("F0") + ",";
-                    break;
-                case "doctorScore":
-                    doctorScore += average.ToString("F0") + ",";
-                    break;
-                case "nurseScore":
-                    nurseScore += average.ToString("F0") + ",";
-                    break;
-                case "inpatientsScore":
-                    inpatientsScore += average.ToString("F0") + ",";
-                    break;
-                case "outpatientsScore":
-                    outpatientsScore += average.ToString("F0") + ",";
-                    break;
-                case "emergencyPatientsScore":
-                    emergencyPatientsScore += average.ToString("F0") + ",";
-                    break;
-                case "icuPatientsScore":
-                    icuPatientsScore += average.ToString("F0") + ",";
-                    break;
-            }
+            difference20More[avgList.Count] = true;
         }
-        else
+
+        if (scoreType == "totalScores")
         {
-            Debug.LogError($"데이터가 부족함. {ratesList.Count}");
+            FindTimeInResearchRecords(avgList.Count);
+        }
+
+        switch (scoreType)
+        {
+            case "totalScores":
+                totalScores += average.ToString("F0") + ",";
+                break;
+            case "doctorScore":
+                doctorScore += average.ToString("F0") + ",";
+                break;
+            case "nurseScore":
+                nurseScore += average.ToString("F0") + ",";
+                break;
+            case "inpatientsScore":
+                inpatientsScore += average.ToString("F0") + ",";
+                break;
+            case "outpatientsScore":
+                outpatientsScore += average.ToString("F0") + ",";
+                break;
+            case "emergencyPatientsScore":
+                emergencyPatientsScore += average.ToString("F0") + ",";
+                break;
+            case "icuPatientsScore":
+                icuPatientsScore += average.ToString("F0") + ",";
+                break;
         }
 
         UpdateDatabaseInfectionScore();     // DB 업데이트
@@ -301,36 +263,51 @@ public class GameDataManager : MonoBehaviour
     // 평균 계산하는 함수
     private float CalculateAverage(List<float> chunk)
     {
-        if (chunk.Count == 0) return 0f;
-
         float sum = 0f;
-        foreach (float value in chunk)
-        {
-            sum += value;
-        }
+        foreach (float value in chunk) sum += value;
         return sum / chunk.Count;
     }
 
-    // ResearchDBManager의 researchRecords 딕셔너리에서 시간 찾기
-    private void FindTimeInResearchRecords(int index)
+    // 해당 구간 동안 진행된 연구 데이터 출력하기 (index: 1~15)
+    void FindTimeInResearchRecords(int index)
     {
         ResearchDBManager researchManager = ResearchDBManager.Instance;
 
-        // 모든 모드에 대해 시간 찾기
+        // 이전 로그를 기반으로 현재 로그 초기화
+        if (index > 1 && feedbackContent.ContainsKey(index - 2))
+        {
+            feedbackContent[index - 1] = feedbackContent[index - 2];
+            Debug.Log($"이전 로그 저장: {index - 1}, {feedbackContent[index - 1]}");
+
+            RemoveFeedbackByKeyword(index);     // 필요없는 문장 제거
+        }
+        else
+            feedbackContent[index - 1] = " "; // 첫날이거나 이전 로그가 없는 경우
+
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
         {
-            List<string> recordList = researchManager.researchRecords[mode];  // 현재 모드의 리스트 가져오기
+            List<string> recordList = researchManager.researchRecords[mode]
+                .Where(record => int.Parse(record.Split('.')[0]) == index) // 날짜 필터링
+                .ToList();
 
             for (int i = 0; i < recordList.Count; i++)
             {
                 string[] parts = recordList[i].Split('.');  // 데이터 분할 (day.btnNum.targetNum.toggleIsOn.currentMoment)
+                int day = int.Parse(parts[0]);              // day 값 추출
                 int btnNum = int.Parse(parts[1]);           // 연구 항목 번호
                 int targetNum = int.Parse(parts[2]);        // 타겟 번호
                 int toggleState = int.Parse(parts[3]);      // 상태 값 (1 또는 0)
                 string currentMoment = parts[4];            // 시간 값 (mm:ss 형식)
                 string feedback = "";
 
-                // 모드에 따라 피드백 내용 결정
+                // 비활성화된 연구버튼에 대한 로그는 피드백에서 삭제
+                if (toggleState == 0)
+                {
+                    RemoveFeedback(index, btnNum, targetNum, toggleState, mode);
+                    continue;
+                }
+
+                // 피드백 생성
                 switch (mode)
                 {
                     case ResearchDBManager.ResearchMode.gear:
@@ -344,15 +321,58 @@ public class GameDataManager : MonoBehaviour
                         break;
                 }
 
-                // feedbackContent에 추가
-                if (!feedbackContent.ContainsKey(index))
+                if (!feedbackContent[index - 1].Contains(feedback))
                 {
-                    feedbackContent[index] = "";
+                    feedbackContent[index - 1] += $"{feedback} ({currentMoment})\n";
                 }
-                feedbackContent[index] += $"{feedback} ({currentMoment})\n";
             }
         }
     }
+
+    void RemoveFeedback(int index, int btnNum, int targetNum, int toggleState, ResearchDBManager.ResearchMode mode)
+    {
+        if (!feedbackContent.ContainsKey(index - 1)) return;
+
+        string[] lines = feedbackContent[index - 1].Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        string updatedContent = "";
+
+        foreach (var line in lines)
+        {
+            if (mode == ResearchDBManager.ResearchMode.gear)
+            {
+                if (line.Contains($"{GetGearResearchFeedback(btnNum, targetNum, 1)}"))
+                    continue;
+            }
+            else if (mode == ResearchDBManager.ResearchMode.patient)
+            {
+                if (line.Contains($"{GetPatientResearchFeedback(btnNum, targetNum, 1)}"))
+                    continue;
+            }
+
+            updatedContent += line + "\n";
+        }
+
+        feedbackContent[index - 1] = updatedContent;
+    }
+
+    void RemoveFeedbackByKeyword(int index)
+    {
+        if (!feedbackContent.ContainsKey(index - 1)) return;
+
+        string[] lines = feedbackContent[index - 1].Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        string updatedContent = "";
+
+        foreach (var line in lines)
+        {
+            if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제"))
+                continue;
+
+            updatedContent += line + "\n";
+        }
+
+        feedbackContent[index - 1] = updatedContent;
+    }
+
 
     // Gear Research 모드의 피드백 생성
     private string GetGearResearchFeedback(int btnNum, int target, int toggleState)
@@ -360,16 +380,13 @@ public class GameDataManager : MonoBehaviour
         string[] gearItems = { "Dental 마스크", "일회용 장갑", "N95 마스크", "라텍스 장갑", "의료용 고글", "의료용 헤어캡", "AP 가운", "Level C" };
         string[] gearTarget = { "의사", "간호사", "외래 환자", "입원 환자", "응급 환자" };
 
-        Debug.Log($"target: {btnNum}버튼에서 {target}에게 보호구 사용");
-        if (btnNum >= 1 && btnNum <= gearItems.Length)
+        if (btnNum >= 1 && btnNum <= 8 && target >= 1 && target <= 5)
         {
             string itemName = gearItems[btnNum - 1];
-            if(target>=1 && target<= gearTarget.Length)
-            {
-                string targetName = gearTarget[target - 1];
-                return $"{itemName} {(toggleState == 1 ? "사용" : "미사용")}({targetName})";
-            }
+            string targetName = gearTarget[target - 1];
+            return $"{itemName} {(toggleState == 1 ? "사용" : "미사용")}({targetName})";
         }
+
         return "";
     }
 
@@ -404,7 +421,7 @@ public class GameDataManager : MonoBehaviour
 
                 if (btnNum == 1)
                 {
-                    return $"{itemName} {(toggleState == 1 ? "진행" : "미진행")}({tartgetName})";
+                    return $"{itemName} 진행({tartgetName})";
                 }
                 else
                 {
@@ -419,55 +436,87 @@ public class GameDataManager : MonoBehaviour
         return "";
     }
 
-    // 토글 상태에 따라 직군별 피드백 표시/숨김
+    // 토글이 true인 직군의 피드백만 feedbackText에 출력
     public void ToggleFeedbackVisibility(string role, bool isVisible)
     {
-        if (!isVisible)
+        if (feedbackText == null)
+            feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
+
+        UpdateTotalToggle(role);    // 하위 토글 상태에 따른 전체토글 값 관리
+
+        // 전체 토글이 켜져 있으면 모든 내용을 표시
+        if (feedbackTotalToggle.isOn)
         {
-            feedbackTotalToggle.isOn = false;
+            feedbackText.text = originalContent;
             return;
         }
 
-        if(feedbackText == null)
-            feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
-
-        string originalContent = feedbackText.text;
         string filteredContent = "";
 
-        if (feedbackTotalToggle.isOn)
+        string[] dayBlocks = originalContent.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+        for (int i = 0; i < dayBlocks.Length; i++)
         {
-            //모든 내용 그대로 표시
-            filteredContent = originalContent;
-        }
-        else
-        {
-            // 특정 토글이 켜져 있을 때 조건에 맞는 피드백 표시
-            string[] lines = originalContent.Split('\n');
+            string[] lines = dayBlocks[i].Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (difference20More[i])
+            {
+                filteredContent += $"{i + 1}DAY - 감염률 급상승!\n";
+            }
+            else
+            {
+                filteredContent += $"{i + 1}DAY\n";
+            }
+
             foreach (string line in lines)
             {
+                if (line.StartsWith($"{i + 1}DAY")) continue;
+
                 if (feedbackDoctorToggle.isOn && line.Contains("의사"))
-                    filteredContent += $"- {line}\n";
+                    filteredContent += $"{line}\n";
                 if (feedbackNurseToggle.isOn && line.Contains("간호사"))
-                    filteredContent += $"- {line}\n";
+                    filteredContent += $"{line}\n";
                 if (feedbackInpatientToggle.isOn && (line.Contains("입원 환자") || line.Contains("입원병동")))
-                    filteredContent += $"- {line}\n";
+                    filteredContent += $"{line}\n";
                 if (feedbackOutpatientToggle.isOn && (line.Contains("외래 환자") || line.Contains("내과") || line.Contains("외과")))
-                    filteredContent += $"- {line}\n";
+                    filteredContent += $"{line}\n";
                 if (feedbackEmergencyToggle.isOn && (line.Contains("응급 환자") || line.Contains("응급실")))
-                    filteredContent += $"- {line}\n";
+                    filteredContent += $"{line}\n";
                 if (feedbackIcuToggle.isOn && line.Contains("중환자실"))
-                    filteredContent += $"- {line}\n";
+                    filteredContent += $"{line}\n";
             }
+
+            filteredContent += "\n";
         }
 
-        // 필터링된 내용 적용
         feedbackText.text = filteredContent.Trim();
     }
 
-    void ShowFinishedGraph()
+    // 모든 토글의 상태가 변경될 때 전체 토글의 상태를 업데이트
+    public void UpdateTotalToggle(string role)
     {
-        gameClearPanel.SetActive(false);
-        GraphSourceChangeInt();             // 그래프 생성
+        if (role == "total")
+        {
+            bool onTotalToggle = feedbackTotalToggle.isOn;
+
+            feedbackDoctorToggle.SetIsOnWithoutNotify(onTotalToggle);
+            feedbackNurseToggle.SetIsOnWithoutNotify(onTotalToggle);
+            feedbackInpatientToggle.SetIsOnWithoutNotify(onTotalToggle);
+            feedbackOutpatientToggle.SetIsOnWithoutNotify(onTotalToggle);
+            feedbackEmergencyToggle.SetIsOnWithoutNotify(onTotalToggle);
+            feedbackIcuToggle.SetIsOnWithoutNotify(onTotalToggle);
+        }
+        else
+        {
+            bool allOn = feedbackDoctorToggle.isOn &&
+                        feedbackNurseToggle.isOn &&
+                        feedbackInpatientToggle.isOn &&
+                        feedbackOutpatientToggle.isOn &&
+                        feedbackEmergencyToggle.isOn &&
+                        feedbackIcuToggle.isOn;
+
+            feedbackTotalToggle.SetIsOnWithoutNotify(allOn);
+        }
     }
 
     // DB에 최종 감염 데이터 정보 업그레이드(1일~ 15일 데이터)

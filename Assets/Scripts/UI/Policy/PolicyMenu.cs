@@ -48,6 +48,7 @@ public class PolicyMenu : MonoBehaviour
         {
             OpenPolicyPanel();
             BtnSoundManager.Instance.PlayButtonSound();
+            OneClearManager.Instance.CloseDisinfectionMode();
         });
         // 이미지(닫기 버튼) 클릭 이벤트 설정
         AddEventTrigger(policyCloseButton.gameObject, EventTriggerType.PointerClick, (data) => {

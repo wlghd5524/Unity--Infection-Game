@@ -281,7 +281,7 @@ public class PolicyItem : MonoBehaviour
 
     private IEnumerator ReenableSwitchAfterCooldown(Slider itemSwitch, float cooldownTime)
     {
-        yield return new WaitForSeconds(cooldownTime);
+        yield return YieldInstructionCache.WaitForSeconds(cooldownTime);
         itemSwitch.interactable = true;
     }
 
