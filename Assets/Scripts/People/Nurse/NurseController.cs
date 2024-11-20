@@ -130,7 +130,10 @@ public class NurseController : NPCController
         AutoDoorWaypoint[] inFrontOfAutoDoor = targetPatientController.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());  //격리실 자동문 앞으로 이동
 
-        targetPatientController.StopCoroutine(targetPatientController.hospitalizationCoroutine);
+        if(targetPatientController.hospitalizationCoroutine != null)
+        {
+            targetPatientController.StopCoroutine(targetPatientController.hospitalizationCoroutine);
+        }
 
         while (!Managers.NPCManager.isArrived(agent))
         {

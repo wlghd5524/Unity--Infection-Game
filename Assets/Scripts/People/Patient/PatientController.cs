@@ -508,7 +508,6 @@ public class PatientController : NPCController
 
         yield return new WaitUntil(() => doctorSignal);
 
-
         BedWaypoint nextBed = Ward.wards
              .Where(ward => !ward.isClosed && ward.num >= 4 && ward.num <= 7)
              .SelectMany(ward => ward.beds)
@@ -524,8 +523,6 @@ public class PatientController : NPCController
         // 퇴원
         if (random <= 30 || nextBed == null)
         {
-            bedWaypoint.isEmpty = true;
-            bedWaypoint.patient = null;
             AddWaypoint(waypointsTransform, $"Counter");
             AddWaypoint(Managers.NPCManager.gatewayTransform, $"Gateway ({Random.Range(0, 2)})");
             int stayDuration = Random.Range(5, 10);
@@ -539,7 +536,8 @@ public class PatientController : NPCController
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
-
+            bedWaypoint.isEmpty = true;
+            bedWaypoint.patient = null;
 
             agent.SetDestination(waypoints[2].GetRandomPointInRange());
 
@@ -755,7 +753,7 @@ public class PatientController : NPCController
             Managers.NPCManager.PlayWakeUpAnimation(this);
             yield return YieldInstructionCache.WaitForSeconds(5.0f);
         }
-        standingState = StandingState.Standing;
+        Managers.NPCManager.PlayWakeUpAnimation(this);
 
         // 5층에 있는 NPC
         if (gameObject.layer >= 20 && gameObject.layer <= 22)
