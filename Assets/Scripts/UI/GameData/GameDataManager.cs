@@ -494,7 +494,7 @@ public class GameDataManager : MonoBehaviour
                     filteredContent += $"{line}\n";
                 if (feedbackEmergencyToggle.isOn && (line.Contains("응급 환자") || line.Contains("응급실")))
                     filteredContent += $"{line}\n";
-                if (feedbackIcuToggle.isOn && line.Contains("중환자실") || line.Contains("중환자"))
+                if (feedbackIcuToggle.isOn && (line.Contains("중환자실") || line.Contains("중환자")))
                     filteredContent += $"{line}\n";
             }
 
