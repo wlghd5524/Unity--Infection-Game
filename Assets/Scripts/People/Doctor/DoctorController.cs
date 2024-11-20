@@ -33,14 +33,8 @@ public class DoctorController : NPCController
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (isResting)
-        {
-            return;
-        }
-        // 애니메이션
         Managers.NPCManager.UpdateAnimation(agent, animator);
-
-        if (isWaiting)
+        if (isResting || isWaiting)
         {
             return;
         }
@@ -122,14 +116,16 @@ public class DoctorController : NPCController
             } while (ERWaitingList[random].bedWaypoint == null);
             patient = ERWaitingList[random].gameObject;
             agent.SetDestination(ERWaitingList[random].bedWaypoint.GetRandomPointInRange());
-            yield return YieldInstructionCache.WaitForSeconds(2.0f);
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+            if(ERWaitingList[random].bedWaypoint == null)
+            {
+                isWaiting = false;
+                yield break;
+            }
             transform.LookAt(ERWaitingList[random].bedWaypoint.bedGameObject.transform);
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
             ERWaitingList[random].doctorSignal = true;
             ERWaitingList.RemoveAt(random);
-            isWaiting = false;
-            yield break;
         }
         else
         {

@@ -30,9 +30,8 @@ public class NurseController : NPCController
     // Update는 매 프레임 호출됩니다.
     void FixedUpdate()
     {
-
-        // 애니메이션 업데이트
         Managers.NPCManager.UpdateAnimation(agent, animator);
+
         if (isWorking)
         {
             Managers.NPCManager.PlayWakeUpAnimation(this);
@@ -119,9 +118,7 @@ public class NurseController : NPCController
         }
 
         Managers.NPCManager.FaceEachOther(gameObject, patientGameObject); // 간호사와 환자가 서로를 바라보게 설정
-        targetPatientController.StopCoroutine(targetPatientController.OutpatientMove());
-        targetPatientController.StopCoroutine(targetPatientController.InpatientMove());
-        targetPatientController.StopCoroutine(targetPatientController.EmergencyPatientMove());
+        targetPatientController.StopCoroutine(targetPatientController.moveCoroutine);
         targetPatientController.waypoints.Clear();
         targetPatientController.wardComponent.RemoveFromPatientList(targetPatientController);
 
@@ -133,7 +130,7 @@ public class NurseController : NPCController
         AutoDoorWaypoint[] inFrontOfAutoDoor = targetPatientController.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());  //격리실 자동문 앞으로 이동
 
-        targetPatientController.StopCoroutine(targetPatientController.HospitalizationTimeCounter());
+        targetPatientController.StopCoroutine(targetPatientController.hospitalizationCoroutine);
 
         while (!Managers.NPCManager.isArrived(agent))
         {

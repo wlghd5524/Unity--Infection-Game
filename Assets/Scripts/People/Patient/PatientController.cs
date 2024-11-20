@@ -40,6 +40,7 @@ public class PatientController : NPCController
 
     public Coroutine prevCoroutine;
     public Coroutine moveCoroutine;
+    public Coroutine hospitalizationCoroutine;
     public void Activate()
     {
         do
@@ -77,8 +78,11 @@ public class PatientController : NPCController
 
     private void FixedUpdate()
     {
-        // 애니메이션
         Managers.NPCManager.UpdateAnimation(agent, animator);
+        if(!Managers.PatientCreator.startSignal)
+        {
+            return;
+        }
         if (standingState == StandingState.Standing)
         {
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
@@ -127,7 +131,7 @@ public class PatientController : NPCController
             if (!excutedHC && Managers.PatientCreator.startSignal)
             {
                 excutedHC = true;
-                StartCoroutine(HospitalizationTimeCounter());
+                hospitalizationCoroutine = StartCoroutine(HospitalizationTimeCounter());
             }
             if (isWaitingForNurse || isQuarantined)
             {
@@ -816,11 +820,7 @@ public class PatientController : NPCController
     public IEnumerator QuarantineTimeCounter()
     {
         yield return YieldInstructionCache.WaitForSeconds(70);
-        if (isWaiting)
-        {
-            StopCoroutine(QuarantineMove());
-            isQuarantined = false;
-        }
+        StopCoroutine(moveCoroutine);
         isQuarantined = false;
         Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return YieldInstructionCache.WaitForSeconds(5.0f);
@@ -842,7 +842,7 @@ public class PatientController : NPCController
     public IEnumerator TransferToAvailableWard(BedWaypoint nextBed)
     {
         isWaiting = true;
-        StopCoroutine(InpatientMove());
+        StopCoroutine(moveCoroutine);
         bedWaypoint = nextBed;
         wardComponent.inpatients.Remove(this);
         ward = bedWaypoint.ward;
