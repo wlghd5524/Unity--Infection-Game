@@ -102,7 +102,7 @@ public class PolicyHospital : MonoBehaviour
             isClosed[index] = false;       // 모든 병동을 열림 상태로 저장
             isDisinfected[index] = false;  // 모든 병동을 소독 안 한 상태로 저장
 
-            closingButton[index].onClick.RemoveAllListeners(); // 기존 리스너 제거
+            closingButton[index].onClick.RemoveAllListeners(); 
             disinfectionButton[index].onClick.RemoveAllListeners();
 
             // 폐쇄 버튼 클릭 시 처리
@@ -147,12 +147,13 @@ public class PolicyHospital : MonoBehaviour
         closingOutline[index].color = isClosed[index] ? HexColor("#DC0004") : HexColor("#CED4DA");       // 폐쇄 시 빨간 테두리 이미지 
         UpdateWardCounts();
 
-        // 소독을 안 했다면
-        if (!isDisinfected[index])
+        // 소독 진행 중에 폐쇄를 끄면 소독도 중지
+        if (!isClosed[index] && isDisinfected[index])
         {
-            disinfectionButton[index].interactable = isClosed[index]; // 소독 버튼 활성화 관리
-            disinfectionText[index].text = isClosed[index] ? "소독 가능" : "";
+            isDisinfected[index] = false;
         }
+        disinfectionButton[index].interactable = isClosed[index]; 
+        disinfectionText[index].text = isClosed[index] ? "소독 가능" : "";
 
         PrintButtonState(1, index, isClosed[index]);             // DB에 폐쇄 상태 저장
     }
