@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System.Linq;
-using OpenCover.Framework.Model;
 
 public class PolicyResearch : MonoBehaviour
 {
@@ -132,7 +131,7 @@ public class PolicyResearch : MonoBehaviour
         setVaccineCountTen.onClick.AddListener(() => { UpdateVaccineCount(vaccineCount + 10); BtnSoundManager.Instance.PlayButtonSound(); });
         setVaccineCountMax.onClick.AddListener(() => { UpdateVaccineCount(GetCurrentWardUninfectedCount()); BtnSoundManager.Instance.PlayButtonSound(); });
         vaccineUseDicisionButton.onClick.AddListener(() => { ApplyVaccine(); BtnSoundManager.Instance.PlayButtonSound(); });
-        vaccineUsePanelClose.onClick.AddListener(() => {CloseVaccineUsePanelWithoutSaving(); BtnSoundManager.Instance.PlayButtonSound(); });
+        vaccineUsePanelClose.onClick.AddListener(() => { CloseVaccineUsePanelWithoutSaving(); BtnSoundManager.Instance.PlayButtonSound(); });
 
         // 이벤트 트리거 추가
         AddEventTrigger(medicinePlusButton.gameObject, EventTriggerType.PointerClick, (data) => { UpdateMedicineCount(1); BtnSoundManager.Instance.PlayButtonSound(); });
@@ -175,7 +174,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             researchingTimeText.text = $"바이러스 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return YieldInstructionCache.WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSecondsRealtime(1f);
             remainingTime--;
         }
 
@@ -221,7 +220,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             vaccineTimeText.text = $"백신 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return YieldInstructionCache.WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSecondsRealtime(1f);
             remainingTime--;
         }
         if (vaccineLockPanel != null)
@@ -241,7 +240,7 @@ public class PolicyResearch : MonoBehaviour
         while (remainingTime > 0)
         {
             medicineTimeText.text = $"치료제 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
-            yield return YieldInstructionCache.WaitForSeconds(1f);
+            yield return YieldInstructionCache.WaitForSecondsRealtime(1f);
             remainingTime--;
         }
         if (medicineLockPanel != null)
@@ -314,7 +313,7 @@ public class PolicyResearch : MonoBehaviour
     // 감염환자 수 계산 (치료제)
     private int GetCurrentWardInfectedCount()
     {
-        return medSelectedWard != null ? medSelectedWard.inpatients.Count(p => p.infectionController.isInfected) : 0;
+        return medSelectedWard != null ? medSelectedWard.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName) : 0;
     }
 
     // 치료제 사용 시 최대 최소값 조정
@@ -341,7 +340,7 @@ public class PolicyResearch : MonoBehaviour
         int remainingCount = medicineCount;
 
         // 감염된 환자 수 만큼 치료제를 사용
-        foreach (var patientController in medSelectedWard.inpatients.Where(p => p.infectionController.isInfected))
+        foreach (var patientController in medSelectedWard.inpatients.Where(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName))
         {
             if (remainingCount <= 0) break;
 
@@ -407,12 +406,12 @@ public class PolicyResearch : MonoBehaviour
     {
         if (vaccineWard == null) return 0;
 
-        int unInfectedCount = vaccineWard.doctors.Count(d => !d.infectionController.isInfected && d.infectionController.infectionResistance < 40) +
-                              vaccineWard.nurses.Count(n => !n.infectionController.isInfected && n.infectionController.infectionResistance < 40) +
-                              vaccineWard.outpatients.Count(o => !o.infectionController.isInfected && o.infectionController.infectionResistance < 40) +
-                              vaccineWard.inpatients.Count(i => !i.infectionController.isInfected && i.infectionController.infectionResistance < 40) +
-                              vaccineWard.emergencyPatients.Count(e => !e.infectionController.isInfected && e.infectionController.infectionResistance < 40)
-                              + vaccineWard.icuPatients.Count(c => !c.infectionController.isInfected && c.infectionController.infectionResistance < 40)
+        int unInfectedCount = vaccineWard.doctors.Count(d => !d.infectionController.isInfected && d.personComponent.vaccineResist < 40 && d.isInCurrentWard && d.currentWard == vaccineWard.WardName) +
+                              vaccineWard.nurses.Count(n => !n.infectionController.isInfected && n.personComponent.vaccineResist < 40 && n.isInCurrentWard && n.currentWard == vaccineWard.WardName) +
+                              vaccineWard.outpatients.Count(o => !o.infectionController.isInfected && o.personComponent.vaccineResist < 40 && o.isInCurrentWard && o.currentWard == vaccineWard.WardName) +
+                              vaccineWard.inpatients.Count(i => !i.infectionController.isInfected && i.personComponent.vaccineResist < 40 && i.isInCurrentWard && i.currentWard == vaccineWard.WardName) +
+                              vaccineWard.emergencyPatients.Count(e => !e.infectionController.isInfected && e.personComponent.vaccineResist < 40 && e.isInCurrentWard && e.currentWard == vaccineWard.WardName)
+                              + vaccineWard.icuPatients.Count(c => !c.infectionController.isInfected && c.personComponent.vaccineResist < 40 && c.isInCurrentWard && c.currentWard == vaccineWard.WardName)
                               ;
 
 
@@ -456,9 +455,10 @@ public class PolicyResearch : MonoBehaviour
             if (remainingCount <= 0) break;
 
             // 감염되지 않은 NPC에게만 백신 적용
-            if (!npc.infectionController.isInfected && npc.infectionController.infectionResistance < 40)
+            if (!npc.infectionController.isInfected && npc.personComponent.vaccineResist < 40)
             {
-                npc.infectionController.SetInfectionResistance(resistanceIncrease);
+                npc.personComponent.vaccineResist = resistanceIncrease;
+                npc.personComponent.UpdateInfectionResistance();
                 remainingCount--;
             }
         }
@@ -535,7 +535,7 @@ public class PolicyResearch : MonoBehaviour
             TextMeshProUGUI researchWardName = wardItem.transform.Find("ResearchWardName").GetComponent<TextMeshProUGUI>();
 
             int inpatientCount = ward.inpatientCount;
-            int infectedInpatientCount = ward.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == ward.WardName);
+            int infectedInpatientCount = ward.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName);
             int uninfectedInpatientCount = ward.inpatientCount - ward.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == ward.WardName);
 
             wardInPatientCount.text = inpatientCount.ToString();
@@ -571,7 +571,7 @@ public class PolicyResearch : MonoBehaviour
             TextMeshProUGUI wardInPatientCount = wardItem.transform.Find("VaccineWardPatient").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI wardInfectedPatientCount = wardItem.transform.Find("VaccineWardInfectedPatient").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI researchWardName = wardItem.transform.Find("VaccineWardName").GetComponent<TextMeshProUGUI>();
-            int allCount = ward.doctors.Count + ward.nurses.Count + ward.emergencyPatients.Count + ward.outpatients.Count + ward.inpatients.Count + ward.icuPatients.Count;
+            int allCount = ward.doctorCount + ward.nurseCount + ward.emergencypatientCount + ward.outpatientCount + ward.inpatientCount + ward.icupatientCount;
             int infectedCount = ward.doctors.Count(d => d.infectionController.isInfected && d.isInCurrentWard && d.currentWard == ward.WardName) +
                 ward.nurses.Count(n => n.infectionController.isInfected && n.isInCurrentWard && n.currentWard == ward.WardName) +
                 ward.outpatients.Count(o => o.infectionController.isInfected && o.isInCurrentWard && o.currentWard == ward.WardName) +

@@ -25,6 +25,9 @@ public class TutorialMove : TutorialBase
             return;
         }
 
+        // 카메라 전환 막기
+        cameraHandler.isTutoralMoveActive = true;
+
         // 카메라 초기 위치 저장
         initialPosition = cameraHandler.mainCamera.transform.position;
         firstPosition = cameraHandler.mainCamera.transform.position;
@@ -85,6 +88,10 @@ public class TutorialMove : TutorialBase
     public override void Exit()
     {
         // 튜토리얼 종료 시의 로직을 여기에 추가할 수 있습니다.
+
+        // 카메라 전환 기능 다시 온
+        cameraHandler.isTutoralMoveActive = false;
+
         // UI 요소 비활성화
         KeyImage.SetActive(false);
         CheckToggle_W.isOn = false;

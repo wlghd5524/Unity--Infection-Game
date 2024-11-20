@@ -109,7 +109,6 @@ public class PolicyHospital : MonoBehaviour
             closingButton[index].onClick.AddListener(() =>
             {
                 BtnSoundManager.Instance.PlayButtonSound();
-                nowIndex = index;
                 if (!isClosed[index])
                 {
                     Ward.wards[index].CloseWard();
@@ -125,6 +124,7 @@ public class PolicyHospital : MonoBehaviour
             disinfectionButton[index].onClick.AddListener(() =>
             {
                 ToggleDisinfection(index);
+                nowIndex = index;
                 BtnSoundManager.Instance.PlayButtonSound();
             });
         }
@@ -172,8 +172,7 @@ public class PolicyHospital : MonoBehaviour
             }
             else{
                 disinfectionText[index].text = "소독 불가: 병동에 인원이 있습니다.";
-            }
-                
+            } 
         }
     }
 
@@ -212,7 +211,6 @@ public class PolicyHospital : MonoBehaviour
             }
 
             // 소독 완료 처리
-
             disinfectionOutline[index].color = HexColor("#CED4DA");
             PrintButtonState(2, index, true); // 소독 완료 상태를 DB에 저장
             disinfectionButton[index].interactable = false;
@@ -243,8 +241,6 @@ public class PolicyHospital : MonoBehaviour
     {
         int toggleState = isOn ? 1 : 0;
         int wardNumber = wardIndex + 1; // 병동 번호 1부터 시작
-        Debug.Log($"PolicyHospital: {toggleType}.{wardNumber}.{toggleState}");
-
         researchDBManager.AddResearchData(ResearchDBManager.ResearchMode.patient, toggleType, wardNumber, toggleState);
     }
 

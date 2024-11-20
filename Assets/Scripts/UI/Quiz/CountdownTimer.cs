@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class CountdownTimer : MonoBehaviour
 {
     public TextMeshProUGUI timerText;
-    public Image shadowImage;         
+    public Image shadowImage;
 
     private float maxDuration;        // 최대 타이머 시간
     private float timeRemaining;      // 남은 시간

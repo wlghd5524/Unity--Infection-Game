@@ -55,6 +55,12 @@ public class NPCController : MonoBehaviour
     {
         if (other.GetComponent<WardRender>() != null && !isInCurrentWard)
         {
+            gameObject.layer = other.gameObject.layer;
+            // 자식 오브젝트도 레이어 변경
+            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                child.gameObject.layer = other.gameObject.layer;
+            }
             string layerName = LayerMask.LayerToName(gameObject.layer);
             switch (layerName)
             {
@@ -125,68 +131,76 @@ public class NPCController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<WardRender>() == null || !isInCurrentWard) return;
-        string layerName = LayerMask.LayerToName(gameObject.layer);
-        switch (layerName)
+        if (other.GetComponent<WardRender>() != null && isInCurrentWard)
         {
-            case "Floor 1 L":
-                UpdateWardCount(Ward.wards[8], -1);
-                break;
-            case "Floor 1 R":
-                UpdateWardCount(Ward.wards[9], -1);
-                break;
-            case "Floor 2 L":
-                UpdateWardCount(Ward.wards[0], -1);
-                break;
-            case "Floor 2 R":
-                UpdateWardCount(Ward.wards[1], -1);
-                break;
-            case "Floor 3 L":
-                UpdateWardCount(Ward.wards[2], -1);
-                break;
-            case "Floor 3 R":
-                UpdateWardCount(Ward.wards[3], -1);
-                break;
-            case "Floor 4 L":
-                UpdateWardCount(Ward.wards[4], -1);
-                break;
-            case "Floor 4 R":
-                UpdateWardCount(Ward.wards[5], -1);
-                break;
-            case "Floor 5 L":
-                UpdateWardCount(Ward.wards[6], -1);
-                break;
-            case "Floor 5 R":
-                UpdateWardCount(Ward.wards[7], -1);
-                break;
+            gameObject.layer = other.gameObject.layer;
+            // 자식 오브젝트도 레이어 변경
+            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                child.gameObject.layer = other.gameObject.layer;
+            }
+            string layerName = LayerMask.LayerToName(gameObject.layer);
+            switch (layerName)
+            {
+                case "Floor 1 L":
+                    UpdateWardCount(Ward.wards[8], -1);
+                    break;
+                case "Floor 1 R":
+                    UpdateWardCount(Ward.wards[9], -1);
+                    break;
+                case "Floor 2 L":
+                    UpdateWardCount(Ward.wards[0], -1);
+                    break;
+                case "Floor 2 R":
+                    UpdateWardCount(Ward.wards[1], -1);
+                    break;
+                case "Floor 3 L":
+                    UpdateWardCount(Ward.wards[2], -1);
+                    break;
+                case "Floor 3 R":
+                    UpdateWardCount(Ward.wards[3], -1);
+                    break;
+                case "Floor 4 L":
+                    UpdateWardCount(Ward.wards[4], -1);
+                    break;
+                case "Floor 4 R":
+                    UpdateWardCount(Ward.wards[5], -1);
+                    break;
+                case "Floor 5 L":
+                    UpdateWardCount(Ward.wards[6], -1);
+                    break;
+                case "Floor 5 R":
+                    UpdateWardCount(Ward.wards[7], -1);
+                    break;
+            }
+            // 인원 수 감소 후 태그를 변경하여 역할에 맞는 상태를 유지
+            if (personComponent.role == Role.Outpatient)
+            {
+                gameObject.tag = "Outpatient";
+            }
+            else if (personComponent.role == Role.Inpatient)
+            {
+                gameObject.tag = "Inpatient";
+            }
+            else if (personComponent.role == Role.EmergencyPatient)
+            {
+                gameObject.tag = "EmergencyPatient";
+            }
+            else if (personComponent.role == Role.ICUPatient)
+            {
+                gameObject.tag = "ICUPatient";
+            }
+            else if (personComponent.role == Role.Doctor)
+            {
+                gameObject.tag = "Doctor";
+            }
+            else if (personComponent.role == Role.Nurse)
+            {
+                gameObject.tag = "Nurse";
+            }
+            isInCurrentWard = false; // 병동에서 나가면 상태를 false로 설정
+            currentWard = null;
         }
-        // 인원 수 감소 후 태그를 변경하여 역할에 맞는 상태를 유지
-        if (personComponent.role == Role.Outpatient)
-        {
-            gameObject.tag = "Outpatient";
-        }
-        else if (personComponent.role == Role.Inpatient)
-        {
-            gameObject.tag = "Inpatient";
-        }
-        else if (personComponent.role == Role.EmergencyPatient)
-        {
-            gameObject.tag = "EmergencyPatient";
-        }
-        else if (personComponent.role == Role.ICUPatient)
-        {
-            gameObject.tag = "ICUPatient";
-        }
-        else if (personComponent.role == Role.Doctor)
-        {
-            gameObject.tag = "Doctor";
-        }
-        else if (personComponent.role == Role.Nurse)
-        {
-            gameObject.tag = "Nurse";
-        }
-        isInCurrentWard = false; // 병동에서 나가면 상태를 false로 설정
-        currentWard = null;
     }
 
     private void UpdateWardCount(Ward ward, int countChange)

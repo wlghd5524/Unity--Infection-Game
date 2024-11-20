@@ -11,7 +11,6 @@ public class OneClearManager : MonoBehaviour
     public GameObject guidGreenImage;            //소독중 표지판
     public Texture2D customCursor;                  //소독 커서 이미지
     public bool isDisinfectionOn = false;       //소독 중인지 여부
-    private bool isCustomCursorActive = false;   //현재 커서 상태 추적
 
     void Awake()
     {
@@ -46,7 +45,7 @@ public class OneClearManager : MonoBehaviour
     void ToggleDisinfection()
     {
         isDisinfectionOn = !isDisinfectionOn;
-        Debug.Log("Disinfection 상태: " + (isDisinfectionOn ? "On" : "Off"));  //수정
+        //Debug.Log("Disinfection 상태: " + (isDisinfectionOn ? "On" : "Off"));  //수정
         if (isDisinfectionOn)
         {
             guidGreenImage.SetActive(true);
@@ -56,7 +55,6 @@ public class OneClearManager : MonoBehaviour
             Vector2 hotspot = new Vector2(customCursor.width/2, customCursor.height/2); // 커서 중심을 이미지 크기와 동일하게
             //Cursor.SetCursor(customCursor, hotspot, CursorMode.Auto);
             Cursor.SetCursor(customCursor, hotspot, CursorMode.ForceSoftware);
-            isCustomCursorActive = true;
         }
         else
         {
@@ -70,7 +68,6 @@ public class OneClearManager : MonoBehaviour
 
         //소독 모드 OFF -> 원래 커서로 복원
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-        isCustomCursorActive = false;
         isDisinfectionOn = false;
     }
 

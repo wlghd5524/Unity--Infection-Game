@@ -97,7 +97,7 @@ public class Ward : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count;
+        totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count + emergencyPatients.Count + icuPatients.Count;
     }
 
     public void RemoveFromPatientList(PatientController patient)
@@ -136,16 +136,12 @@ public class Ward : MonoBehaviour
         {
             PatientController patient = outpatients[i];
             if (patient == null) continue;
-
-            if (patient.waypointIndex == 3)
-            {
-                patient.StopAllCoroutines();
-                patient.agent.isStopped = false;
-            }
-            else if (patient.waypointIndex == 4)
+            if (patient.waypointIndex == 4)
             {
                 continue;
             }
+            patient.StopAllCoroutines();
+            patient.agent.isStopped = false;
             bool moved = TryMovePatientToAdjacentWard(patient, index);
             if (!moved)
             {
@@ -160,18 +156,21 @@ public class Ward : MonoBehaviour
         for (int i = inpatients.Count - 1; i >= 0; i--)
         {
             PatientController inpatient = inpatients[i];
-            if (inpatient == null) continue;
+            if (inpatient == null || inpatient.isExiting) continue;
 
             BedWaypoint nextBed = wards
-                .Where(ward => ward.num != num && ward.num >= 4 && ward.num <= 7 && !ward.isClosed)
+                .Where(ward => ward.num >= 4 && ward.num <= 7 && !ward.isClosed)
                 .SelectMany(ward => ward.beds)
                 .FirstOrDefault(bed => bed.patient == null);
 
             if (nextBed != null)
             {
                 nextBed.patient = inpatient.gameObject;
-                inpatient.StopCoroutine(inpatient.TransferToAvailableWard(inpatient.bedWaypoint));
-                inpatient.StartCoroutine(inpatient.TransferToAvailableWard(nextBed));
+                if(inpatient.prevCoroutine != null)
+                {
+                    inpatient.StopCoroutine(inpatient.prevCoroutine);
+                }
+                inpatient.prevCoroutine = inpatient.StartCoroutine(inpatient.TransferToAvailableWard(nextBed));
             }
             else
             {
@@ -246,6 +245,7 @@ public class Ward : MonoBehaviour
             patient.waypoints.Clear();
             patient.isWaitingForDoctor = false;
             patient.waypointIndex = 0;
+            patient.isWaiting = false;
             return true;
         }
         return false;

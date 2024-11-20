@@ -70,6 +70,10 @@ public class QuarantineManager : MonoBehaviour
                 {
                     yield break;
                 }
+                if(patientController.personComponent.role == Role.EmergencyPatient)
+                {
+                    DoctorController.ERWaitingList.Remove(patientController);
+                }
                 Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
                 QuarantineRoom quarantineRoom = null;
                 for (int i = 0; i < 8; i++)
@@ -91,7 +95,12 @@ public class QuarantineManager : MonoBehaviour
                 else
                 {
                     GameObject closestNurse = SearchNurse(gameObject.transform.position);
-                    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null || (patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3))
+                    NurseController nurseController = null;
+                    if (closestNurse != null)
+                    {
+                        nurseController = closestNurse.GetComponent<NurseController>();
+                    }
+                    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null || (patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3) || !nurseController.personComponent.Inventory["Level C"].isEquipped)
                     {
                         Debug.Log("격리 취소");
                         patientController.quarantineRoom = null;
@@ -103,7 +112,6 @@ public class QuarantineManager : MonoBehaviour
                     {
                         patientController.StopAllCoroutines();
                         // 간호사의 NurseController 컴포넌트를 가져옵니다.
-                        NurseController nurseController = closestNurse.GetComponent<NurseController>();
                         if (nurseController == null)
                         {
                             Debug.LogError("nurseController를 찾을 수 없습니다.");

@@ -2,7 +2,7 @@
 
 public class Virus : MonoBehaviour
 {    
-    public float infectionProbability = 0.5f;  //감염 확률(50%)
+    public float infectionProbability = 0.3f;  //감염 확률(50%)
 
     private float lifetime = 5;              //바이러스 기본 수명 5초
     private InfectionState infectionState;   //감염 상태

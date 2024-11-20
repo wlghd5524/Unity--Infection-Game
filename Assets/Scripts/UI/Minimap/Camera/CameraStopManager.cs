@@ -37,14 +37,14 @@ public class CameraManager : MonoBehaviour
         bool anyPanelActive = false;
 
         // UI 패널이 활성화되어 있는지 확인
-        //foreach (GameObject uiPanel in uiPanels)
-        //{
-        //    if (uiPanel.activeSelf)
-        //    {
-        //        anyPanelActive = true;
-        //        break;
-        //    }
-        //}
+        foreach (GameObject uiPanel in uiPanels)
+        {
+            if (uiPanel.activeSelf)
+            {
+                anyPanelActive = true;
+                break;
+            }
+        }
 
         // QuestCanvas의 Canvas 컴포넌트가 활성화되어 있는지 확인
         if (questCanvas != null && questCanvas.enabled)

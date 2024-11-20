@@ -49,7 +49,6 @@ public class GameDataManager : MonoBehaviour
     public Dictionary<int, string> feedbackContent = new Dictionary<int, string>();
 
     GameObject scoreGraphCanvas;
-    private DateTime gameStartTime;
     public Transform graphContainer;
     public Transform feedbackContainer;
     public GameObject gameClearPanel;
@@ -304,21 +303,14 @@ public class GameDataManager : MonoBehaviour
                 if (toggleState == 0)
                 {
                     RemoveFeedback(index, btnNum, targetNum, toggleState, mode);
-                    continue;
+                    if(mode == ResearchDBManager.ResearchMode.patient)
+                        feedback = $"{GetFeedback(mode, btnNum, targetNum, toggleState)} (취소)"; // 취소된 작업에 피드백 표시
+                    else 
+                        continue;
                 }
-
-                // 피드백 생성
-                switch (mode)
+                else
                 {
-                    case ResearchDBManager.ResearchMode.gear:
-                        feedback = GetGearResearchFeedback(btnNum, targetNum, toggleState);
-                        break;
-                    case ResearchDBManager.ResearchMode.patient:
-                        feedback = GetPatientResearchFeedback(btnNum, targetNum, toggleState);
-                        break;
-                    case ResearchDBManager.ResearchMode.research:
-                        feedback = GetAdvancedResearchFeedback(btnNum, targetNum, toggleState);
-                        break;
+                    feedback = GetFeedback(mode, btnNum, targetNum, toggleState);
                 }
 
                 if (!feedbackContent[index - 1].Contains(feedback))
@@ -327,6 +319,25 @@ public class GameDataManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    // 피드백 생성
+    string GetFeedback(ResearchDBManager.ResearchMode mode, int btnNum, int targetNum, int toggleState)
+    {
+        string feedback = "";
+        switch (mode)
+        {
+            case ResearchDBManager.ResearchMode.gear:
+                feedback = GetGearResearchFeedback(btnNum, targetNum, toggleState);
+                break;
+            case ResearchDBManager.ResearchMode.patient:
+                feedback = GetPatientResearchFeedback(btnNum, targetNum, toggleState);
+                break;
+            case ResearchDBManager.ResearchMode.research:
+                feedback = GetAdvancedResearchFeedback(btnNum, targetNum, toggleState);
+                break;
+        }
+        return feedback;
     }
 
     void RemoveFeedback(int index, int btnNum, int targetNum, int toggleState, ResearchDBManager.ResearchMode mode)
@@ -364,7 +375,7 @@ public class GameDataManager : MonoBehaviour
 
         foreach (var line in lines)
         {
-            if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제"))
+            if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제") || line.Contains("취소"))
                 continue;
 
             updatedContent += line + "\n";
@@ -378,9 +389,9 @@ public class GameDataManager : MonoBehaviour
     private string GetGearResearchFeedback(int btnNum, int target, int toggleState)
     {
         string[] gearItems = { "Dental 마스크", "일회용 장갑", "N95 마스크", "라텍스 장갑", "의료용 고글", "의료용 헤어캡", "AP 가운", "Level C" };
-        string[] gearTarget = { "의사", "간호사", "외래 환자", "입원 환자", "응급 환자" };
+        string[] gearTarget = { "의사", "간호사", "외래 환자", "입원 환자", "응급 환자", "중환자"};
 
-        if (btnNum >= 1 && btnNum <= 8 && target >= 1 && target <= 5)
+        if (btnNum >= 1 && btnNum <= 8 && target >= 1 && target <= 6)
         {
             string itemName = gearItems[btnNum - 1];
             string targetName = gearTarget[target - 1];
@@ -400,7 +411,8 @@ public class GameDataManager : MonoBehaviour
         {
             string itemName = patientItems[btnNum - 1];
             string tartgetName = patientTarget[target - 1];
-            return $"{itemName} {(toggleState == 1 ? "진행" : "미진행")}({tartgetName})";
+            //return $"{itemName} {(toggleState == 1 ? "진행" : "미진행")}({tartgetName})";
+            return $"{itemName} 진행({tartgetName})";
         }
         return "";
     }
@@ -482,7 +494,7 @@ public class GameDataManager : MonoBehaviour
                     filteredContent += $"{line}\n";
                 if (feedbackEmergencyToggle.isOn && (line.Contains("응급 환자") || line.Contains("응급실")))
                     filteredContent += $"{line}\n";
-                if (feedbackIcuToggle.isOn && line.Contains("중환자실"))
+                if (feedbackIcuToggle.isOn && line.Contains("중환자실") || line.Contains("중환자"))
                     filteredContent += $"{line}\n";
             }
 

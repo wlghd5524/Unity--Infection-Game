@@ -17,18 +17,11 @@ public class InfectionController : MonoBehaviour
     // 감염 상태 확인 프로퍼티
     public bool isInfected => person != null && person.status != InfectionState.Normal;
 
-    // 감염 저항성 프로퍼티
-    public int infectionResistance => person != null ? person.infectionResistance : 0;
-
-    // 감염 저항성 설정 메서드
-    public void SetInfectionResistance(int infectionResistance_)
+    public float GetFinalProtectionRate(Person person)
     {
-        if (person != null)
-        {
-            person.infectionResistance += infectionResistance_;
-        }
+        if (person == null) return 0f; // Person이 null이면 방어율 0으로 반환
+        return person.infectionResistance + person.GetTotalProtectionRate();
     }
-
     private void Awake()
     {
         selectedLevel = Assign(selectedLevel, "SelectedLevel");
@@ -112,7 +105,7 @@ public class InfectionController : MonoBehaviour
         int random = Random.Range(0, Managers.Infection.infectionProbability);
         //감염되는 사람의 감염 저항성을 고려하여 감염 확률 계산
         int totalRandom = Random.Range(0, 101);
-        if (random - otherPerson.infectionResistance >= totalRandom)
+        if (random - GetFinalProtectionRate(otherPerson) >= totalRandom)
         {
             //Debug.Log(random - otherPerson.infectionResistance + " 값이 나왔기 때문에 감염됨");
             //other.GetComponent<NPCController>().wardComponent.infectedNPC++;

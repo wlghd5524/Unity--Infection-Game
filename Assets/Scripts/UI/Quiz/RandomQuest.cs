@@ -16,7 +16,7 @@ public class RandomQuest : MonoBehaviour
     public GameObject wrongPanel;
     public GameObject rightPanel;
     public TMP_Text rightText;                 
-    public Canvas questCanvas;                 
+    public Canvas questCanvas;                
     public GameObject coolTimePanel;
 
     public MySQLConnector mySQLConnector;
@@ -33,15 +33,15 @@ public class RandomQuest : MonoBehaviour
     private List<User> usersDB = new List<User>();             // DB_문제 및 선택지 데이터
     private List<User> answersDB = new List<User>();           // DB_정답 데이터
     private Dictionary<string, List<int>> availableIndicesByLevel = new Dictionary<string, List<int>>();
-    public Dictionary<string, float> cooldownTimers = new Dictionary<string, float>();           // 각 레벨의 쿨타임 타이머
-    private Dictionary<string, int> questCount = new Dictionary<string, int>();                  //문제 개수 제어
-    private Dictionary<string, int> lastIndexPerLevel = new Dictionary<string, int>();           //레벨별 마지막 인덱스
-    private Dictionary<string, bool> firstAttemptPerLevel = new Dictionary<string, bool>();      //레벨별 첫 번째 오답 여부
+    public Dictionary<string, float> cooldownTimers = new Dictionary<string, float>();                 // 각 레벨의 쿨타임 타이머
+    private Dictionary<string, int> questCount = new Dictionary<string, int>();                         //문제 개수 제어
+    private Dictionary<string, int> lastIndexPerLevel = new Dictionary<string, int>();                  //레벨별 마지막 인덱스
+    private Dictionary<string, bool> firstAttemptPerLevel = new Dictionary<string, bool>();             //레벨별 첫 번째 오답 여부
 
     private int currentIndex = -1, lastIndex = -1;
     private float duration = 0f;
-    private bool firstAttempt = true;                          // 오답 첫 번째 재도전인지 확인
-    private float maxCooldown = 60f;                         // 쿨타임 최대 시간
+    private bool firstAttempt = true;          // 오답 첫 번째 재도전인지 확인
+    private float maxCooldown = 60f;           // 쿨타임 최대 시간
 
     void Start()
     {
@@ -79,11 +79,9 @@ public class RandomQuest : MonoBehaviour
         questCanvas = Assign(questCanvas, "QuestCanvas");
         monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
         currentMoneyManager = Assign(currentMoneyManager, "CurrentMoneyManager");
-        countdownTimer = FindObjectOfType<CountdownTimer>();    
+        countdownTimer = Assign(countdownTimer, "Timer");
         moneyText = Assign(moneyText, "MoneyText");
         timerText = Assign(timerText, "TimerText");
-
- 
 
         if (mySQLConnector != null) 
         {
@@ -113,7 +111,7 @@ public class RandomQuest : MonoBehaviour
         answersDB = mySQLConnector.GetAnswers();
         //Debug.Log($"Loaded {usersDB.Count} users and {answersDB.Count} answers from the database.");
 
-        OnLevelButtonClicked(levelButton[0]);                                       // 처음에 level1btn이 선택된 상태로 시작
+        OnLevelButtonClicked(levelButton[0]);  
 
         foreach (var button in levelButton)
         {
@@ -151,7 +149,7 @@ public class RandomQuest : MonoBehaviour
         levelButton[selectedLevel].interactable = false;
 
         RestorePreviousState();
-        ManageCooltimePanels(clickbtn.name);
+        ManageCooltimePanels(clickedButton.name);
         SetRandomQuest();
     }
 
@@ -183,12 +181,7 @@ public class RandomQuest : MonoBehaviour
     // 난이도에 따른 문제 및 객관식 선택지 텍스트 변환
     public void SetRandomQuest()
     {
-        if (!questCanvas.enabled)
-        {
-            return;
-        }
-
-        if (availableIndices.Count == 0)
+        if (!questCanvas.enabled || availableIndices.Count == 0)
         {
             return;
         }

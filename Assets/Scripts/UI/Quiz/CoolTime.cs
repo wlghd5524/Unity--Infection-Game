@@ -16,37 +16,19 @@ public class CoolTime : MonoBehaviour
 
     private void Start()
     {
-        cooltimeText = Assign(cooltimeText, "TextCoolTime");
-        fillImage = Assign(fillImage, "Shadow");
+        cooltimeText = GameObject.Find("TextCoolTime").GetComponent<TextMeshProUGUI>();
+        fillImage = GameObject.Find("Shadow").GetComponent<Image>();
         randomQuest = FindObjectOfType<RandomQuest>();
     }
 
-    // 자동 할당 코드 
-    private T Assign<T>(T obj, string objectName) where T : Object
-    {
-        if (obj == null)
-        {
-            GameObject foundObject = GameObject.Find(objectName);
-            if (foundObject != null)
-            {
-                if (typeof(Component).IsAssignableFrom(typeof(T))) obj = foundObject.GetComponent(typeof(T)) as T;
-                else if (typeof(GameObject).IsAssignableFrom(typeof(T))) obj = foundObject as T;
-            }
-            if (obj == null) Debug.LogError($"{objectName} 를 찾을 수 없습니다.");
-        }
-        return obj;
-
-    }
-
-    // 쿨타임 시작하는 함수
     public void StartCooldown(float remainingCooldown, float maxCooldown, System.Action onCooldownComplete)
     {
-        this.maxCooldown = maxCooldown;  
+        this.maxCooldown = maxCooldown; 
         this.onCooldownComplete = onCooldownComplete;
         randomQuest.cooldownTimers[currentLevelName] = remainingCooldown;
         startTime = Time.realtimeSinceStartup; 
         UpdateCooltimeUI();
-        gameObject.SetActive(true);  
+        gameObject.SetActive(true); 
         if (_co != null)
         {
             StopCoroutine(_co);
@@ -56,13 +38,13 @@ public class CoolTime : MonoBehaviour
 
     //시간이 남아있으면 매 프레임마다 currentCooldown을 감소시킴
     //쿨타임 끝나면 onCooldownCompete 호출
-    IEnumerator CooldownCoroutine()
+    private IEnumerator CooldownCoroutine()
     {
-        float endTime = startTime + randomQuest.cooldownTimers[currentLevelName]; // 종료 시간 계산
+        float endTime = startTime + randomQuest.cooldownTimers[currentLevelName]; 
 
         while (Time.realtimeSinceStartup < endTime)
         {
-            randomQuest.cooldownTimers[currentLevelName] = endTime - Time.realtimeSinceStartup; // 남은 시간 계산
+            randomQuest.cooldownTimers[currentLevelName] = endTime - Time.realtimeSinceStartup; 
             UpdateCooltimeUI();
             yield return null;
         }

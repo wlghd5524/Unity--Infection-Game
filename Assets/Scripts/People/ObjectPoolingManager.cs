@@ -303,7 +303,7 @@ public class ObjectPoolingManager
             outpatientPerson.status = InfectionState.Normal; // 감염 상태 초기화
             patientController.wardComponent.infectedNPC--;
         }
-        patientController.wardComponent.totalOfNPC--;
+        //patientController.wardComponent.totalOfNPC--;
         outpatientPerson.isImmune = false;
         //outpatientController.wardComponent.outpatients.Remove(outpatientController);
         patientController.wardComponent = null;

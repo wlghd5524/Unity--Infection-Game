@@ -17,7 +17,7 @@ public class CalendarManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Start 메소드 호출됨");
+        //Debug.Log("Start 메소드 호출됨");
         dateText = Assign(dateText, "DateText");
         monthText = Assign(monthText, "MonthText");
         monthlyReportUI = FindObjectOfType<MonthlyReportUI>();
