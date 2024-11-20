@@ -39,6 +39,7 @@ public class NPCController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.avoidancePriority = Random.Range(0, 100);
         agent.speed = Random.Range(3.0f, 5.0f);
+        agent.stoppingDistance = 0.5f;
         personComponent = GetComponent<Person>();
         if(gameObject.CompareTag("Doctor") || gameObject.CompareTag("Nurse"))
         {

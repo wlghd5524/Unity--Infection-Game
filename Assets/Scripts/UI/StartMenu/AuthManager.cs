@@ -6,10 +6,16 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using MyApp.UserManagement;
+using System.Runtime.InteropServices;
 
 // 로그인 및 회원가입 관련 기능 매니저
 public class AuthManager : MonoBehaviour
 {
+    [DllImport("user32.dll")]
+    public static extern short GetKeyState(int keyCode);    // WINDOWS API 사용해 Caps lock 판단
+
+    private const int VK_CAPITAL = 0x14;
+
     public static AuthManager Instance { get; private set; }
 
     // 로그인 관련 객체들
@@ -218,6 +224,26 @@ public class AuthManager : MonoBehaviour
                 Input.imeCompositionMode = IMECompositionMode.Auto;
             }
         }
+
+        // Caps Lock 상태 확인
+        if (IsCapsLockOn())
+        {
+            DisplayMessage("Caps Lock이 켜져 있습니다", Color.red);
+        }
+        else
+        {
+            TMP_Text messageText = GetCurrentMessageText();
+            if (messageText.text == "Caps Lock이 켜져 있습니다")
+            {
+                messageText.text = ""; // Caps Lock이 꺼졌을 때 메시지를 지움
+            }
+        }
+    }
+
+    // Caps Lock 상태 확인 함수
+    private bool IsCapsLockOn()
+    {
+        return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
     }
 
     // 첫번째 입력 필드를 찾는 함수
