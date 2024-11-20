@@ -23,7 +23,8 @@ public enum Role
 public class Person : MonoBehaviour
 {
     public InfectionState status = InfectionState.Normal;
-    public int infectionResistance = 0;
+    public float infectionResistance = 0;
+    public float vaccineResist = 0f;
     public Role role;
 
     public bool isImmune;
@@ -234,5 +235,13 @@ public class Person : MonoBehaviour
             }
         }
         return totalProtectionRate;
+    }
+
+    // 아이템 방어율 업데이트
+    public void UpdateInfectionResistance()
+    {
+        infectionResistance = vaccineResist + GetTotalProtectionRate(); // 아이템 방어율 합산
+
+        Debug.Log($"{name}의 방어율 업데이트: {infectionResistance}%");
     }
 }

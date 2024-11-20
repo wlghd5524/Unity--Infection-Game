@@ -66,7 +66,7 @@ public class ProfileUI : MonoBehaviour
 
 
             // NPC 보호율 텍스트 업데이트
-            npcProtectionRateText.text = $"+ {currentNPC.GetTotalProtectionRate() + currentNPC.infectionResistance}%";
+            npcProtectionRateText.text = $"+ {currentNPC.infectionResistance}%";
         }
         else
         {
@@ -85,6 +85,6 @@ public class ProfileUI : MonoBehaviour
         npcAvatarImage.sprite = currentNPC.AvatarSprite;
 
         // NPC 보호율 텍스트 업데이트
-        npcProtectionRateText.text = $"+ {currentNPC.GetTotalProtectionRate() + currentNPC.infectionResistance}%";
+        npcProtectionRateText.text = $"+ {currentNPC.infectionResistance}%";
     }
 }
