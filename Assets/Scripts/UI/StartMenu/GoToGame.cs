@@ -117,7 +117,7 @@ public class GoToGame : MonoBehaviour
         {
             Managers.Instance.ChangeGameStage(2);
             //InfectionManager.Instance.infectionProbability = InfectionManager.Instance.infectionProbability *1.5; // 나중에 double 형식으로 변경
-            InfectionManager.Instance.infectionProbability = 45; // Hard 모드일때는 감염률 1.5배 (하드코딩)
+            InfectionManager.Instance.infectionProbability = 175; // Hard 모드일때는 감염률 1.5배 (하드코딩)
         }
         else
         {
