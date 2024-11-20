@@ -370,7 +370,7 @@ public class PatientController : NPCController
                     }
                     else
                     {
-                        agent.SetDestination(waypoints[waypointIndex++].GetSampledPosition());
+                        agent.SetDestination(waypoints[waypointIndex++].GetRandomPointInRange());
                     }
                 }
             }

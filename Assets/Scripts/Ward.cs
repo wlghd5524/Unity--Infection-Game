@@ -141,6 +141,7 @@ public class Ward : MonoBehaviour
                 continue;
             }
             patient.StopAllCoroutines();
+            patient.agent.ResetPath();
             patient.agent.isStopped = false;
             bool moved = TryMovePatientToAdjacentWard(patient, index);
             if (!moved)
