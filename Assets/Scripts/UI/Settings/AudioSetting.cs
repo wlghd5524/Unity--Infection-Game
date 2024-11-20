@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor; // 에디터 관련 네임스페이스
+#endif
 
 public class AudioSetting : MonoBehaviour
 {
@@ -8,6 +11,7 @@ public class AudioSetting : MonoBehaviour
     public Slider musicVolumeSlider;
     public Slider sfxVolumeSlider;
     private bool isUpdatingSlider = false; // 슬라이더 값이 업데이트 중인지 여부를 체크하는 플래그
+    public Button quitButton; // 게임 종료 버튼 추가
 
     void Start()
     {
@@ -16,6 +20,7 @@ public class AudioSetting : MonoBehaviour
         masterVolumeSlider = Assign(masterVolumeSlider, "MasterVolume");
         musicVolumeSlider = Assign(musicVolumeSlider, "BGMVolume");
         sfxVolumeSlider = Assign(sfxVolumeSlider, "SfxVolume");
+        quitButton = Assign(quitButton, "QuitButton"); // 게임 종료 버튼 자동 할당
     }
 
     // 자동 할당 코드
@@ -61,6 +66,8 @@ public class AudioSetting : MonoBehaviour
         masterVolumeSlider.onValueChanged.AddListener(SnapAndSetMasterVolume);
         musicVolumeSlider.onValueChanged.AddListener(SnapAndSetMusicVolume);
         sfxVolumeSlider.onValueChanged.AddListener(SnapAndSetSfxVolume);
+        // 게임 종료 버튼 클릭 이벤트 등록
+        quitButton.onClick.AddListener(OnQuitButtonClicked);
     }
 
     private void UnregisterListeners()
@@ -68,6 +75,8 @@ public class AudioSetting : MonoBehaviour
         masterVolumeSlider.onValueChanged.RemoveListener(SnapAndSetMasterVolume);
         musicVolumeSlider.onValueChanged.RemoveListener(SnapAndSetMusicVolume);
         sfxVolumeSlider.onValueChanged.RemoveListener(SnapAndSetSfxVolume);
+        // 게임 종료 버튼 클릭 이벤트 제거
+        quitButton.onClick.RemoveListener(OnQuitButtonClicked);
     }
 
     // 마스터 볼륨 설정 함수
@@ -113,6 +122,16 @@ public class AudioSetting : MonoBehaviour
         isUpdatingSlider = false;
     }
 
+    // 게임 종료 버튼 클릭 시 호출되는 함수
+    void OnQuitButtonClicked()
+    {
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false; // 에디터에서 플레이 모드 종료
+#else
+        Debug.Log("Quit button clicked");
+        Application.Quit(); // 빌드된 게임에서 게임 종료
+#endif
+    }
 
     // 슬라이더 값을 스냅 간격으로 조정하는 함수
     private float SnapValue(float value)
