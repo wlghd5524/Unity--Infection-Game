@@ -276,7 +276,7 @@ public class GameDataManager : MonoBehaviour
         if (index > 1 && feedbackContent.ContainsKey(index - 2))
         {
             feedbackContent[index - 1] = feedbackContent[index - 2];
-            Debug.Log($"이전 로그 저장: {index - 1}, {feedbackContent[index - 1]}");
+            //Debug.Log($"이전 로그 저장: {index - 1}, {feedbackContent[index - 1]}");
 
             RemoveFeedbackByKeyword(index);     // 필요없는 문장 제거
         }
