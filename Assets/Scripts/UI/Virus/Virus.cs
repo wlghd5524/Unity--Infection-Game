@@ -34,7 +34,6 @@ public class Virus : MonoBehaviour
             if (Random.value < infectionProbability)
             {
                 person.ChangeStatus(infectionState);
-                Debug.Log($"바이러스에 의해 감염됨" + other.gameObject.name);
                 //Debug.Log($"바이러스에 의해 감염됨 (상태: {infectionState})");
             }
             //else { Debug.Log($"바이러스에 의해 감염되지 않음 (상태: {infectionState})"); }
@@ -45,23 +44,6 @@ public class Virus : MonoBehaviour
     public void Disinfect()
     {
         Destroy(gameObject);
-        Debug.Log("바이러스 하나를 소독했습니다.");  
-    }
-
-    //클릭 이벤트 처리 메서드
-    void OnMouseDown()
-    {
-        if (OneClearManager.Instance.isDisinfectionOn)
-        {
-            Virus clickedVirus = GetComponent<Virus>();
-            if (clickedVirus != null)
-            {
-                clickedVirus.Disinfect();
-            }
-        }
-        else
-        {
-            Debug.Log("소독이 비활성화되어 바이러스가 삭제되지 않았습니다.");
-        }
+        //Debug.Log("바이러스 하나를 소독했습니다.");  
     }
 }
