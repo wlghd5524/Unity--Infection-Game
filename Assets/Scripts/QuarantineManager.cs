@@ -102,7 +102,7 @@ public class QuarantineManager : MonoBehaviour
                     }
                     if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null || (patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3) || !nurseController.personComponent.Inventory["Level C"].isEquipped)
                     {
-                        Debug.Log("격리 취소");
+                        //Debug.Log("격리 취소");
                         patientController.quarantineRoom = null;
                         quarantineRoom.isEmpty = true;
                         quarantineRoom.patient = null;
