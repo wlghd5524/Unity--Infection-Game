@@ -9,6 +9,7 @@ using MyApp.UserManagement;
 using Unity.VisualScripting;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 
 public class GameDataManager : MonoBehaviour
 {
@@ -272,21 +273,20 @@ public class GameDataManager : MonoBehaviour
     {
         ResearchDBManager researchManager = ResearchDBManager.Instance;
 
-        // 이전 로그를 기반으로 현재 로그 초기화
+        // 이전 피드백 복사
         if (index > 1 && feedbackContent.ContainsKey(index - 2))
         {
             feedbackContent[index - 1] = feedbackContent[index - 2];
-            //Debug.Log($"이전 로그 저장: {index - 1}, {feedbackContent[index - 1]}");
-
-            RemoveFeedbackByKeyword(index);     // 필요없는 문장 제거
+            RemoveFeedbackByKeyword(index);     
         }
         else
-            feedbackContent[index - 1] = " "; // 첫날이거나 이전 로그가 없는 경우
+            feedbackContent[index - 1] = " "; 
 
+        // index월 연구데이터에 대한 피드백 추가
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
         {
             List<string> recordList = researchManager.researchRecords[mode]
-                .Where(record => int.Parse(record.Split('.')[0]) == index) // 날짜 필터링
+                .Where(record => int.Parse(record.Split('.')[0]) == index) 
                 .ToList();
 
             for (int i = 0; i < recordList.Count; i++)
@@ -299,48 +299,36 @@ public class GameDataManager : MonoBehaviour
                 string currentMoment = parts[4];            // 시간 값 (mm:ss 형식)
                 string feedback = "";
 
-                // 비활성화된 연구버튼에 대한 로그는 피드백에서 삭제
-                if (toggleState == 0)
+                if (toggleState == 0 && mode == ResearchDBManager.ResearchMode.gear)
                 {
-                    RemoveFeedback(index, btnNum, targetNum, toggleState, mode);
-                    if(mode == ResearchDBManager.ResearchMode.patient)
-                        feedback = $"{GetFeedback(mode, btnNum, targetNum, toggleState)} (취소)"; // 취소된 작업에 피드백 표시
-                    else 
-                        continue;
+                    RemoveFeedbackByKeyword(index, $"{GetGearResearchFeedback(btnNum, targetNum, 1)}");
                 }
-                else
+
+                switch (mode)
                 {
-                    feedback = GetFeedback(mode, btnNum, targetNum, toggleState);
+                    case ResearchDBManager.ResearchMode.gear:
+                        feedback = GetGearResearchFeedback(btnNum, targetNum, toggleState);
+                        break;
+                    case ResearchDBManager.ResearchMode.patient:
+                        feedback = GetPatientResearchFeedback(btnNum, targetNum, toggleState);
+                        break;
+                    case ResearchDBManager.ResearchMode.research:
+                        feedback = GetAdvancedResearchFeedback(btnNum, targetNum, toggleState);
+                        break;
                 }
 
                 if (!feedbackContent[index - 1].Contains(feedback))
                 {
                     feedbackContent[index - 1] += $"{feedback} ({currentMoment})\n";
+                    Debug.Log($"이전, 피드백 출력!");
                 }
             }
         }
+        Debug.Log($"이전, {index}월 피드백: {feedbackContent[index - 1]}");
     }
 
-    // 피드백 생성
-    string GetFeedback(ResearchDBManager.ResearchMode mode, int btnNum, int targetNum, int toggleState)
-    {
-        string feedback = "";
-        switch (mode)
-        {
-            case ResearchDBManager.ResearchMode.gear:
-                feedback = GetGearResearchFeedback(btnNum, targetNum, toggleState);
-                break;
-            case ResearchDBManager.ResearchMode.patient:
-                feedback = GetPatientResearchFeedback(btnNum, targetNum, toggleState);
-                break;
-            case ResearchDBManager.ResearchMode.research:
-                feedback = GetAdvancedResearchFeedback(btnNum, targetNum, toggleState);
-                break;
-        }
-        return feedback;
-    }
-
-    void RemoveFeedback(int index, int btnNum, int targetNum, int toggleState, ResearchDBManager.ResearchMode mode)
+    // 피드백에서 필요없는 문장 제거
+    void RemoveFeedbackByKeyword(int index, string select = null)
     {
         if (!feedbackContent.ContainsKey(index - 1)) return;
 
@@ -349,41 +337,23 @@ public class GameDataManager : MonoBehaviour
 
         foreach (var line in lines)
         {
-            if (mode == ResearchDBManager.ResearchMode.gear)
+            if(select != null)
             {
-                if (line.Contains($"{GetGearResearchFeedback(btnNum, targetNum, 1)}"))
+                if (line.Contains(select))
                     continue;
             }
-            else if (mode == ResearchDBManager.ResearchMode.patient)
+            else
             {
-                if (line.Contains($"{GetPatientResearchFeedback(btnNum, targetNum, 1)}"))
+                if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제") || line.Contains("취소"))
                     continue;
             }
+            
 
             updatedContent += line + "\n";
         }
 
         feedbackContent[index - 1] = updatedContent;
     }
-
-    void RemoveFeedbackByKeyword(int index)
-    {
-        if (!feedbackContent.ContainsKey(index - 1)) return;
-
-        string[] lines = feedbackContent[index - 1].Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        string updatedContent = "";
-
-        foreach (var line in lines)
-        {
-            if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제") || line.Contains("취소"))
-                continue;
-
-            updatedContent += line + "\n";
-        }
-
-        feedbackContent[index - 1] = updatedContent;
-    }
-
 
     // Gear Research 모드의 피드백 생성
     private string GetGearResearchFeedback(int btnNum, int target, int toggleState)
@@ -395,7 +365,11 @@ public class GameDataManager : MonoBehaviour
         {
             string itemName = gearItems[btnNum - 1];
             string targetName = gearTarget[target - 1];
-            return $"{itemName} {(toggleState == 1 ? "사용" : "미사용")}({targetName})";
+            return $"{targetName} {itemName} {(toggleState == 1 ? "사용" : "취소")}";
+        }
+        else
+        {
+            Debug.LogError($"GetGearResearchFeedback에서 btnNum: {btnNum}, target: {target}");
         }
 
         return "";
@@ -411,8 +385,7 @@ public class GameDataManager : MonoBehaviour
         {
             string itemName = patientItems[btnNum - 1];
             string tartgetName = patientTarget[target - 1];
-            //return $"{itemName} {(toggleState == 1 ? "진행" : "미진행")}({tartgetName})";
-            return $"{itemName} 진행({tartgetName})";
+            return $"{tartgetName} {itemName} {(toggleState == 1 ? "진행" : "취소")}";
         }
         return "";
     }
@@ -433,7 +406,7 @@ public class GameDataManager : MonoBehaviour
 
                 if (btnNum == 1)
                 {
-                    return $"{itemName} 진행({tartgetName})";
+                    return $"바이러스 연구 개시";
                 }
                 else
                 {
@@ -473,16 +446,16 @@ public class GameDataManager : MonoBehaviour
 
             if (difference20More[i])
             {
-                filteredContent += $"{i + 1}DAY - 감염률 급상승!\n";
+                filteredContent += $"{i + 1}월 - 감염률 급상승!\n";
             }
             else
             {
-                filteredContent += $"{i + 1}DAY\n";
+                filteredContent += $"{i + 1}월\n";
             }
 
             foreach (string line in lines)
             {
-                if (line.StartsWith($"{i + 1}DAY")) continue;
+                if (line.StartsWith($"{i + 1}월")) continue;
 
                 if (feedbackDoctorToggle.isOn && line.Contains("의사"))
                     filteredContent += $"{line}\n";

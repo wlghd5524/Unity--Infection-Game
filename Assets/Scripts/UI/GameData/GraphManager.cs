@@ -150,11 +150,11 @@ public class GraphManager : MonoBehaviour
             // 제목 설정
             if (GameDataManager.Instance.difference20More[i])
             {
-                str += $"{i + 1}DAY - 감염률 급상승!\n";
+                str += $"{i + 1}월 - 감염률 급상승!\n";
             }
             else
             {
-                str += $"{i + 1}DAY\n";
+                str += $"{i + 1}월\n";
             }
 
             // 내용 설정
