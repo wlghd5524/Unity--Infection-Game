@@ -42,7 +42,7 @@ public class OneClearManager : MonoBehaviour
         oneClearButton.onClick.AddListener(() => { ToggleDisinfection(); BtnSoundManager.Instance.PlayButtonSound(); });  //버튼 상태 전환
     }
 
-    void ToggleDisinfection()
+    public void ToggleDisinfection()
     {
         isDisinfectionOn = !isDisinfectionOn;
         //Debug.Log("Disinfection 상태: " + (isDisinfectionOn ? "On" : "Off"));  //수정

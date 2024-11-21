@@ -83,9 +83,9 @@ public class GraphManager : MonoBehaviour
         // 선 생성
         for (int i = 0; i < scores.Count; i++)
         {
-            float xPosition = i * xSpacing;   
+            float xPosition = i * xSpacing;
             float yValue = float.IsNaN(scores[i]) ? 0f : scores[i];
-            float yPosition = (yValue / yMax) * graphHeight;  
+            float yPosition = (yValue / yMax) * graphHeight;
             yPosition = Mathf.Min(yPosition, graphHeight);  // y 값 최대 80으로 제한
 
             Vector2 currentPointPosition = new Vector2(xPosition + graphWidth / 2 * (-1), yPosition - graphHeight / 2);
@@ -150,11 +150,11 @@ public class GraphManager : MonoBehaviour
             // 제목 설정
             if (GameDataManager.Instance.difference20More[i])
             {
-                str += $"{i + 1}DAY - 감염률 급상승!\n";
+                str += $"{i + 1}월 - 감염률 급상승!\n";
             }
             else
             {
-                str += $"{i + 1}DAY\n";
+                str += $"{i + 1}월\n";
             }
 
             // 내용 설정
@@ -195,10 +195,10 @@ public class GraphManager : MonoBehaviour
 
     void QuitGame()
     {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
             Application.Quit();
-        #endif
+#endif
     }
 }

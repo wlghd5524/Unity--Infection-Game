@@ -51,7 +51,7 @@ public class Virus : MonoBehaviour
     //클릭 이벤트 처리 메서드
     void OnMouseDown()
     {
-        if(OneClearManager.Instance.isDisinfectionOn)
+        if (OneClearManager.Instance.isDisinfectionOn)
         {
             Virus clickedVirus = GetComponent<Virus>();
             if (clickedVirus != null)

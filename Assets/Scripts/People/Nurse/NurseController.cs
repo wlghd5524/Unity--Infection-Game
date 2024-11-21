@@ -72,7 +72,8 @@ public class NurseController : NPCController
         Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return YieldInstructionCache.WaitForSeconds(1.0f);
         Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patientGameObject.transform, 0.5f); // 환자 앞의 임의 위치 계산
-        agent.SetDestination(targetPatientPosition); // 에이전트 목적지 설정
+        agent.SetDestination(targetPatientPosition); // 에
+                                                     // 트 목적지 설정
         //targetPatient = patientGameObject; // 타겟 환자 설정
 
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));

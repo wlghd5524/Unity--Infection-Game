@@ -56,6 +56,7 @@ public class CameraHandler : MonoBehaviour
         if (!isTutoralMoveActive && Input.GetKeyDown(KeyCode.T))
         {
             cameraController.ToggleViewMode();
+            SetViewMode();
         }
         ApplyMovement();
         HandleMouseZoom();
@@ -211,9 +212,18 @@ public class CameraHandler : MonoBehaviour
         return new Vector2(cos * tx - sin * ty, sin * tx + cos * ty);
     }
 
-    public void SetViewMode(ViewMode mode)
+    public void SetViewMode()
     {
-        currentViewMode = mode;
+        if (currentViewMode == ViewMode.TopView)
+        {
+            currentViewMode = ViewMode.QuarterView;
+            Debug.Log("Switched to Quarter View");
+        }
+        else if (currentViewMode == ViewMode.QuarterView)
+        {
+            currentViewMode = ViewMode.TopView;
+            Debug.Log("Switched to Top View");
+        }
     }
 
     public void SetCenterPosition(Vector3 newCenterPosition)
