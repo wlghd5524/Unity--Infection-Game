@@ -65,8 +65,8 @@ public class PolicyResearch : MonoBehaviour
     private int vaccineCount = 0;
     private Ward vaccineWard;
 
-    private const int medicinePrice = 50; // 치료제 한 개당 가격
-    private const int vaccinePrice = 30; // 백신 한 개당 가격
+    private const int medicinePrice = 100; // 치료제 한 개당 가격
+    private const int vaccinePrice = 80; // 백신 한 개당 가격
 
     private Coroutine researchCoroutine;
 
@@ -170,7 +170,7 @@ public class PolicyResearch : MonoBehaviour
     }
     private IEnumerator ResearchCoroutine()
     {
-        int remainingTime = 10; // 연구 시간 10초
+        int remainingTime = 60; // 연구 시간 10초
         while (remainingTime > 0)
         {
             researchingTimeText.text = $"바이러스 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
@@ -216,7 +216,7 @@ public class PolicyResearch : MonoBehaviour
     private IEnumerator UnlockVaccine()
     {
 
-        int remainingTime = 10; // 연구 시간 10초
+        int remainingTime = 80; // 연구 시간 10초
         while (remainingTime > 0)
         {
             vaccineTimeText.text = $"백신 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
@@ -236,7 +236,7 @@ public class PolicyResearch : MonoBehaviour
 
     private IEnumerator UnlockMedicine()
     {
-        int remainingTime = 15; // 연구 시간 10초
+        int remainingTime = 100; // 연구 시간 10초
         while (remainingTime > 0)
         {
             medicineTimeText.text = $"치료제 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
