@@ -14,6 +14,7 @@ TagManager:
   - AutoDoor
   - ICUPatient
   - Floor
+  - QuarantinedPatient
   layers:
   - Default
   - TransparentFX
