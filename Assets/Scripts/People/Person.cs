@@ -18,7 +18,8 @@ public enum Role
     Outpatient,
     Inpatient,
     EmergencyPatient,
-    ICUPatient
+    ICUPatient,
+    QuarantinedPatient
 }
 public class Person : MonoBehaviour
 {
