@@ -14,7 +14,6 @@ public class GraphManager : MonoBehaviour
     public GameObject feedbackGraphPanel;
     public Transform feedgraphContainer;    // 피드백 그래프를 그릴 부모 객체
     public Transform feedbackContainerArea;    
-    public Transform feedbackxLabelContainer;
     public Button feedBackButton;
     public Button backButton;
     public Button graphCloseButton;
@@ -24,7 +23,7 @@ public class GraphManager : MonoBehaviour
     GameDataManager gameDataManager;
     public TextMeshProUGUI feedbackText;
     public float spacing = 50f;     // 프리팹 간의 간격 설정
-
+    bool isFeedbackOpen = false;
     Dictionary<string, List<GameObject>> graphLines = new Dictionary<string, List<GameObject>>();
 
     void Start()
@@ -40,7 +39,6 @@ public class GraphManager : MonoBehaviour
         feedbackGraphPanel = GameObject.Find("FeedbackGraphPanel");
         feedgraphContainer = GameObject.Find("FeedgraphContainer").transform;
         feedbackContainerArea = GameObject.Find("FeedbackContainerArea").transform;
-        feedbackxLabelContainer = GameObject.Find("FeedbackX-axis").transform;
         feedBackButton = GameObject.Find("FeedBackButton").GetComponent<Button>();
         backButton = GameObject.Find("BackButton").GetComponent<Button>();
         graphCloseButton = GameObject.Find("GraphCloseButton").GetComponent<Button>();
@@ -80,16 +78,15 @@ public class GraphManager : MonoBehaviour
         RectTransform graphRectTransform = container.GetComponent<RectTransform>();
         Vector2 sizeDelta = graphRectTransform.sizeDelta;
 
-        int currentMonth = (scores.Count - 1) / 6 + 1;
-        Debug.Log($"drawgraph, 현재 월: {currentMonth}월 (총 데이터: {scores.Count}개)");
-
         if (role == "total" && scores.Count <= 90)
         {
+            int currentMonth = (scores.Count - 1) / 6 + 1;
+            //Debug.Log($"drawgraph, 현재 월: {container}에 {currentMonth}월 (총 데이터: {scores.Count}개)");
             sizeDelta.x = graphRectTransform.sizeDelta.x / 15 * currentMonth;
             graphRectTransform.sizeDelta = sizeDelta;
         }
 
-        float yMax = 80f;                                   // y축 최댓값
+        float yMax = 80f;    
         float xSpacing = sizeDelta.x / (scores.Count - 1);    
         Vector2 previousPointPosition = Vector2.zero;
 
@@ -148,14 +145,19 @@ public class GraphManager : MonoBehaviour
     {
         feedbackGraphPanel.SetActive(true);
 
-        DrawGraph(GameDataManager.Instance.infectionRates, "total", feedbackContainerArea);
-        DrawGraph(GameDataManager.Instance.doctorInfectionRates, "doctor", feedbackContainerArea);
-        DrawGraph(GameDataManager.Instance.nurseInfectionRates, "nurse", feedbackContainerArea);
-        DrawGraph(GameDataManager.Instance.inpatientsRates, "inpatients", feedbackContainerArea);
-        DrawGraph(GameDataManager.Instance.outpatientsRates, "outpatients", feedbackContainerArea);
-        DrawGraph(GameDataManager.Instance.emergencyPatientsRates, "emergencyPatients", feedbackContainerArea);
-        DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedbackContainerArea);
-        //DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedgraphContainer);
+        if (!isFeedbackOpen)
+        {
+            DrawGraph(GameDataManager.Instance.infectionRates, "total", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.doctorInfectionRates, "doctor", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.nurseInfectionRates, "nurse", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.inpatientsRates, "inpatients", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.outpatientsRates, "outpatients", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.emergencyPatientsRates, "emergencyPatients", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedbackContainerArea);
+            //DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedgraphContainer);
+
+            isFeedbackOpen = true;
+        }
 
         string str = "";
 
@@ -206,10 +208,10 @@ public class GraphManager : MonoBehaviour
 
     void QuitGame()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #else
+                    Application.Quit();
+        #endif
     }
 }

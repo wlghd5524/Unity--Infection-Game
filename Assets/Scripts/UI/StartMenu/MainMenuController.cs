@@ -120,7 +120,7 @@ public class MainMenuController : MonoBehaviour
     // 로그인 메뉴 클릭
     private void OnStartGameClicked()
     {
-        Debug.Log("Start Game Clicked");
+        //Debug.Log("Start Game Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         loginCanvas.SetActive(true);    // 로그인 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정

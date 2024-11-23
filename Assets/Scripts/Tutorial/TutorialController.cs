@@ -124,7 +124,7 @@ public class TutorialController : MonoBehaviour
     public void CompletedAllTutorials()
     {
         currentTutorial = null;
-        Debug.Log("Compleye All");
+        //Debug.Log("Compleye All");
         newscontroller = FindObjectOfType<NewsController>();
         Managers.PatientCreator.startSignal = true;         // 튜토리얼 끝나면 npc 생성 시작
         GoToGame.Instance.calendarManager.StartCalendar();  // 튜토리얼 끝나면 시간 흐름

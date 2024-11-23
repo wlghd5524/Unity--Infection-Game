@@ -37,7 +37,7 @@ public class CalendarManager : MonoBehaviour
                 else if (typeof(GameObject).IsAssignableFrom(typeof(T))) obj = foundObject as T;
             }
             if (obj == null) Debug.LogError($"{objectName} 를 찾을 수 없습니다.");
-            else Debug.Log($"{objectName} 를 성공적으로 찾았습니다.");
+            //else Debug.Log($"{objectName} 를 성공적으로 찾았습니다.");
         }
         return obj;
     }

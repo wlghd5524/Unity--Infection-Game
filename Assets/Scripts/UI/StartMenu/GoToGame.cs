@@ -97,7 +97,7 @@ public class GoToGame : MonoBehaviour
         SetDifficultyAndStage();
 
         isStart = true;
-        Debug.Log("Start!!!");
+        //Debug.Log("Start!!!");
     }
 
     // 난이도에 따라 감염 상태와 스테이지 설정

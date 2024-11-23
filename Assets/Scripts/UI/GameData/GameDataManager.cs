@@ -10,6 +10,7 @@ using Unity.VisualScripting;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using TreeEditor;
 
 public class GameDataManager : MonoBehaviour
 {
@@ -61,6 +62,7 @@ public class GameDataManager : MonoBehaviour
     public TextMeshProUGUI selectedLevel;
     List<string> steps = new List<string>();
     TextMeshProUGUI feedbackText;
+    Coroutine _co;
 
     private string urlUpdateData = "http://220.69.209.164:3333/update_game_score";
     private int pointsPerMinute = 6;        // 1분 동안의 감염률 평균 내기(10초*6)
@@ -117,13 +119,11 @@ public class GameDataManager : MonoBehaviour
         gameClearNextButton.onClick.AddListener(() =>
         {
             gameClearPanel.SetActive(false);
-            GraphSourceChangeInt();             // 그래프 생성
         });
 
         gameOverNextButton.onClick.AddListener(() =>
         {
             gameOverPanel.SetActive(false);
-            GraphSourceChangeInt();
         });
     }
 
@@ -145,11 +145,14 @@ public class GameDataManager : MonoBehaviour
         form.AddField("playingDate", currentDate);
 
         StartCoroutine(PostRequest(urlUpdateData, form));
-        StartCoroutine(SaveInfectionRateFor15Minutes());
+        if (_co == null)
+        {
+            _co = StartCoroutine(SaveInfectionRateFor15Minutes());
+        }
     }
 
     // 15분 동안 10초 간격으로 감염률 리스트에 저장
-    private IEnumerator SaveInfectionRateFor15Minutes()
+    IEnumerator SaveInfectionRateFor15Minutes()
     {
         float totalTime = 900f;      // 전체 실행 시간 (초)
         float interval = 10f;        // 간격 (초)
@@ -161,14 +164,15 @@ public class GameDataManager : MonoBehaviour
             yield return YieldInstructionCache.WaitForSecondsRealtime(interval);
 
             float infectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);  // 현재 감염률 가져오기
-            infectionRates.Add(infectionRate);
-
+            
             // 감염률이 80%를 초과할 시 게임 오버
             if (infectionRate > 80)
             {
                 GameOverClearShow(gameOverPanel, "np");
-                yield break;
+                //yield break;
             }
+
+            infectionRates.Add(infectionRate);
 
             // 역할별 감염률 리스트 저장
             infectionRoleDictionary = InfectionManager.Instance.GetInfectionRateByRole();
@@ -553,17 +557,8 @@ public class GameDataManager : MonoBehaviour
         }
     }
 
-    public void ShowScoreGraph()
-    {
-        if (scoreGraphCanvas != null)
-        {
-            scoreGraphCanvas.SetActive(true);
-            GraphSourceChangeInt(); // 그래프 생성
-        }
-    }
-
     // 문장열 형태의 감염 데이터 정수화
-    private void GraphSourceChangeInt()
+    public void GraphSourceChangeInt()
     {
         FindObjectOfType<GraphManager>().DrawGraph(infectionRates, "total", graphContainerArea);
         FindObjectOfType<GraphManager>().DrawGraph(doctorInfectionRates, "doctor", graphContainerArea);
@@ -579,9 +574,16 @@ public class GameDataManager : MonoBehaviour
     public void GameOverClearShow(GameObject showPanel, string isPass)
     {
         Time.timeScale = 0;
+        if (_co !=null)
+        {
+            StopCoroutine(_co);
+            _co = null;
+
+        }
         scoreGraphCanvas.SetActive(true);
         showPanel.SetActive(true);
         OneClearManager.Instance.CloseDisinfectionMode();
+        GraphSourceChangeInt();
         SavePassStage(isPass);
     }
 }

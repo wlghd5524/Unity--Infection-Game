@@ -275,7 +275,7 @@ public class AuthManager : MonoBehaviour
     private void OnAuthButtonClicked(AuthMode mode)
     {
         currentMode = mode;
-        Debug.Log($"{mode} Button Clicked");
+        //Debug.Log($"{mode} Button Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
 
         // 입력된 ID 및 이름 가져오기

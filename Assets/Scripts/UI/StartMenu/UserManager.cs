@@ -61,7 +61,7 @@ namespace MyApp.UserManagement
             else
             {
                 string jsonResponse = www.downloadHandler.text;
-                Debug.Log("User Login JSON Response: " + jsonResponse);
+                //Debug.Log("User Login JSON Response: " + jsonResponse);
 
                 try
                 {
@@ -69,7 +69,7 @@ namespace MyApp.UserManagement
                     if (fetchedUsers != null)
                     {
                         users = fetchedUsers;
-                        Debug.Log($"Successfully fetched {users.Count} users.");
+                        //Debug.Log($"Successfully fetched {users.Count} users.");
                     }
                     else
                     {
@@ -192,7 +192,7 @@ namespace MyApp.UserManagement
             form.AddField("normalCompleted", normalMode);
             form.AddField("hardCompleted", hardMode);
 
-            Debug.Log($"DB: Sending Data: nurse_id={id}, nurse_name={username}, nurse_passwd={password}");
+            //Debug.Log($"DB: Sending Data: nurse_id={id}, nurse_name={username}, nurse_passwd={password}");
 
             string urlSignupData = "http://220.69.209.164:3333/signup_or_update";
 
@@ -212,7 +212,7 @@ namespace MyApp.UserManagement
                 }
                 else
                 {
-                    Debug.Log("Request successfully sent: " + www.downloadHandler.text);
+                    //Debug.Log("Request successfully sent: " + www.downloadHandler.text);
 
                     // 회원가입 성공 시 새로고침
                     StartCoroutine(GetUsersData());

@@ -55,7 +55,7 @@ namespace MyApp.DataAccess
             else
             {
                 string jsonResponse = www.downloadHandler.text;
-                Debug.Log("JSON Response from /get_levels: " + jsonResponse);
+                //Debug.Log("JSON Response from /get_levels: " + jsonResponse);
 
                 try
                 {
@@ -88,7 +88,7 @@ namespace MyApp.DataAccess
             else
             {
                 string jsonResponse = www.downloadHandler.text;
-                Debug.Log("JSON Response from /get_answers: " + jsonResponse);
+                //Debug.Log("JSON Response from /get_answers: " + jsonResponse);
 
                 try
                 {
