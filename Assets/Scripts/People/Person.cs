@@ -18,13 +18,14 @@ public enum Role
     Outpatient,
     Inpatient,
     EmergencyPatient,
-    ICUPatient
+    ICUPatient,
+    QuarantinedPatient
 }
 public class Person : MonoBehaviour
 {
     public InfectionState status = InfectionState.Normal;
-    public float infectionResistance = 0;
-    public float vaccineResist = 0f;
+    public int infectionResistance = 0;
+    public int vaccineResist = 0;
     public Role role;
 
     public bool isImmune;
@@ -224,9 +225,9 @@ public class Person : MonoBehaviour
         OnInfectionStateChanged?.Invoke(infection); // 이벤트 호출
     }
 
-    public float GetTotalProtectionRate()
+    public int GetTotalProtectionRate()
     {
-        float totalProtectionRate = 0f;
+        int totalProtectionRate = 0;
         foreach (var item in Inventory.Values)
         {
             if (item.isEquipped)
@@ -241,7 +242,5 @@ public class Person : MonoBehaviour
     public void UpdateInfectionResistance()
     {
         infectionResistance = vaccineResist + GetTotalProtectionRate(); // 아이템 방어율 합산
-
-        Debug.Log($"{name}의 방어율 업데이트: {infectionResistance}%");
     }
 }

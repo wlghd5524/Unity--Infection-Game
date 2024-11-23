@@ -42,6 +42,13 @@ public class CurrentMoney : MonoBehaviour
         {
             moneyInfo.text = $"{value:N0}";
             monthlyReport.UpdateNowMoney();   //금액이 변경되면 잔여 금액도 업데이트
+
+            // 금액이 0원이 되었을 때 게임 멈추고 그래프 생성
+            if (value <= 0)
+            {
+                Time.timeScale = 0; // 게임 일시 정지
+                GameDataManager.Instance.ShowScoreGraph();
+            }
         }
     }
 

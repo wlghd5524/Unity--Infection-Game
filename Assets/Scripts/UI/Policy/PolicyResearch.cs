@@ -313,7 +313,10 @@ public class PolicyResearch : MonoBehaviour
     // 감염환자 수 계산 (치료제)
     private int GetCurrentWardInfectedCount()
     {
-        return medSelectedWard != null ? medSelectedWard.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName) : 0;
+        return medSelectedWard != null ? medSelectedWard.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName)
+            + medSelectedWard.doctors.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName)
+            + medSelectedWard.nurses.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName)
+            : 0;
     }
 
     // 치료제 사용 시 최대 최소값 조정
@@ -340,13 +343,29 @@ public class PolicyResearch : MonoBehaviour
         int remainingCount = medicineCount;
 
         // 감염된 환자 수 만큼 치료제를 사용
-        foreach (var patientController in medSelectedWard.inpatients.Where(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName))
+        foreach (var patient in medSelectedWard.inpatients.Where(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName))
         {
             if (remainingCount <= 0) break;
 
-            patientController.personComponent.Recover();
+            patient.personComponent.Recover();
             remainingCount--;
         }
+        foreach (var doctor in medSelectedWard.doctors.Where(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName))
+        {
+            if (remainingCount <= 0) break;
+
+            doctor.personComponent.Recover();
+            remainingCount--;
+        }
+
+        foreach (var nurse in medSelectedWard.nurses.Where(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName))
+        {
+            if (remainingCount <= 0) break;
+
+            nurse.personComponent.Recover();
+            remainingCount--;
+        }
+
 
         // 연구 버튼에 대한 데이터 저장
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.research, 3, medSelectedWard.num + 1, medicineCount);
@@ -535,14 +554,17 @@ public class PolicyResearch : MonoBehaviour
             TextMeshProUGUI researchWardName = wardItem.transform.Find("ResearchWardName").GetComponent<TextMeshProUGUI>();
 
             int inpatientCount = ward.inpatientCount;
-            int infectedInpatientCount = ward.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName);
-            int uninfectedInpatientCount = ward.inpatientCount - ward.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == ward.WardName);
+            int infectedInpatientCount = ward.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
+                + ward.doctors.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
+                + ward.nurses.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName);
+            int uninfectedInpatientCount = ward.inpatientCount - ward.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == ward.WardName)
+                - ward.doctors.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
+                - ward.nurses.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName);
 
             wardInPatientCount.text = inpatientCount.ToString();
             wardInfectedPatientCount.text = infectedInpatientCount.ToString();
             researchWardName.text = ward.WardName;
 
-            Debug.Log($"{ward.WardName} 에서 입원 환자 수 : {inpatientCount}, 감염 환자 수 : {infectedInpatientCount}(비감염 : {uninfectedInpatientCount}) 로 측정되었습니다.");
             // WardButton 클릭 시 MedicineUsePanel 열기
             Button wardButton = wardItem.transform.Find("WardButton").GetComponent<Button>();
             wardButton.onClick.AddListener(() => { OpenMedicineUsePanel(ward); BtnSoundManager.Instance.PlayButtonSound(); });

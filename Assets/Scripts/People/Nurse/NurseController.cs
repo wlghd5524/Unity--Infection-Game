@@ -72,8 +72,9 @@ public class NurseController : NPCController
         Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return YieldInstructionCache.WaitForSeconds(1.0f);
         Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patientGameObject.transform, 0.5f); // 환자 앞의 임의 위치 계산
-        agent.SetDestination(targetPatientPosition); // 에이전트 목적지 설정
-        //targetPatient = patientGameObject; // 타겟 환자 설정
+        agent.SetDestination(targetPatientPosition); // 에
+                                                     // 트 목적지 설정
+                                                     //targetPatient = patient; // 타겟 환자 설정
 
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
@@ -91,54 +92,59 @@ public class NurseController : NPCController
     }
 
     // 음압실로 이동
-    public IEnumerator GoToQuarantineRoom(GameObject patientGameObject)
+    public IEnumerator GoToQuarantineRoom(PatientController patient)
     {
-        PatientController targetPatientController = patientGameObject.GetComponent<PatientController>();
         isWorking = true; // 일하는 중으로 설정
-        targetPatientController.isWaiting = true;
-        if(targetPatientController.personComponent.role == Role.EmergencyPatient && DoctorController.ERWaitingList.Contains(targetPatientController))
+        patient.isWaiting = true;
+        if (patient.personComponent.role == Role.EmergencyPatient && DoctorController.ERWaitingList.Contains(patient))
         {
-            DoctorController.ERWaitingList.Remove(targetPatientController);
+            DoctorController.ERWaitingList.Remove(patient);
         }
+
+        //4종 보호구 입기
+        personComponent.Inventory["Level C"].isEquipped = true;
+        meshRenderer.enabled = false;
+        protectedGear.meshRenderer.enabled = true;
+
         Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return YieldInstructionCache.WaitForSeconds(1.0f);
-        agent.avoidancePriority = targetPatientController.agent.avoidancePriority++ - 1;
+        agent.avoidancePriority = patient.agent.avoidancePriority++ - 1;
 
-        //Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patientGameObject.transform, 0.5f); // 환자 앞의 임의 위치 계산
-        agent.SetDestination(patientGameObject.transform.position);
-        //targetPatient = patientGameObject; // 타겟 환자 설정
+        //Vector3 targetPatientPosition = Managers.NPCManager.GetPositionInFront(transform, patient.transform, 0.5f); // 환자 앞의 임의 위치 계산
+        agent.SetDestination(patient.transform.position);
+        //targetPatient = patient; // 타겟 환자 설정
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
-
-        if (targetPatientController.standingState == StandingState.LayingDown)
+        if (patient.standingState == StandingState.LayingDown)
         {
-            targetPatientController.standingState = StandingState.Standing;
-            Managers.NPCManager.PlayWakeUpAnimation(targetPatientController);
+            patient.standingState = StandingState.Standing;
+            Managers.NPCManager.PlayWakeUpAnimation(patient);
             yield return YieldInstructionCache.WaitForSeconds(5.0f);
         }
 
-        Managers.NPCManager.FaceEachOther(gameObject, patientGameObject); // 간호사와 환자가 서로를 바라보게 설정
-        targetPatientController.StopCoroutine(targetPatientController.moveCoroutine);
-        targetPatientController.waypoints.Clear();
-        targetPatientController.wardComponent.RemoveFromPatientList(targetPatientController);
+        Managers.NPCManager.FaceEachOther(gameObject, patient.gameObject); // 간호사와 환자가 서로를 바라보게 설정
+        patient.StopCoroutine(patient.moveCoroutine);
+        patient.waypoints.Clear();
+        patient.wardComponent.RemoveFromPatientList(patient);
+        patient.gameObject.tag = "QuarantinedPatient";
 
-        targetPatientController.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
+        patient.nurseSignal = true; // 환자에게 간호사가 도착했음을 알림
         //targetPatientController.nurse = gameObject; // 간호사 설정
-        agent.speed = targetPatientController.agent.speed - 1.0f;
-        targetPatientController.agent.stoppingDistance = 1.0f;
-        targetPatientController.StartCoroutine(targetPatientController.FollowNurse(gameObject));
-        AutoDoorWaypoint[] inFrontOfAutoDoor = targetPatientController.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
+        agent.speed = patient.agent.speed - 1.0f;
+        patient.agent.stoppingDistance = 1.0f;
+        patient.StartCoroutine(patient.FollowNurse(gameObject));
+        AutoDoorWaypoint[] inFrontOfAutoDoor = patient.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());  //격리실 자동문 앞으로 이동
 
-        if(targetPatientController.hospitalizationCoroutine != null)
+        if (patient.hospitalizationCoroutine != null)
         {
-            targetPatientController.StopCoroutine(targetPatientController.hospitalizationCoroutine);
+            patient.StopCoroutine(patient.hospitalizationCoroutine);
         }
 
         while (!Managers.NPCManager.isArrived(agent))
         {
             yield return YieldInstructionCache.WaitForSeconds(0.5f);
-            float distance = Vector3.Distance(gameObject.transform.position, patientGameObject.transform.position);
+            float distance = Vector3.Distance(gameObject.transform.position, patient.transform.position);
             if (distance > 3.0f)
             {
                 agent.isStopped = true;
@@ -151,29 +157,34 @@ public class NurseController : NPCController
 
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
-        if (targetPatientController.quarantineRoom == null)
+        if (patient.quarantineRoom == null)
         {
             Debug.Log("격리실 null");
         }
-        agent.SetDestination(targetPatientController.quarantineRoom.GetRandomPointInRange()); // 음압실로 이동
+        agent.SetDestination(patient.quarantineRoom.GetRandomPointInRange()); // 음압실로 이동
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
-        targetPatientController.StopAllCoroutines();
-        targetPatientController.StartCoroutine(targetPatientController.QuarantineTimeCounter());
-        Managers.NPCManager.FaceEachOther(gameObject, targetPatientController.gameObject);
+        patient.StopAllCoroutines();
+        patient.StartCoroutine(patient.QuarantineTimeCounter());
+        Managers.NPCManager.FaceEachOther(gameObject, patient.gameObject);
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
-        targetPatientController.agent.stoppingDistance = 0f;
-        targetPatientController.isFollowingNurse = false;
-        targetPatientController.isQuarantined = true;
-        targetPatientController.isWaiting = false;
-        targetPatientController.ward = 9;
-        targetPatientController.wardComponent = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")].GetComponentInParent<Ward>();
+        patient.agent.stoppingDistance = 0f;
+        patient.isFollowingNurse = false;
+        patient.isQuarantined = true;
+        patient.isWaiting = false;
+        patient.ward = 9;
+        patient.wardComponent = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")].GetComponentInParent<Ward>();
 
         agent.speed += 1.0f;
         agent.SetDestination(inFrontOfAutoDoor[1].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
         yield return YieldInstructionCache.WaitForSeconds(1.0f);
+
+        //4종 보호구 벗기
+        personComponent.Inventory["Level C"].isEquipped = false;
+        meshRenderer.enabled = true;
+        protectedGear.meshRenderer.enabled = false;
 
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));

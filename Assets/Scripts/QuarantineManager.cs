@@ -70,7 +70,7 @@ public class QuarantineManager : MonoBehaviour
                 {
                     yield break;
                 }
-                if(patientController.personComponent.role == Role.EmergencyPatient)
+                if (patientController.personComponent.role == Role.EmergencyPatient)
                 {
                     DoctorController.ERWaitingList.Remove(patientController);
                 }
@@ -95,14 +95,9 @@ public class QuarantineManager : MonoBehaviour
                 else
                 {
                     GameObject closestNurse = SearchNurse(gameObject.transform.position);
-                    NurseController nurseController = null;
-                    if (closestNurse != null)
+                    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null || (patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3))
                     {
-                        nurseController = closestNurse.GetComponent<NurseController>();
-                    }
-                    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null || (patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3) || !nurseController.personComponent.Inventory["Level C"].isEquipped)
-                    {
-                        Debug.Log("격리 취소");
+                        //Debug.Log("격리 취소");
                         patientController.quarantineRoom = null;
                         quarantineRoom.isEmpty = true;
                         quarantineRoom.patient = null;
@@ -110,22 +105,20 @@ public class QuarantineManager : MonoBehaviour
                     }
                     else
                     {
+
                         patientController.StopAllCoroutines();
                         // 간호사의 NurseController 컴포넌트를 가져옵니다.
+                        NurseController nurseController = closestNurse.GetComponent<NurseController>();
                         if (nurseController == null)
                         {
                             Debug.LogError("nurseController를 찾을 수 없습니다.");
-                        }
-                        else if(!nurseController.personComponent.Inventory["Level C"].isEquipped)
-                        {
-                            Debug.Log("간호사가 보호구를 입고 있지 않습니다.");
                         }
                         else
                         {
                             patientController.nurseSignal = false;
                             patientController.StartCoroutine(patientController.WaitForNurse());
                             // 간호사가 격리실로 가도록 지시합니다.
-                            nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(gameObject));
+                            nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(patientController));
                         }
                         //Debug.Log("증상 발견으로 인한 격리 조치 중!");
                     }

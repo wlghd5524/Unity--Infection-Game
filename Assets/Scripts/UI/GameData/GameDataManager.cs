@@ -288,7 +288,7 @@ public class GameDataManager : MonoBehaviour
         }
         else
             feedbackContent[index - 1] = "";
-        Debug.Log($"이전 로그 저장: {feedbackContent[index - 1]}");
+        //Debug.Log($"이전 로그 저장: {feedbackContent[index - 1]}");
 
         // index월 연구데이터에 대한 피드백 추가
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
@@ -311,12 +311,12 @@ public class GameDataManager : MonoBehaviour
                 {
                     if (mode == ResearchDBManager.ResearchMode.gear)
                     {
-                        Debug.Log($"이전, 보호구 취소 {btnNum}, {targetNum}");
+                        //Debug.Log($"이전, 보호구 취소 {btnNum}, {targetNum}");
                         RemoveFeedbackByKeyword(index, $"{GetGearResearchFeedback(btnNum, targetNum, 1)}");
                     }
                     else if (mode == ResearchDBManager.ResearchMode.patient)
                     {
-                        Debug.Log($"이전, 폐쇄 취소 {btnNum}, {targetNum}");
+                        //Debug.Log($"이전, 폐쇄 취소 {btnNum}, {targetNum}");
                         RemoveFeedbackByKeyword(index, $"({GetPatientResearchFeedback(btnNum, targetNum, 1)}");
                     }
                 }
@@ -364,6 +364,7 @@ public class GameDataManager : MonoBehaviour
                     continue;
             }
 
+
             updatedContent += line + "\n";
         }
 
@@ -374,7 +375,7 @@ public class GameDataManager : MonoBehaviour
     private string GetGearResearchFeedback(int btnNum, int target, int toggleState)
     {
         string[] gearItems = { "Dental 마스크", "일회용 장갑", "N95 마스크", "라텍스 장갑", "의료용 고글", "의료용 헤어캡", "AP 가운", "Level C" };
-        string[] gearTarget = { "의사", "간호사", "외래 환자", "입원 환자", "응급 환자", "중환자"};
+        string[] gearTarget = { "의사", "간호사", "외래 환자", "입원 환자", "응급 환자", "중환자" };
 
         if (btnNum >= 1 && btnNum <= 8 && target >= 1 && target <= 6)
         {
@@ -552,6 +553,15 @@ public class GameDataManager : MonoBehaviour
         }
     }
 
+    public void ShowScoreGraph()
+    {
+        if (scoreGraphCanvas != null)
+        {
+            scoreGraphCanvas.SetActive(true);
+            GraphSourceChangeInt(); // 그래프 생성
+        }
+    }
+
     // 문장열 형태의 감염 데이터 정수화
     private void GraphSourceChangeInt()
     {
@@ -563,16 +573,6 @@ public class GameDataManager : MonoBehaviour
         FindObjectOfType<GraphManager>().DrawGraph(emergencyPatientsRates, "emergencyPatients", graphContainerArea);
         FindObjectOfType<GraphManager>().DrawGraph(icuPatientsRates, "icuPatients", graphContainerArea);
         //FindObjectOfType<GraphManager>().DrawGraph(icuPatientsRates, "icuPatients", graphContainer);
-    }
-
-    // 게임 클리어 시
-    public void ShowScoreGraph()
-    {
-        if (scoreGraphCanvas != null)
-        {
-            scoreGraphCanvas.SetActive(true);
-            GraphSourceChangeInt(); // 그래프 생성
-        }
     }
 
     // 게임 오버 시

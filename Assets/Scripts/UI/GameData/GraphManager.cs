@@ -96,11 +96,10 @@ public class GraphManager : MonoBehaviour
         // 선 생성
         for (int i = 0; i < scores.Count; i++)
         {
-            float xPosition = i * xSpacing;   
+            float xPosition = i * xSpacing;
             float yValue = float.IsNaN(scores[i]) ? 0f : scores[i];
             float yPosition = (yValue / yMax) * sizeDelta.y;  
             yPosition = Mathf.Min(yPosition, sizeDelta.y);  // y 값 최대 80으로 제한
-
             Vector2 currentPointPosition = new Vector2(xPosition + sizeDelta.x / 2 * (-1), yPosition - sizeDelta.y / 2);
 
             // 이전 점과 현재 점 사이에 선 그리기
@@ -207,10 +206,10 @@ public class GraphManager : MonoBehaviour
 
     void QuitGame()
     {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
             Application.Quit();
-        #endif
+#endif
     }
 }

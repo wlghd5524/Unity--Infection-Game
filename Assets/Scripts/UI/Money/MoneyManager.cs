@@ -143,7 +143,6 @@ public class MoneyManager : MonoBehaviour
 
         // 총 일일 비용 차감
         currentMoneyManager.CurrentMoneyGetter -= totalDailyExpense;
-        Debug.Log($"일일 총 비용: {totalDailyExpense}가 차감되었습니다.");
     }
 
 

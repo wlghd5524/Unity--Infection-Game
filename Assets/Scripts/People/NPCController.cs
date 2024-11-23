@@ -108,7 +108,10 @@ public class NPCController : MonoBehaviour
             }
             isInCurrentWard = true; // 병동에 진입하면 상태를 true로 설정
         }
+    }
 
+    private void OnTriggerStay(Collider other)
+    {
         if (other.CompareTag("Floor"))
         {
             if (standingState != StandingState.Standing)
@@ -126,8 +129,6 @@ public class NPCController : MonoBehaviour
                 child.gameObject.layer = other.gameObject.layer;
             }
         }
-
-
     }
 
     private void OnTriggerExit(Collider other)

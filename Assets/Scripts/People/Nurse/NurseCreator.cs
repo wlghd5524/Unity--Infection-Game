@@ -118,7 +118,7 @@ public class NurseCreator : MonoBehaviour
             Managers.ObjectPooling.ActivateNurse(newNurse);
             NurseController newNurseController = newNurse.GetComponent<NurseController>();
             newNurseController.waypoints.AddRange(Managers.NPCManager.waypointDictionary[(newNurseController.ward, "DoctorWaypoints")].GetComponentsInChildren<Waypoint>());
-            if (0 <= newNurseController.num && newNurseController.num <= 5)
+            if (0 <= newNurseController.num && newNurseController.num <= 2)
             {
                 for (int j = 0; j < newNurseController.waypoints[0].chairsDictionary.Count; j++)
                 {
@@ -130,7 +130,7 @@ public class NurseCreator : MonoBehaviour
                     }
                 }
             }
-            else if (6 <= newNurseController.num && newNurseController.num <= 10)
+            else if (3 <= newNurseController.num && newNurseController.num <= 5)
             {
                 for (int j = 0; j < newNurseController.waypoints[1].chairsDictionary.Count; j++)
                 {
@@ -142,7 +142,31 @@ public class NurseCreator : MonoBehaviour
                     }
                 }
             }
-            else if(newNurseController.num == 11)
+            else if (6 <= newNurseController.num && newNurseController.num <= 8)
+            {
+                for (int j = 0; j < newNurseController.waypoints[2].chairsDictionary.Count; j++)
+                {
+                    if (newNurseController.waypoints[2].chairsDictionary[j].Item2)
+                    {
+                        newNurseController.waypoints[2].chairsDictionary[j] = (newNurseController.waypoints[2].chairsDictionary[j].Item1, false);
+                        newNurseController.chair = newNurseController.waypoints[2].chairsDictionary[j].Item1;
+                        break;
+                    }
+                }
+            }
+            else if (9 <= newNurseController.num && newNurseController.num <= 10)
+            {
+                for (int j = 0; j < newNurseController.waypoints[3].chairsDictionary.Count; j++)
+                {
+                    if (newNurseController.waypoints[3].chairsDictionary[j].Item2)
+                    {
+                        newNurseController.waypoints[3].chairsDictionary[j] = (newNurseController.waypoints[3].chairsDictionary[j].Item1, false);
+                        newNurseController.chair = newNurseController.waypoints[3].chairsDictionary[j].Item1;
+                        break;
+                    }
+                }
+            }
+            else if (newNurseController.num == 11)
             {
                 newNurseController.doctor = GameObject.Find("ICUDoctor 0").GetComponent<DoctorController>();
             }
