@@ -13,13 +13,14 @@ public class GraphManager : MonoBehaviour
 
     public GameObject feedbackGraphPanel;
     public Transform feedgraphContainer;    // 피드백 그래프를 그릴 부모 객체
+    public Transform feedbackxLabelContainer;
     public Button feedBackButton;
     public Button backButton;
     public Button graphCloseButton;
     public Button feedbackCloseButton;
 
     public Transform feedbackContainer;
-    public GameDataManager gameDataManager;
+    GameDataManager gameDataManager;
     public TextMeshProUGUI feedbackText;
     public float spacing = 50f;     // 프리팹 간의 간격 설정
 
@@ -37,6 +38,7 @@ public class GraphManager : MonoBehaviour
         icuToggle = GameObject.Find("IcuToggle").GetComponent<Toggle>();
         feedbackGraphPanel = GameObject.Find("FeedbackGraphPanel");
         feedgraphContainer = GameObject.Find("FeedgraphContainer").transform;
+        feedbackxLabelContainer = GameObject.Find("FeedbackX-axis").transform;
         feedBackButton = GameObject.Find("FeedBackButton").GetComponent<Button>();
         backButton = GameObject.Find("BackButton").GetComponent<Button>();
         graphCloseButton = GameObject.Find("GraphCloseButton").GetComponent<Button>();
@@ -74,10 +76,32 @@ public class GraphManager : MonoBehaviour
     public void DrawGraph(List<float> scores, string role, Transform container)
     {
         RectTransform graphRectTransform = container.GetComponent<RectTransform>();
-        float graphWidth = graphRectTransform.sizeDelta.x;
-        float graphHeight = graphRectTransform.sizeDelta.y;
+        Vector2 sizeDelta = graphRectTransform.sizeDelta;
+
+        /*if (role == "total")
+        {
+            int totalDays = Mathf.Min(scores.Count / 60, 15);
+            Debug.Log($"drawgraph totalDays: {totalDays}");
+
+            // 그래프 컨테이너 크기 변경
+            float graphWidth = graphRectTransform.sizeDelta.x;
+            sizeDelta.x = graphRectTransform.sizeDelta.x / 15 * totalDays;
+            graphRectTransform.sizeDelta = sizeDelta;
+
+            // 그래프 x축 Label 설정
+            for (int i = 0; i < 15; i++)
+            {
+                GameObject xLabelPrefab = Resources.Load<GameObject>($"Graph/XLabel");
+                GameObject xLabel = Instantiate(xLabelPrefab, container);
+
+                TextMeshProUGUI xLabelText = xLabel.GetComponent<TextMeshProUGUI>();
+                xLabelText.text = $"{i + 1}";
+            }
+            Debug.Log($"drawgraph 너비 설정: {scores.Count}개 있음. {sizeDelta.x}");
+        }*/
+
         float yMax = 80f;                                   // y축 최댓값
-        float xSpacing = graphWidth / (scores.Count - 1);    // 점 간의 x 간격 계산
+        float xSpacing = sizeDelta.x / (scores.Count - 1);    
         Vector2 previousPointPosition = Vector2.zero;
 
         // 선 생성
@@ -85,10 +109,10 @@ public class GraphManager : MonoBehaviour
         {
             float xPosition = i * xSpacing;   
             float yValue = float.IsNaN(scores[i]) ? 0f : scores[i];
-            float yPosition = (yValue / yMax) * graphHeight;  
-            yPosition = Mathf.Min(yPosition, graphHeight);  // y 값 최대 80으로 제한
+            float yPosition = (yValue / yMax) * sizeDelta.y;  
+            yPosition = Mathf.Min(yPosition, sizeDelta.y);  // y 값 최대 80으로 제한
 
-            Vector2 currentPointPosition = new Vector2(xPosition + graphWidth / 2 * (-1), yPosition - graphHeight / 2);
+            Vector2 currentPointPosition = new Vector2(xPosition + sizeDelta.x / 2 * (-1), yPosition - sizeDelta.y / 2);
 
             // 이전 점과 현재 점 사이에 선 그리기
             if (i > 0)
@@ -102,6 +126,7 @@ public class GraphManager : MonoBehaviour
     }
 
     // 선 생성하는 메소드
+    // 라인 랜더러
     GameObject CreateLine(Vector2 start, Vector2 end, string role, Transform container)
     {
         GameObject linePrefab = Resources.Load<GameObject>($"Graph/{role}Line");
@@ -158,19 +183,16 @@ public class GraphManager : MonoBehaviour
             }
 
             // 내용 설정
-            if (gameDataManager.feedbackContent.ContainsKey(i))
+            if (gameDataManager.feedbackContent.ContainsKey(i) && !string.IsNullOrWhiteSpace(gameDataManager.feedbackContent[i]))
             {
                 string[] lines = gameDataManager.feedbackContent[i].Split('\n');
 
                 foreach (string line in lines)
                 {
-                    if (!string.IsNullOrWhiteSpace(line)) // 빈 줄은 무시
-                    {
+                    if(!string.IsNullOrEmpty(line))
                         str += $"- {line}\n";
-                    }
                 }
             }
-            //str += $"- {gameDataManager.feedbackContent[i]}\n";
             else
                 str += $"No research done\n";
 

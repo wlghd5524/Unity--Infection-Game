@@ -51,6 +51,7 @@ public class GameDataManager : MonoBehaviour
 
     GameObject scoreGraphCanvas;
     public Transform graphContainer;
+    public Transform xLabelContainer;
     public Transform feedbackContainer;
     public GameObject gameClearPanel;
     public Button gameClearNextButton;
@@ -79,6 +80,7 @@ public class GameDataManager : MonoBehaviour
     {
         scoreGraphCanvas = GameObject.Find("ScoreGraphCanvas");
         graphContainer = GameObject.Find("graphContainer").transform;
+        xLabelContainer = GameObject.Find("X-axis").transform;
         feedbackContainer = GameObject.Find("FeedgraphContainer").transform;
         feedbackTotalToggle = GameObject.Find("FeedbackTotalToggle").GetComponent<Toggle>();
         feedbackDoctorToggle = GameObject.Find("FeedbackDoctorlToggle").GetComponent<Toggle>();
@@ -280,7 +282,8 @@ public class GameDataManager : MonoBehaviour
             RemoveFeedbackByKeyword(index);     
         }
         else
-            feedbackContent[index - 1] = " "; 
+            feedbackContent[index - 1] = "";
+        //Debug.Log($"이전 로그 저장: {feedbackContent[index - 1]}");
 
         // index월 연구데이터에 대한 피드백 추가
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
@@ -320,11 +323,10 @@ public class GameDataManager : MonoBehaviour
                 if (!feedbackContent[index - 1].Contains(feedback))
                 {
                     feedbackContent[index - 1] += $"{feedback} ({currentMoment})\n";
-                    Debug.Log($"이전, 피드백 출력!");
                 }
             }
         }
-        Debug.Log($"이전, {index}월 피드백: {feedbackContent[index - 1]}");
+        //Debug.Log($"이전, {index}월 피드백: {feedbackContent[index - 1]}");
     }
 
     // 피드백에서 필요없는 문장 제거
@@ -344,7 +346,8 @@ public class GameDataManager : MonoBehaviour
             }
             else
             {
-                if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제") || line.Contains("취소"))
+                if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제") || line.Contains("취소") ||
+                    line.Contains("No research done"))
                     continue;
             }
             
@@ -540,9 +543,16 @@ public class GameDataManager : MonoBehaviour
     // 문장열 형태의 감염 데이터 정수화
     private void GraphSourceChangeInt()
     {
+        /*FindObjectOfType<GraphManager>().DrawGraph(infectionRates, "total", graphContainer, xLabelContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(doctorInfectionRates, "doctor", graphContainer, xLabelContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(nurseInfectionRates, "nurse", graphContainer, xLabelContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(inpatientsRates, "inpatients", graphContainer, xLabelContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(outpatientsRates, "outpatients", graphContainer, xLabelContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(emergencyPatientsRates, "emergencyPatients", graphContainer, xLabelContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(icuPatientsRates, "icuPatients", graphContainer, xLabelContainer);*/
         FindObjectOfType<GraphManager>().DrawGraph(infectionRates, "total", graphContainer);
         FindObjectOfType<GraphManager>().DrawGraph(doctorInfectionRates, "doctor", graphContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(nurseInfectionRates, "nurse", graphContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(nurseInfectionRates, "nurse", graphContainer );
         FindObjectOfType<GraphManager>().DrawGraph(inpatientsRates, "inpatients", graphContainer);
         FindObjectOfType<GraphManager>().DrawGraph(outpatientsRates, "outpatients", graphContainer);
         FindObjectOfType<GraphManager>().DrawGraph(emergencyPatientsRates, "emergencyPatients", graphContainer);
