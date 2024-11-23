@@ -133,7 +133,7 @@ public class NurseController : NPCController
         agent.speed = patient.agent.speed - 1.0f;
         patient.agent.stoppingDistance = 1.0f;
         patient.StartCoroutine(patient.FollowNurse(gameObject));
-        AutoDoorWaypoint[] inFrontOfAutoDoor = patient.quarantineRoom.transform.GetComponentsInChildren<AutoDoorWaypoint>();
+        AutoDoorWaypoint[] inFrontOfAutoDoor = patient.bedWaypoint.transform.GetComponentsInChildren<AutoDoorWaypoint>();
         agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());  //격리실 자동문 앞으로 이동
 
         if (patient.hospitalizationCoroutine != null)
@@ -157,11 +157,11 @@ public class NurseController : NPCController
 
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
-        if (patient.quarantineRoom == null)
+        if (patient.bedWaypoint == null)
         {
             Debug.Log("격리실 null");
         }
-        agent.SetDestination(patient.quarantineRoom.GetRandomPointInRange()); // 음압실로 이동
+        agent.SetDestination(patient.bedWaypoint.GetRandomPointInRange()); // 음압실로 이동
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
         patient.StopAllCoroutines();
@@ -419,7 +419,6 @@ public class NurseController : NPCController
                     agent.speed = doctor.agent.speed;
                     agent.SetDestination(doctor.transform.position - doctor.transform.forward * 0.5f);
                     yield return YieldInstructionCache.WaitForSeconds(0.1f);
-                    isWorking = false;
                 }
                 int random = Random.Range(0, waypoints.Count);
                 if (!waypoints[random].isEmpty && waypoints[random] is BedWaypoint bed)
@@ -481,6 +480,7 @@ public class NurseController : NPCController
             }
             else //환자 보러다니는 간호사들
             {
+                isWaitingAtDoctorOffice = true;
                 while (doctor.isWorking)
                 {
                     agent.SetDestination(doctor.transform.position - doctor.transform.forward * 0.5f);

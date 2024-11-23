@@ -52,9 +52,9 @@ public class IconManager : MonoBehaviour
         }
     }
 
-    private void HandleInfectionStateChanged(InfectionState newStatus)
+    private void HandleInfectionStateChanged(InfectionStatus newStatus)
     {
-        if (newStatus != InfectionState.Normal && (person.role == Role.Outpatient || person.role == Role.Inpatient || person.role == Role.EmergencyPatient))
+        if (newStatus != InfectionStatus.Normal && (person.role == Role.Outpatient || person.role == Role.Inpatient || person.role == Role.EmergencyPatient))
         {
             if (symptomCoroutine != null)
             {
@@ -103,7 +103,7 @@ public class IconManager : MonoBehaviour
 
     private IEnumerator ShowRandomSymptomIcon()
     {
-        while (person.status != InfectionState.Normal && (person.role == Role.Outpatient || person.role == Role.Inpatient || person.role == Role.EmergencyPatient))
+        while (person.infectionStatus != InfectionStatus.Normal && (person.role == Role.Outpatient || person.role == Role.Inpatient || person.role == Role.EmergencyPatient))
         {
             int randomIndex = Random.Range(0, symptomSprites.Length);
 

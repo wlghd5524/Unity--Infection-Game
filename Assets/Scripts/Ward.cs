@@ -293,4 +293,16 @@ public class Ward : MonoBehaviour
             Managers.ObjectPooling.ActivateDoctor(doctor);
         }
     }
+
+    public void QuarantineWard()
+    {
+        status = WardStatus.Quarantined;
+
+        MoveOutpatients(num);
+        MoveInpatientsToAvailableBeds();
+        ClearEmergencyPatients();
+
+
+
+    }
 }

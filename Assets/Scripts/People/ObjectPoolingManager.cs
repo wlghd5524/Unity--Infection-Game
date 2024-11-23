@@ -284,10 +284,12 @@ public class ObjectPoolingManager
         patientController.officeSignal = false; // 진료실 신호 초기화
         patientController.isExiting = false;
         patientController.nurse = null;
-        patientController.quarantineRoom = null;
         if (patientController.bedWaypoint != null)
         {
-            patientController.bedWaypoint.isEmpty = true;
+            if (patientController.bedWaypoint.patient == patientController.gameObject)
+            {
+                patientController.bedWaypoint.patient = null;
+            }
             patientController.bedWaypoint = null;
         }
         patientController.prevWaypointIndex = -1;
@@ -297,10 +299,10 @@ public class ObjectPoolingManager
         patientController.excutedQC = false;
         Person outpatientPerson = patient.GetComponent<Person>();
 
-        if (outpatientPerson.status != InfectionState.Normal)
+        if (outpatientPerson.infectionStatus != InfectionStatus.Normal)
         {
             infectedOutpatients++;
-            outpatientPerson.status = InfectionState.Normal; // 감염 상태 초기화
+            outpatientPerson.infectionStatus = InfectionStatus.Normal; // 감염 상태 초기화
             patientController.wardComponent.infectedNPC--;
         }
         //patientController.wardComponent.totalOfNPC--;

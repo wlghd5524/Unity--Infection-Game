@@ -162,11 +162,11 @@ public class PatientCreator
                 {
                     if (Managers.Stage.stage == 1)
                     {
-                        newOutPatientPerson.ChangeStatus(InfectionState.CRE);
+                        newOutPatientPerson.ChangeStatus(InfectionStatus.CRE);
                     }
                     else if (Managers.Stage.stage == 2)
                     {
-                        newOutPatientPerson.ChangeStatus(InfectionState.Covid);
+                        newOutPatientPerson.ChangeStatus(InfectionStatus.Covid);
                     }
                 }
                 numberOfOutpatient++; // 외래 환자 수 증가
@@ -191,7 +191,7 @@ public class PatientCreator
         yield return new WaitUntil(() => startSignal);
         yield return YieldInstructionCache.WaitForSeconds(Random.Range(spawnDelay, spawnDelay + 15f)); // 대기 시간
 
-        BedWaypoint nextBed = Ward.wards[8].beds.FirstOrDefault(bed => bed.isEmpty);
+        BedWaypoint nextBed = Ward.wards[8].beds.FirstOrDefault(bed => bed.isEmpty && bed.patient == null);
         if (nextBed != null)
         {
             nextBed.isEmpty = false;
@@ -219,11 +219,11 @@ public class PatientCreator
                 {
                     if (Managers.Stage.stage == 1)
                     {
-                        newEmergencyPatientPerson.ChangeStatus(InfectionState.CRE);
+                        newEmergencyPatientPerson.ChangeStatus(InfectionStatus.CRE);
                     }
                     else if (Managers.Stage.stage == 2)
                     {
-                        newEmergencyPatientPerson.ChangeStatus(InfectionState.Covid);
+                        newEmergencyPatientPerson.ChangeStatus(InfectionStatus.Covid);
                     }
                 }
                 numberOfEmergencyPatient++;

@@ -129,22 +129,22 @@ public class GoToGame : MonoBehaviour
     //private void SetPersonDifficultyBasedOnLevel()
     //{
     //    string levelText = selectedLevel.text;
-    //    InfectionState infectionState;
+    //    InfectionStatus infectionState;
 
     //    // 난이도에 따른 감염 상태 및 저항성 설정
     //    switch (levelText)
     //    {
     //        case "Easy":
-    //            infectionState = InfectionState.CRE;
+    //            infectionState = InfectionStatus.CRE;
     //            break;
     //        case "Normal":
-    //            infectionState = InfectionState.Covid;
+    //            infectionState = InfectionStatus.Covid;
     //            break;
     //        case "Hard":
-    //            infectionState = InfectionState.Normal;
+    //            infectionState = InfectionStatus.Normal;
     //            break;
     //        default:
-    //            infectionState = InfectionState.Normal;
+    //            infectionState = InfectionStatus.Normal;
     //            Debug.LogWarning("알 수 없는 난이도: " + levelText);
     //            break;
     //    }
@@ -153,7 +153,7 @@ public class GoToGame : MonoBehaviour
     //    Person[] people = FindObjectsOfType<Person>();
     //    foreach (var person in people)
     //    {
-    //        person.status = infectionState;
+    //        person.infectionStatus = infectionState;
     //        Debug.Log($"Person {person.Name}의 감염 상태가 {infectionState}로 설정되었습니다.");
     //    }
     //}

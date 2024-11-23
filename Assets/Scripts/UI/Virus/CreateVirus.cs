@@ -28,7 +28,7 @@ public class CreateVirus : MonoBehaviour
         if (virus != null)
         {
             virus.SetLifetime(Virus.virusLifetime); //바이러스 컴포넌트의 수명, 감염상태 설정
-            virus.SetInfectionState(person.status);
+            virus.SetInfectionState(person.infectionStatus);
         }
         return virusObject;  //바이러스 오브젝트 반환
     }

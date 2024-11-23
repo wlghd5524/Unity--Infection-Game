@@ -9,15 +9,15 @@ public class InfectionController : MonoBehaviour
     public TextMeshProUGUI selectedLevel; // 난이도 UI 텍스트
     private Person person;       //추가
     private List<Person> delayList = new List<Person>();
-    //private InfectionState activeInfectionState = InfectionState.Normal; // 현재 게임에서 활성화된 감염 상태
+    //private InfectionStatus activeInfectionState = InfectionStatus.Normal; // 현재 게임에서 활성화된 감염 상태
 
 
     Coroutine _co;
 
     // 감염 상태 확인 프로퍼티
-    public bool isInfected => person != null && person.status != InfectionState.Normal;
+    public bool isInfected => person != null && person.infectionStatus != InfectionStatus.Normal;
 
-    public int GetFinalProtectionRate(Person person)
+    public static int GetFinalProtectionRate(Person person)
     {
         if (person == null) return 0; // Person이 null이면 방어율 0으로 반환
         return person.infectionResistance + person.GetTotalProtectionRate();
@@ -35,20 +35,20 @@ public class InfectionController : MonoBehaviour
         StartCoroutine(CheckInfectionStatus());
     }
 
-    private InfectionState ChangeNPCState()
+    private InfectionStatus ChangeNPCState()
     {
         if (selectedLevel.text == "Easy")
-            return InfectionState.CRE;
+            return InfectionStatus.CRE;
         else if (selectedLevel.text == "Normal")
-            return InfectionState.Covid;
-        return InfectionState.Normal;
+            return InfectionStatus.Covid;
+        return InfectionStatus.Normal;
     }
 
     IEnumerator CheckInfectionStatus()
     {
         while (true)
         {
-            if (person.status != InfectionState.Normal && _co == null)
+            if (person.infectionStatus != InfectionStatus.Normal && _co == null)
             {
                 _co = StartCoroutine(TryDropVirus());
             }
@@ -60,7 +60,7 @@ public class InfectionController : MonoBehaviour
     //감염이면 바이러스 떨어뜨리기 시도
     IEnumerator TryDropVirus()
     {
-        while (person.status != InfectionState.Normal)
+        while (person.infectionStatus != InfectionStatus.Normal)
         {
             if (Random.value < Virus.virusDropProbability)
             {
@@ -81,9 +81,9 @@ public class InfectionController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        InfectionState thisPersonStatus = GetComponent<Person>().status;
+        InfectionStatus thisPersonStatus = GetComponent<Person>().infectionStatus;
         // 충돌한 오브젝트의 레이어가 지정된 레이어 마스크에 포함되어 있는지 확인
-        if (other.gameObject == gameObject || thisPersonStatus == InfectionState.Normal)
+        if (other.gameObject == gameObject || thisPersonStatus == InfectionStatus.Normal)
         {
             return;
         }
@@ -98,9 +98,17 @@ public class InfectionController : MonoBehaviour
             //Debug.Log("이미 접촉된 사람");
             return;
         }
-        if (otherPerson.status != InfectionState.Normal || otherPerson.isImmune)
+        if (otherPerson.infectionStatus != InfectionStatus.Normal || otherPerson.isImmune)
         {
             return;
+        }
+        PatientController patient = GetComponent<PatientController>();
+        if(patient != null)
+        {
+            if(patient.isQuarantined)
+            {
+                return;
+            }
         }
         int random = Random.Range(0, 101);
         //감염되는 사람의 감염 저항성을 고려하여 감염 확률 계산
