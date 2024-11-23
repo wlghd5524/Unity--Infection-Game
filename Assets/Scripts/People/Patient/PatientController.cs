@@ -49,7 +49,7 @@ public class PatientController : NPCController
             waypointsTransform = Managers.NPCManager.waypointDictionary[(ward, "OutpatientWaypoints")];
             wardComponent = waypointsTransform.gameObject.GetComponentInParent<Ward>();
         }
-        while (wardComponent.isClosed);
+        while (wardComponent.status != Ward.WardStatus.Normal);
         // 첫 번째 웨이포인트 추가
         AddWaypoint(waypointsTransform, $"CounterWaypoint (0)");
 
@@ -79,10 +79,7 @@ public class PatientController : NPCController
     private void FixedUpdate()
     {
         Managers.NPCManager.UpdateAnimation(agent, animator);
-        if (!Managers.PatientCreator.startSignal)
-        {
-            return;
-        }
+        
         if (standingState == StandingState.Standing)
         {
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
@@ -148,6 +145,10 @@ public class PatientController : NPCController
                 {
                     transform.eulerAngles = Vector3.zero;
                 }
+            }
+            if (!Managers.PatientCreator.startSignal)
+            {
+                return;
             }
             if (isWaitingForNurse || isQuarantined)
             {
@@ -303,7 +304,7 @@ public class PatientController : NPCController
                 if (waypointIndex > 0 && waypoints[waypointIndex - 1] is DoctorOffice)
                 {
                     BedWaypoint nextBed = Ward.wards
-                        .Where(ward => !ward.isClosed && ward.num >= 4 && ward.num <= 7)
+                        .Where(ward => ward.status == Ward.WardStatus.Normal && ward.num >= 4 && ward.num <= 7)
                         .SelectMany(ward => ward.beds)
                         .FirstOrDefault(bed => bed.patient == null);
 
@@ -509,7 +510,7 @@ public class PatientController : NPCController
         yield return new WaitUntil(() => doctorSignal);
 
         BedWaypoint nextBed = Ward.wards
-             .Where(ward => !ward.isClosed && ward.num >= 4 && ward.num <= 7)
+             .Where(ward => ward.status == Ward.WardStatus.Normal && ward.num >= 4 && ward.num <= 7)
              .SelectMany(ward => ward.beds)
              .FirstOrDefault(bed => bed.patient == null);
         if (nextBed != null)

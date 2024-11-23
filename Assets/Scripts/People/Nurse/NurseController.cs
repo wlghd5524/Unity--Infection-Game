@@ -192,6 +192,7 @@ public class NurseController : NPCController
         agent.SetDestination(waypoints[0].GetMiddlePointInRange());
 
         isReturning = true;
+        agent.stoppingDistance = 0f;
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         agent.avoidancePriority = 50;
         isReturning = false;
@@ -423,7 +424,11 @@ public class NurseController : NPCController
                 int random = Random.Range(0, waypoints.Count);
                 if (!waypoints[random].isEmpty && waypoints[random] is BedWaypoint bed)
                 {
-                    agent.SetDestination(waypoints[random].GetMiddlePointInRange());
+                    agent.SetDestination(bed.GetMiddlePointInRange());
+                    yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+                    transform.LookAt(bed.gameObject.transform);
+                    isWaiting = false;
+                    yield break;
                 }
                 else
                 {
@@ -431,6 +436,7 @@ public class NurseController : NPCController
                 }
                 if (doctor.isWorking)
                 {
+                    isWaiting = false;
                     yield break;
                 }
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));

@@ -106,7 +106,7 @@ public class DoctorController : NPCController
     public IEnumerator ERDoctorMove()
     {
         isWaiting = true;
-        if (ERWaitingList.Count > 0)
+        if (ERWaitingList.Count > 0 && Managers.PatientCreator.startSignal)
         {
             isWorking = true;
             int random = 0;

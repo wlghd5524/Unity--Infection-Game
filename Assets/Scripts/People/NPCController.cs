@@ -36,11 +36,12 @@ public class NPCController : MonoBehaviour
         // 컴포넌트 초기화
         animator = GetComponent<Animator>();
         infectionController = GetComponent<InfectionController>();
+        personComponent = GetComponent<Person>();
         agent = GetComponent<NavMeshAgent>();
         agent.avoidancePriority = Random.Range(0, 100);
         agent.speed = Random.Range(3.0f, 5.0f);
         agent.stoppingDistance = 0.5f;
-        personComponent = GetComponent<Person>();
+        
         if(gameObject.CompareTag("Doctor") || gameObject.CompareTag("Nurse"))
         {
             protectedGear = gameObject.transform.Find("ProtectedGear").GetComponent<ProtectedGearController>();

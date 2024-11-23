@@ -89,7 +89,7 @@ public class NewsController : MonoBehaviour
     {
         foreach (Ward ward in wards)
         {
-            UpdateNewsTrigger(ward.num, wardClosedNewsTriggered, ward.isClosed,
+            UpdateNewsTrigger(ward.num, wardClosedNewsTriggered, ward.status,
                 $"<color=#FF0000>경고!!</color> {ward.WardName} 병동의 감염률이 <color=#FF0000>50%</color>를 초과하였습니다!");
         }
     }
@@ -103,14 +103,14 @@ public class NewsController : MonoBehaviour
         }
     }
 
-    private void UpdateNewsTrigger(int wardNum, Dictionary<int, bool> triggerDictionary, bool condition, string mainNews)
+    private void UpdateNewsTrigger(int wardNum, Dictionary<int, bool> triggerDictionary, Ward.WardStatus condition, string mainNews)
     {
-        if (!triggerDictionary[wardNum] && condition)
+        if (!triggerDictionary[wardNum] && condition == Ward.WardStatus.Closed)
         {
             EnqueueNews(mainNews);
             triggerDictionary[wardNum] = true;
         }
-        else if (triggerDictionary[wardNum] && !condition)
+        else if (triggerDictionary[wardNum] && condition != Ward.WardStatus.Closed)
         {
             triggerDictionary[wardNum] = false;
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PatientCreator
@@ -58,7 +59,7 @@ public class PatientCreator
             newInpatient.name = "Inpatient " + i;
 
             // 입원 환자 위치별 Layer 설정
-            
+
 
             if (ward >= 0 && ward < Managers.LayerChanger.layers.Length)
             {
@@ -81,7 +82,35 @@ public class PatientCreator
             numberOfInpatient++;
         }
 
-        for (int i = 0; i < Managers.ObjectPooling.maxOfICUPateint * 0.7; i++)
+        for (int i = 0; i < Managers.ObjectPooling.maxOfEmergencyPatient * 0.5f; i++)
+        {
+            int ward = 8;
+            BedWaypoint spawnArea = Managers.NPCManager.waypointDictionary[(ward, "EmergencyPatientWaypoints")].Find("BedWaypoint (" + i + ")").gameObject.GetComponent<BedWaypoint>();
+            GameObject newEmergencyPatient = Managers.ObjectPooling.ActiveEmergentcyPatient(spawnArea.transform.position, spawnArea); // 응급 환자 활성화
+            newEmergencyPatient.gameObject.layer = LayerMask.NameToLayer("Floor 1 L");
+            newEmergencyPatient.GetComponent<Person>().role = Role.EmergencyPatient;
+            if (newEmergencyPatient != null)
+            {
+                Person newEmergencyPatientPerson = newEmergencyPatient.GetComponent<Person>(); // Person 컴포넌트 가져오기
+                Renderer renderer = newEmergencyPatientPerson.GetComponent<Renderer>();         // Renderer 컴포넌트 가져오기
+
+                if (newEmergencyPatientPerson != null)
+                {
+                    NPCManager.Instance.RegisterNPC(newEmergencyPatient, newEmergencyPatientPerson, renderer);
+                    numberOfEmergencyPatient++;
+                }
+                else
+                {
+                    Debug.LogError("새 응급 환자에 Person 컴포넌트가 없습니다.");
+                }
+            }
+            else
+            {
+                Debug.LogError("새 응급 환자를 활성화하는 데 실패했습니다.");
+            }
+        }
+
+        for (int i = 0; i < Managers.ObjectPooling.maxOfICUPateint * 0.7f; i++)
         {
             int ward = 9;
             BedWaypoint spawnArea = Managers.NPCManager.waypointDictionary[(ward, "DoctorWaypoints")].Find("BedWaypoint (" + i + ")").gameObject.GetComponent<BedWaypoint>();
@@ -155,25 +184,19 @@ public class PatientCreator
         yield return YieldInstructionCache.WaitForSeconds(spawnDelay); // 대기 시간
         outpatientWaiting = false; // 대기 상태 해제
     }
-    
+
     public IEnumerator SpawnEmergencyPatient()
     {
         emergencyPatientWaiting = true;
         yield return new WaitUntil(() => startSignal);
-        yield return YieldInstructionCache.WaitForSeconds(spawnDelay); // 대기 시간
+        yield return YieldInstructionCache.WaitForSeconds(Random.Range(spawnDelay, spawnDelay + 15f)); // 대기 시간
 
-        BedWaypoint nextBed = null;
-        foreach (BedWaypoint bed in Ward.wards[8].beds)
+        BedWaypoint nextBed = Ward.wards[8].beds.FirstOrDefault(bed => bed.isEmpty);
+        if (nextBed != null)
         {
-            if (bed.isEmpty == true)
-            {
-                nextBed = bed;
-                nextBed.isEmpty = false;
-                break;
-            }
+            nextBed.isEmpty = false;
         }
-
-        if (nextBed == null)
+        else
         {
             emergencyPatientWaiting = false;
             yield break;
@@ -225,7 +248,7 @@ public class PatientCreator
         for (int i = 0; i < 4; i++)
         {
             var ward = Managers.NPCManager.waypointDictionary[(i, "OutpatientWaypoints")].gameObject.GetComponentInParent<Ward>();
-            if (!ward.isClosed)
+            if (ward.status == Ward.WardStatus.Normal)
             {
                 return false;
             }

@@ -52,7 +52,7 @@ public class DoctorOffice : Waypoint
                 next.officeSignal = true;
             }
         }
-        if (wardComponent.isClosed)
+        if (wardComponent.status == Ward.WardStatus.Closed)
         {
             waitingQueue.Clear();
         }
