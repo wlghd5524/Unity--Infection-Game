@@ -51,10 +51,13 @@ public class GameDataManager : MonoBehaviour
 
     GameObject scoreGraphCanvas;
     public Transform graphContainer;
+    public Transform graphContainerArea;
     public Transform xLabelContainer;
     public Transform feedbackContainer;
     public GameObject gameClearPanel;
+    public GameObject gameOverPanel;
     public Button gameClearNextButton;
+    public Button gameOverNextButton;
     public TextMeshProUGUI selectedLevel;
     List<string> steps = new List<string>();
     TextMeshProUGUI feedbackText;
@@ -80,6 +83,7 @@ public class GameDataManager : MonoBehaviour
     {
         scoreGraphCanvas = GameObject.Find("ScoreGraphCanvas");
         graphContainer = GameObject.Find("graphContainer").transform;
+        graphContainerArea = GameObject.Find("GraphContainerArea").transform;
         xLabelContainer = GameObject.Find("X-axis").transform;
         feedbackContainer = GameObject.Find("FeedgraphContainer").transform;
         feedbackTotalToggle = GameObject.Find("FeedbackTotalToggle").GetComponent<Toggle>();
@@ -90,7 +94,9 @@ public class GameDataManager : MonoBehaviour
         feedbackEmergencyToggle = GameObject.Find("FeedbackEmergencyToggle").GetComponent<Toggle>();
         feedbackIcuToggle = GameObject.Find("FeedbackIcuToggle").GetComponent<Toggle>();
         gameClearPanel = GameObject.Find("GameClearPanel");
+        gameOverPanel = GameObject.Find("GameOverPanel");
         gameClearNextButton = GameObject.Find("GameClearNextButton").GetComponent<Button>();
+        gameOverNextButton = GameObject.Find("GameOverNextButton").GetComponent<Button>();
         selectedLevel = GameObject.Find("SelectedLevel").GetComponent<TextMeshProUGUI>();
         feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
 
@@ -107,11 +113,17 @@ public class GameDataManager : MonoBehaviour
         feedbackIcuToggle.onValueChanged.AddListener(isOn => ToggleFeedbackVisibility("icuPatients", isOn));
 
         //게임 클리어창 설정
-        gameClearPanel.SetActive(false);
+        //gameClearPanel.SetActive(false);
         gameClearNextButton.onClick.AddListener(() =>
         {
             gameClearPanel.SetActive(false);
             GraphSourceChangeInt();             // 그래프 생성
+        });
+
+        gameOverNextButton.onClick.AddListener(() =>
+        {
+            gameOverPanel.SetActive(false);
+            GraphSourceChangeInt();
         });
     }
 
@@ -154,11 +166,7 @@ public class GameDataManager : MonoBehaviour
             // 감염률이 80%를 초과할 시 게임 오버
             if (infectionRate > 80)
             {
-                Time.timeScale = 0;
-                scoreGraphCanvas.SetActive(true);
-                GraphSourceChangeInt();
-                OneClearManager.Instance.CloseDisinfectionMode();
-                SavePassStage("np");
+                GameOverClearShow(gameOverPanel, "np");
                 yield break;
             }
 
@@ -191,10 +199,7 @@ public class GameDataManager : MonoBehaviour
         }
 
         // 게임 클리어 시
-        Time.timeScale = 0;
-        scoreGraphCanvas.SetActive(true);
-        gameClearPanel.SetActive(true);
-        SavePassStage("p");
+        GameOverClearShow(gameClearPanel, "p");
     }
 
     // 스테이지 클리어 기록 DB에 저장
@@ -283,7 +288,7 @@ public class GameDataManager : MonoBehaviour
         }
         else
             feedbackContent[index - 1] = "";
-        //Debug.Log($"이전 로그 저장: {feedbackContent[index - 1]}");
+        Debug.Log($"이전 로그 저장: {feedbackContent[index - 1]}");
 
         // index월 연구데이터에 대한 피드백 추가
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
@@ -302,9 +307,18 @@ public class GameDataManager : MonoBehaviour
                 string currentMoment = parts[4];            // 시간 값 (mm:ss 형식)
                 string feedback = "";
 
-                if (toggleState == 0 && mode == ResearchDBManager.ResearchMode.gear)
+                if (toggleState == 0)
                 {
-                    RemoveFeedbackByKeyword(index, $"{GetGearResearchFeedback(btnNum, targetNum, 1)}");
+                    if (mode == ResearchDBManager.ResearchMode.gear)
+                    {
+                        Debug.Log($"이전, 보호구 취소 {btnNum}, {targetNum}");
+                        RemoveFeedbackByKeyword(index, $"{GetGearResearchFeedback(btnNum, targetNum, 1)}");
+                    }
+                    else if (mode == ResearchDBManager.ResearchMode.patient)
+                    {
+                        Debug.Log($"이전, 폐쇄 취소 {btnNum}, {targetNum}");
+                        RemoveFeedbackByKeyword(index, $"({GetPatientResearchFeedback(btnNum, targetNum, 1)}");
+                    }
                 }
 
                 switch (mode)
@@ -326,7 +340,6 @@ public class GameDataManager : MonoBehaviour
                 }
             }
         }
-        //Debug.Log($"이전, {index}월 피드백: {feedbackContent[index - 1]}");
     }
 
     // 피드백에서 필요없는 문장 제거
@@ -350,7 +363,6 @@ public class GameDataManager : MonoBehaviour
                     line.Contains("No research done"))
                     continue;
             }
-            
 
             updatedContent += line + "\n";
         }
@@ -543,19 +555,33 @@ public class GameDataManager : MonoBehaviour
     // 문장열 형태의 감염 데이터 정수화
     private void GraphSourceChangeInt()
     {
-        /*FindObjectOfType<GraphManager>().DrawGraph(infectionRates, "total", graphContainer, xLabelContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(doctorInfectionRates, "doctor", graphContainer, xLabelContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(nurseInfectionRates, "nurse", graphContainer, xLabelContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(inpatientsRates, "inpatients", graphContainer, xLabelContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(outpatientsRates, "outpatients", graphContainer, xLabelContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(emergencyPatientsRates, "emergencyPatients", graphContainer, xLabelContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(icuPatientsRates, "icuPatients", graphContainer, xLabelContainer);*/
-        FindObjectOfType<GraphManager>().DrawGraph(infectionRates, "total", graphContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(doctorInfectionRates, "doctor", graphContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(nurseInfectionRates, "nurse", graphContainer );
-        FindObjectOfType<GraphManager>().DrawGraph(inpatientsRates, "inpatients", graphContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(outpatientsRates, "outpatients", graphContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(emergencyPatientsRates, "emergencyPatients", graphContainer);
-        FindObjectOfType<GraphManager>().DrawGraph(icuPatientsRates, "icuPatients", graphContainer);
+        FindObjectOfType<GraphManager>().DrawGraph(infectionRates, "total", graphContainerArea);
+        FindObjectOfType<GraphManager>().DrawGraph(doctorInfectionRates, "doctor", graphContainerArea);
+        FindObjectOfType<GraphManager>().DrawGraph(nurseInfectionRates, "nurse", graphContainerArea);
+        FindObjectOfType<GraphManager>().DrawGraph(inpatientsRates, "inpatients", graphContainerArea);
+        FindObjectOfType<GraphManager>().DrawGraph(outpatientsRates, "outpatients", graphContainerArea);
+        FindObjectOfType<GraphManager>().DrawGraph(emergencyPatientsRates, "emergencyPatients", graphContainerArea);
+        FindObjectOfType<GraphManager>().DrawGraph(icuPatientsRates, "icuPatients", graphContainerArea);
+        //FindObjectOfType<GraphManager>().DrawGraph(icuPatientsRates, "icuPatients", graphContainer);
+    }
+
+    // 게임 클리어 시
+    public void ShowScoreGraph()
+    {
+        if (scoreGraphCanvas != null)
+        {
+            scoreGraphCanvas.SetActive(true);
+            GraphSourceChangeInt(); // 그래프 생성
+        }
+    }
+
+    // 게임 오버 시
+    public void GameOverClearShow(GameObject showPanel, string isPass)
+    {
+        Time.timeScale = 0;
+        scoreGraphCanvas.SetActive(true);
+        showPanel.SetActive(true);
+        OneClearManager.Instance.CloseDisinfectionMode();
+        SavePassStage(isPass);
     }
 }

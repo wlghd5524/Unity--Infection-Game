@@ -29,6 +29,8 @@ public class Close : MonoBehaviour
     public GameObject policyCanvas;
     public GameObject policyOpenButton;
     public GameObject researchingItem;
+    public GameObject gameClearPanel;
+    public GameObject gameOverPanel;
 
     void Start()
     {
@@ -62,6 +64,8 @@ public class Close : MonoBehaviour
         newsTickerCanvas = Assign(newsTickerCanvas, "NewsTickerCanvas");
         policyCanvas = Assign(policyCanvas, "PolicyCanvas");
         researchingItem = Assign(researchingItem, "ResearchComplete");
+        gameClearPanel = Assign(gameClearPanel, "GameClearPanel");
+        gameOverPanel = Assign(gameOverPanel, "GameOverPanel");
 
         loginCanvas?.SetActive(false);
         signUpCanvas?.SetActive(false);
@@ -86,6 +90,8 @@ public class Close : MonoBehaviour
         newsTickerCanvas?.SetActive(false);
         policyCanvas?.SetActive(false);
         researchingItem?.SetActive(false);
+        gameClearPanel?.SetActive(false);
+        gameOverPanel?.SetActive(false);
     }
 
     // 오브젝트 자동 할당

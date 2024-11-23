@@ -13,6 +13,7 @@ public class GraphManager : MonoBehaviour
 
     public GameObject feedbackGraphPanel;
     public Transform feedgraphContainer;    // 피드백 그래프를 그릴 부모 객체
+    public Transform feedbackContainerArea;    
     public Transform feedbackxLabelContainer;
     public Button feedBackButton;
     public Button backButton;
@@ -38,6 +39,7 @@ public class GraphManager : MonoBehaviour
         icuToggle = GameObject.Find("IcuToggle").GetComponent<Toggle>();
         feedbackGraphPanel = GameObject.Find("FeedbackGraphPanel");
         feedgraphContainer = GameObject.Find("FeedgraphContainer").transform;
+        feedbackContainerArea = GameObject.Find("FeedbackContainerArea").transform;
         feedbackxLabelContainer = GameObject.Find("FeedbackX-axis").transform;
         feedBackButton = GameObject.Find("FeedBackButton").GetComponent<Button>();
         backButton = GameObject.Find("BackButton").GetComponent<Button>();
@@ -78,27 +80,14 @@ public class GraphManager : MonoBehaviour
         RectTransform graphRectTransform = container.GetComponent<RectTransform>();
         Vector2 sizeDelta = graphRectTransform.sizeDelta;
 
-        /*if (role == "total")
+        int currentMonth = (scores.Count - 1) / 6 + 1;
+        Debug.Log($"drawgraph, 현재 월: {currentMonth}월 (총 데이터: {scores.Count}개)");
+
+        if (role == "total" && scores.Count <= 90)
         {
-            int totalDays = Mathf.Min(scores.Count / 60, 15);
-            Debug.Log($"drawgraph totalDays: {totalDays}");
-
-            // 그래프 컨테이너 크기 변경
-            float graphWidth = graphRectTransform.sizeDelta.x;
-            sizeDelta.x = graphRectTransform.sizeDelta.x / 15 * totalDays;
+            sizeDelta.x = graphRectTransform.sizeDelta.x / 15 * currentMonth;
             graphRectTransform.sizeDelta = sizeDelta;
-
-            // 그래프 x축 Label 설정
-            for (int i = 0; i < 15; i++)
-            {
-                GameObject xLabelPrefab = Resources.Load<GameObject>($"Graph/XLabel");
-                GameObject xLabel = Instantiate(xLabelPrefab, container);
-
-                TextMeshProUGUI xLabelText = xLabel.GetComponent<TextMeshProUGUI>();
-                xLabelText.text = $"{i + 1}";
-            }
-            Debug.Log($"drawgraph 너비 설정: {scores.Count}개 있음. {sizeDelta.x}");
-        }*/
+        }
 
         float yMax = 80f;                                   // y축 최댓값
         float xSpacing = sizeDelta.x / (scores.Count - 1);    
@@ -160,13 +149,14 @@ public class GraphManager : MonoBehaviour
     {
         feedbackGraphPanel.SetActive(true);
 
-        DrawGraph(GameDataManager.Instance.infectionRates, "total", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.doctorInfectionRates, "doctor", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.nurseInfectionRates, "nurse", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.inpatientsRates, "inpatients", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.outpatientsRates, "outpatients", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.emergencyPatientsRates, "emergencyPatients", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedgraphContainer);
+        DrawGraph(GameDataManager.Instance.infectionRates, "total", feedbackContainerArea);
+        DrawGraph(GameDataManager.Instance.doctorInfectionRates, "doctor", feedbackContainerArea);
+        DrawGraph(GameDataManager.Instance.nurseInfectionRates, "nurse", feedbackContainerArea);
+        DrawGraph(GameDataManager.Instance.inpatientsRates, "inpatients", feedbackContainerArea);
+        DrawGraph(GameDataManager.Instance.outpatientsRates, "outpatients", feedbackContainerArea);
+        DrawGraph(GameDataManager.Instance.emergencyPatientsRates, "emergencyPatients", feedbackContainerArea);
+        DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedbackContainerArea);
+        //DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedgraphContainer);
 
         string str = "";
 
