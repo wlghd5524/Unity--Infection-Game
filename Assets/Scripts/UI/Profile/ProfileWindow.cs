@@ -30,7 +30,6 @@ public class ProfileWindow : MonoBehaviour
     public Transform profileContent; // 프로필을 추가할 스크롤 뷰의 콘텐츠 영역
 
     public ProfileInventoryManager profileInventoryManager;
-    public ClickableObject clickableObject;
 
     private string currentFloor = "응급실";
 
