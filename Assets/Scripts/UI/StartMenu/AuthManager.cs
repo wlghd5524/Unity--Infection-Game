@@ -369,7 +369,7 @@ public class AuthManager : MonoBehaviour
         }
 
         // 확인된 유저 정보를 바탕으로 게임 데이터 테이블에 데이터 추가
-        gameDataMager.InsertInitialData();
+        //gameDataMager.InsertInitialData();
         researchDBManager.SendResearchDataToServer();
         StartCoroutine(LoginSuccessCoroutine());
     }
