@@ -301,8 +301,5 @@ public class Ward : MonoBehaviour
         MoveOutpatients(num);
         MoveInpatientsToAvailableBeds();
         ClearEmergencyPatients();
-
-
-
     }
 }

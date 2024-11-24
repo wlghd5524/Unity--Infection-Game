@@ -104,100 +104,6 @@ public class QuarantineManager : MonoBehaviour
                         AssignQuarantineRoom(patientController, nextBed);
                     }
                 }
-
-
-
-
-
-
-
-
-                ////빈 격리실 찾기
-                //Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
-                //BedWaypoint quarantineRoom = parentTransform
-                //    .GetComponentsInChildren<BedWaypoint>()
-                //    .FirstOrDefault(room => room.isEmpty);
-                ////빈 격리실을 찾았을 때
-                //if (quarantineRoom != null)
-                //{
-                //    patientController.bedWaypoint = quarantineRoom;
-                //    quarantineRoom.isEmpty = false;
-                //    quarantineRoom.patient = patientController.gameObject;
-
-                //    GameObject closestNurse = SearchNurse(gameObject.transform.position);
-                //    // 근처 간호사가 없을 때
-                //    if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null || (patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3))
-                //    {
-                //        //Debug.Log("격리 취소");
-                //        patientController.bedWaypoint = null;
-                //        quarantineRoom.isEmpty = true;
-                //        quarantineRoom.patient = null;
-                //        yield break;
-                //    }
-                //    else
-                //    {
-                //        patientController.StopAllCoroutines();
-                //        // 간호사의 NurseController 컴포넌트를 가져옵니다.
-                //        NurseController nurseController = closestNurse.GetComponent<NurseController>();
-                //        if (nurseController == null)
-                //        {
-                //            Debug.LogError("nurseController를 찾을 수 없습니다.");
-                //        }
-                //        else
-                //        {
-                //            patientController.nurseSignal = false;
-                //            patientController.StartCoroutine(patientController.WaitForNurse());
-                //            // 간호사가 격리실로 가도록 지시합니다.
-                //            nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(patientController));
-                //        }
-                //        //Debug.Log("증상 발견으로 인한 격리 조치 중!");
-                //    }
-                //}
-                //// 격리실이 남아있지 않을 때
-                //else
-                //{
-                //    // 격리 병동이 존재하는지 찾기
-                //    BedWaypoint nextBed = Ward.wards
-                //        .Where(ward => ward.status == Ward.WardStatus.Quarantined && ward.num >= 4 && ward.num <= 7)
-                //        .SelectMany(ward => ward.beds)
-                //        .FirstOrDefault(bed => bed.patient == null);
-                //    // 격리 병동이 존재하지 않을 때
-                //    if (nextBed == null)
-                //    {
-                //        patientController.StartCoroutine(patientController.ExitHospital());
-                //    }
-                //    else
-                //    {
-                //        GameObject closestNurse = SearchNurse(gameObject.transform.position);
-                //        // 근처 간호사가 없을 때
-                //        if (patientController.isFollowingNurse || patientController.isQuarantined || patientController.isWaitingForNurse || patientController.isExiting || patientController.isWaitingForDoctor || closestNurse == null || (patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3))
-                //        {
-                //            //Debug.Log("격리 취소");
-                //            patientController.bedWaypoint = null;
-                //            quarantineRoom.isEmpty = true;
-                //            quarantineRoom.patient = null;
-                //            yield break;
-                //        }
-                //        else
-                //        {
-                //            patientController.StopAllCoroutines();
-                //            // 간호사의 NurseController 컴포넌트를 가져옵니다.
-                //            NurseController nurseController = closestNurse.GetComponent<NurseController>();
-                //            if (nurseController == null)
-                //            {
-                //                Debug.LogError("nurseController를 찾을 수 없습니다.");
-                //            }
-                //            else
-                //            {
-                //                patientController.nurseSignal = false;
-                //                patientController.StartCoroutine(patientController.WaitForNurse());
-                //                // 간호사가 격리실로 가도록 지시합니다.
-                //                nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(patientController));
-                //            }
-                //            //Debug.Log("증상 발견으로 인한 격리 조치 중!");
-                //        }
-                //    }
-                //}
             }
         }
         else
@@ -208,19 +114,25 @@ public class QuarantineManager : MonoBehaviour
 
     private void AssignQuarantineRoom(PatientController patientController, BedWaypoint quarantineRoom)
     {
+        BedWaypoint prevBed = null;
+        // 현재 입원 중인 병상이 있을 때
+        if (patientController.bedWaypoint != null)
+        {
+            prevBed = patientController.bedWaypoint;
+        }
         patientController.bedWaypoint = quarantineRoom;
-        quarantineRoom.isEmpty = false;
-        quarantineRoom.patient = patientController.gameObject;
+        patientController.bedWaypoint.isEmpty = false;
+        patientController.bedWaypoint.patient = patientController.gameObject;
 
         GameObject closestNurse = SearchNurse(patientController.transform.position);
 
         if (!IsValidForQuarantine(patientController, closestNurse))
         {
-            CancelQuarantine(patientController, quarantineRoom);
+            CancelQuarantine(patientController, prevBed);
             return;
         }
 
-        AssignNurseToQuarantine(patientController, closestNurse, quarantineRoom);
+        AssignNurseToQuarantine(patientController, closestNurse);
     }
 
     private bool IsValidForQuarantine(PatientController patientController, GameObject nurse)
@@ -233,17 +145,24 @@ public class QuarantineManager : MonoBehaviour
                !patientController.isWaitingForDoctor &&
                !(patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3);
     }
-    private void CancelQuarantine(PatientController patientController, BedWaypoint quarantineRoom)
+    private void CancelQuarantine(PatientController patientController, BedWaypoint prevBed)
     {
-        patientController.bedWaypoint = null;
-        quarantineRoom.isEmpty = true;
-        if(quarantineRoom.patient == patientController.gameObject)
+        patientController.bedWaypoint.isEmpty = true;
+        if(patientController.bedWaypoint.patient == patientController.gameObject)
         {
-            quarantineRoom.patient = null;
+            patientController.bedWaypoint.patient = null;
+        }
+        if (prevBed != null)
+        {
+            patientController.bedWaypoint = prevBed;
+        }
+        else
+        {
+            patientController.bedWaypoint = null;
         }
     }
 
-    private void AssignNurseToQuarantine(PatientController patientController, GameObject nurse, BedWaypoint quarantineRoom)
+    private void AssignNurseToQuarantine(PatientController patientController, GameObject nurse)
     {
         patientController.StopAllCoroutines();
 
@@ -256,6 +175,6 @@ public class QuarantineManager : MonoBehaviour
 
         patientController.nurseSignal = false;
         patientController.StartCoroutine(patientController.WaitForNurse());
-        nurseController.StartCoroutine(nurseController.GoToQuarantineRoom(patientController));
+        nurseController.StartCoroutine(nurseController.QuarantineMove(patientController));
     }
 }

@@ -98,14 +98,21 @@ public class PatientController : NPCController
         {
             if (standingState == StandingState.LayingDown)
             {
-                if (bedWaypoint.bedNum >= 8)
+                if(ward == 9)
                 {
-                    transform.eulerAngles = new Vector3(0, 90, 0);
+                    transform.eulerAngles = new Vector3(0, -90, 0);
                 }
                 else
                 {
-                    transform.eulerAngles = new Vector3(0, -90, 0);
-
+                    agent.radius = 0.000001f;
+                    if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 0, 0))
+                    {
+                        transform.eulerAngles = new Vector3(0, -180, 0);
+                    }
+                    else
+                    {
+                        transform.eulerAngles = Vector3.zero;
+                    }
                 }
             }
             else
@@ -817,6 +824,7 @@ public class PatientController : NPCController
     public IEnumerator QuarantineTimeCounter()
     {
         yield return YieldInstructionCache.WaitForSeconds(70f);
+        yield return new WaitUntil(() => personComponent.infectionStatus == InfectionStatus.Normal);
         StopCoroutine(moveCoroutine);
         isQuarantined = false;
         Managers.NPCManager.PlayWakeUpAnimation(this);

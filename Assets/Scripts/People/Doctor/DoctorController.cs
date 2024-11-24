@@ -117,7 +117,7 @@ public class DoctorController : NPCController
             patient = ERWaitingList[random].gameObject;
             agent.SetDestination(ERWaitingList[random].bedWaypoint.GetRandomPointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            if(ERWaitingList[random].bedWaypoint == null || random >= ERWaitingList.Count)
+            if(random >= ERWaitingList.Count || ERWaitingList[random].bedWaypoint == null)
             {
                 isWaiting = false;
                 yield break;
