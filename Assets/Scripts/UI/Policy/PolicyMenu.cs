@@ -7,17 +7,18 @@ using UnityEngine.EventSystems;
 public class PolicyMenu : MonoBehaviour
 {
     public PolicyResearch policyResearch;
+    public PolicyWard policyWard;
 
     public GameObject policyPanel;
     public Button policyOpenButton;
     public Image policyCloseButton;
 
     public Image gearTabButton;
-    public Image patientTabButton;
+    public Image wardTabButton;
     public Image researchTabButton;
 
     public GameObject gearTab;
-    public GameObject patientTab;
+    public GameObject wardTab;
     public GameObject researchTab;
 
     private Color originalColor;
@@ -37,10 +38,10 @@ public class PolicyMenu : MonoBehaviour
         policyOpenButton = Assign(policyOpenButton, "PolicyOpenButton");
         policyCloseButton = Assign(policyCloseButton, "PolicyCloseButton");
         gearTabButton = Assign(gearTabButton, "GearTabButton");
-        patientTabButton = Assign(patientTabButton, "PatientTabButton");
+        wardTabButton = Assign(wardTabButton, "WardTabButton");
         researchTabButton = Assign(researchTabButton, "ResearchTabButton");
         gearTab = Assign(gearTab, "GearTab");
-        patientTab = Assign(patientTab, "PatientTab");
+        wardTabButton = Assign(wardTabButton, "WardTab");
         researchTab = Assign(researchTab, "ResearchTab");
 
         // 버튼 클릭 시 패널 활성화 설정
@@ -57,12 +58,12 @@ public class PolicyMenu : MonoBehaviour
         });
         // 각 연구 버튼 클릭 시 연구 변경
         AddEventTrigger(gearTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Gear", gearTabButton); BtnSoundManager.Instance.PlayButtonSound(); });
-        AddEventTrigger(patientTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Patient", patientTabButton); BtnSoundManager.Instance.PlayButtonSound(); });
+        AddEventTrigger(wardTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Ward", wardTabButton); BtnSoundManager.Instance.PlayButtonSound(); policyWard.UpdateWardInfomation(0); });
         AddEventTrigger(researchTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Research", researchTabButton); BtnSoundManager.Instance.PlayButtonSound(); });
 
         // 각 버튼에 마우스 오버 및 클릭 효과 추가
         AddHoverEffect(gearTabButton);
-        AddHoverEffect(patientTabButton);
+        AddHoverEffect(wardTabButton);
         AddHoverEffect(researchTabButton);
     }
 
@@ -76,7 +77,6 @@ public class PolicyMenu : MonoBehaviour
             currentSelectedButton = gearTabButton;
 
             policyPanel.SetActive(true);
-            Time.timeScale = 0f; // 게임 시간 멈춤
             cameraHandler.isPolicyMenuOpen = true; // 정책 창이 열렸음을 설정
 
         }
@@ -90,7 +90,6 @@ public class PolicyMenu : MonoBehaviour
         if (policyPanel != null)
         {
             policyPanel.SetActive(false);
-            Time.timeScale = 1; // 게임 재개
             cameraHandler.isPolicyMenuOpen = false; // 정책 창이 닫혔음을 설정
 
         }
@@ -103,17 +102,17 @@ public class PolicyMenu : MonoBehaviour
         {
             case "Gear":
                 gearTab.SetActive(true);
-                patientTab.SetActive(false);
+                wardTab.SetActive(false);
                 researchTab.SetActive(false);
                 break;
-            case "Patient":
+            case "Ward":
                 gearTab.SetActive(false);
-                patientTab.SetActive(true);
+                wardTab.SetActive(true);
                 researchTab.SetActive(false);
                 break;
             case "Research":
                 gearTab.SetActive(false);
-                patientTab.SetActive(false);
+                wardTab.SetActive(false);
                 researchTab.SetActive(true);
                 policyResearch.OpenResearchPanel();
                 policyResearch.medicineUsePanel.SetActive(false);

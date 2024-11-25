@@ -5,8 +5,15 @@ using UnityEngine;
 
 public class Ward : MonoBehaviour
 {
+    public enum WardStatus
+    {
+        Normal,
+        Closed,
+        Quarantined
+    }
     public int num;
     public string WardName;
+    public WardStatus status = WardStatus.Normal;
     public static List<Ward> wards = new List<Ward>();
     public List<DoctorController> doctors = new List<DoctorController>();
     public List<PatientController> inpatients = new List<PatientController>();
@@ -17,7 +24,6 @@ public class Ward : MonoBehaviour
     public List<BedWaypoint> beds = new List<BedWaypoint>();
     public float totalOfNPC = 0;
     public float infectedNPC = 0;
-    public bool isClosed = false;
 
     public bool isWaiting = false;
 
@@ -121,7 +127,7 @@ public class Ward : MonoBehaviour
     }
     public void CloseWard()
     {
-        isClosed = true;
+        status = WardStatus.Closed;
 
         MoveOutpatients(num);
         MoveInpatientsToAvailableBeds();
@@ -160,7 +166,7 @@ public class Ward : MonoBehaviour
             if (inpatient == null || inpatient.isExiting) continue;
 
             BedWaypoint nextBed = wards
-                .Where(ward => ward.num >= 4 && ward.num <= 7 && !ward.isClosed)
+                .Where(ward => ward.num >= 4 && ward.num <= 7 && ward.status == WardStatus.Normal)
                 .SelectMany(ward => ward.beds)
                 .FirstOrDefault(bed => bed.patient == null);
 
@@ -227,11 +233,11 @@ public class Ward : MonoBehaviour
     private bool TryMovePatientToAdjacentWard(PatientController patient, int index)
     {
         int targetIndex = -1;
-        if ((index == 0 || index == 2) && !wards[index + 1].isClosed)
+        if ((index == 0 || index == 2) && wards[index + 1].status == WardStatus.Normal)
         {
             targetIndex = index + 1;
         }
-        else if ((index == 1 || index == 3) && !wards[index - 1].isClosed)
+        else if ((index == 1 || index == 3) && wards[index - 1].status == WardStatus.Normal)
         {
             targetIndex = index - 1;
         }
@@ -254,7 +260,7 @@ public class Ward : MonoBehaviour
 
     public void OpenWard()
     {
-        isClosed = false;
+        status = WardStatus.Normal;
         if (0 <= num && num <= 3)
         {
             for (int i = num * 16; i < (num * 16) + 16; i++)
@@ -286,5 +292,14 @@ public class Ward : MonoBehaviour
             GameObject doctor = GameObject.Find($"ERDoctor 0");
             Managers.ObjectPooling.ActivateDoctor(doctor);
         }
+    }
+
+    public void QuarantineWard()
+    {
+        status = WardStatus.Quarantined;
+
+        MoveOutpatients(num);
+        MoveInpatientsToAvailableBeds();
+        ClearEmergencyPatients();
     }
 }

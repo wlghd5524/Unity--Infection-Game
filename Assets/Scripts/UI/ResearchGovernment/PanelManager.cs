@@ -19,10 +19,10 @@ public class PanelManager : MonoBehaviour
     //}
 
     ////패널 생성
-    //public void ShowWarning(string status, string message)
+    //public void ShowWarning(string infectionStatus, string message)
     //{
     //    newsText.text = message;        // 경고 문구 변경
-    //    newsIcon.sprite = TryLoadIcon(status);  //이미지 변경
+    //    newsIcon.sprite = TryLoadIcon(infectionStatus);  //이미지 변경
     //    StartCoroutine(StartShowPanel());
     //}
 
@@ -34,12 +34,12 @@ public class PanelManager : MonoBehaviour
     //}
 
     //// 이미지 변경
-    //public Sprite TryLoadIcon(string status)
+    //public Sprite TryLoadIcon(string infectionStatus)
     //{
-    //    Sprite icon = Resources.Load<Sprite>(status);
+    //    Sprite icon = Resources.Load<Sprite>(infectionStatus);
     //    if (icon == null)
     //    {
-    //        Debug.LogError($"이미지 '{status}'를 Resources 폴더에서 찾을 수 없습니다.");
+    //        Debug.LogError($"이미지 '{infectionStatus}'를 Resources 폴더에서 찾을 수 없습니다.");
     //    }
     //    return icon;
     //}

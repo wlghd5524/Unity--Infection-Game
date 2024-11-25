@@ -5,7 +5,7 @@ using UnityEngine;
 //플레이어의 상태(감염병)를 나타내는 enum
 //Stage1은 접촉성 감염병
 //Stage2은 비접촉성(범위형) 감염병
-public enum InfectionState
+public enum InfectionStatus
 {
     Normal,
     CRE,
@@ -23,7 +23,7 @@ public enum Role
 }
 public class Person : MonoBehaviour
 {
-    public InfectionState status = InfectionState.Normal;
+    public InfectionStatus infectionStatus = InfectionStatus.Normal;
     public int infectionResistance = 0;
     public int vaccineResist = 0;
     public Role role;
@@ -33,7 +33,7 @@ public class Person : MonoBehaviour
     private bool isWaiting;
 
     public PatientController patientController;
-    public delegate void InfectionStateChanged(InfectionState newStatus);
+    public delegate void InfectionStateChanged(InfectionStatus newStatus);
     public event InfectionStateChanged OnInfectionStateChanged;
 
 
@@ -81,7 +81,7 @@ public class Person : MonoBehaviour
     {
 
         //감염병 종류에 따라 감염 범위 설정
-        if (status == InfectionState.CRE)
+        if (infectionStatus == InfectionStatus.CRE)
         {
             if (patientController != null)
             {
@@ -102,7 +102,7 @@ public class Person : MonoBehaviour
             }
 
         }
-        else if (status == InfectionState.Covid)
+        else if (infectionStatus == InfectionStatus.Covid)
         {
 
             if (patientController != null)
@@ -122,7 +122,7 @@ public class Person : MonoBehaviour
                 coll.radius = 1.0f;
             }
         }
-        else if (status == InfectionState.Normal)
+        else if (infectionStatus == InfectionStatus.Normal)
         {
             if (patientController != null)
             {
@@ -147,7 +147,7 @@ public class Person : MonoBehaviour
         {
             return;
         }
-        if (status != InfectionState.Normal)
+        if (infectionStatus != InfectionStatus.Normal)
         {
             //ballRenderer.enabled = true;
         }
@@ -182,7 +182,7 @@ public class Person : MonoBehaviour
     }
 
 
-    public void ChangeStatus(InfectionState infection)
+    public void ChangeStatus(InfectionStatus infection)
     {
         gameObject.GetComponent<NPCController>().wardComponent.infectedNPC++;
         NPCManager.Instance.HighlightNPC(gameObject);
@@ -200,14 +200,14 @@ public class Person : MonoBehaviour
         //Debug.Log("자가 면역을 가져서 더 이상 감염되지 않음");
         NPCManager.Instance.UnhighlightNPC(gameObject);
         //Debug.Log("감염자 색상 풀림" + gameObject.name);
-        status = InfectionState.Normal;
+        infectionStatus = InfectionStatus.Normal;
         gameObject.GetComponent<NPCController>().wardComponent.infectedNPC--;
         isImmune = true;
     }
     public void Recover()
     {
         NPCManager.Instance.UnhighlightNPC(gameObject);
-        status = InfectionState.Normal;
+        infectionStatus = InfectionStatus.Normal;
         isImmune = true;
         StartCoroutine(SetImmune());
     }
@@ -216,9 +216,9 @@ public class Person : MonoBehaviour
         yield return new WaitForSeconds(5);
         isImmune = false;
     }
-    private IEnumerator IncubationPeriod(InfectionState infection)
+    private IEnumerator IncubationPeriod(InfectionStatus infection)
     {
-        status = infection;
+        infectionStatus = infection;
         isWaiting = true;
         yield return YieldInstructionCache.WaitForSeconds(5);
         isWaiting = false;

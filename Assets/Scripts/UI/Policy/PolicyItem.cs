@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using System.Linq;
 
 
 
@@ -29,11 +30,23 @@ public class PolicyItem : MonoBehaviour
     public GameObject itemInfoPrefab;
     public Transform itemScrollViewContent;
     private PolicyItemInfo policyItemInfo = new PolicyItemInfo();
+    public Button doctorButton, nurseButton, isolationNurseButton, patientButton;
 
-    // 각 아이템별 직업별 착용 상태 관리
-    private Dictionary<string, Dictionary<string, bool>> equippedStatesByJob = new Dictionary<string, Dictionary<string, bool>>();
+    private string selectedJob; // 선택된 직업 이름
+    private Button currentlySelectedButton; // 현재 선택된 버튼
 
-    private string[] jobNames = { "Doctor", "Nurse", "Outpatient", "Inpatient", "EmergencyPatient", "ICUPatient" }; // 직업명
+    private string[] doctorJobs = { "Doctor", "Nurse", "IsolationNurse" }; // 모든 아이템 착용 가능 직업
+    private string[] patientJobs = { "Outpatient", "Inpatient", "EmergencyPatient", "ICUPatient" }; // 제한된 아이템 착용 가능 직업
+
+    private Dictionary<string, Dictionary<string, bool>> equippedStatesByJob = new Dictionary<string, Dictionary<string, bool>>(); // 직업별 아이템 상태 저장
+    private readonly Dictionary<string, string[]> mutuallyExclusiveItems = new Dictionary<string, string[]>
+    {
+    { "Dental 마스크", new[] { "N95 마스크" } },
+    { "N95 마스크", new[] { "Dental 마스크" } },
+    { "일회용 장갑", new[] { "라텍스 장갑" } },
+    { "라텍스 장갑", new[] { "일회용 장갑" } }
+    };
+
 
     private void Awake()
     {
@@ -52,9 +65,63 @@ public class PolicyItem : MonoBehaviour
     {
         ConfigureGridLayout();
         AdjustScrollSpeed();
-        InitializeDefaultEquippedStates();
-        CreateItemEntries();
+        InitializeEquippedStates();
+        CreateItemEntriesForAllJobs();
+
+        doctorButton.onClick.AddListener(() => HandleJobButtonClick("Doctor", doctorButton));
+        nurseButton.onClick.AddListener(() => HandleJobButtonClick("Nurse", nurseButton));
+        isolationNurseButton.onClick.AddListener(() => HandleJobButtonClick("IsolationNurse", isolationNurseButton));
+        patientButton.onClick.AddListener(() => HandleJobButtonClick("Patient", patientButton));
     }
+
+    private void InitializeEquippedStates()
+    {
+        // 의사, 간호사, 격리 간호사
+        foreach (var jobName in doctorJobs)
+        {
+            equippedStatesByJob[jobName] = new Dictionary<string, bool>();
+            foreach (var itemInfo in policyItemInfo.itemInfos)
+            {
+                string itemName = itemInfo.Split('|')[0];
+                equippedStatesByJob[jobName][itemName] = false; // 초기 상태: 미장착
+            }
+        }
+
+        // 환자 (Outpatient, Inpatient, EmergencyPatient, ICUPatient)
+        equippedStatesByJob["Patient"] = new Dictionary<string, bool>();
+        foreach (var itemInfo in policyItemInfo.itemInfos)
+        {
+            string itemName = itemInfo.Split('|')[0];
+            // 환자는 Dental 마스크와 N95 마스크만 허용
+            if (itemName == "Dental 마스크" || itemName == "N95 마스크")
+            {
+                equippedStatesByJob["Patient"][itemName] = false; // 초기 상태: 미장착
+            }
+        }
+    }
+
+
+    private void CreateItemEntriesForAllJobs()
+    {
+        ShowItemsForJob("Doctor"); // 초기화 시 의사 직업 아이템 표시
+    }
+
+    private List<string> GetAllowedItemsForJob(string jobName)
+    {
+        if (doctorJobs.Contains(jobName))
+        {
+            // 모든 아이템 허용
+            return policyItemInfo.itemInfos.Select(info => info.Split('|')[0]).ToList();
+        }
+        else if (jobName == "Patient")
+        {
+            // 환자는 특정 아이템만 허용
+            return new List<string> { "Dental 마스크", "N95 마스크" };
+        }
+
+        return new List<string>();
+    }
+
 
     void ConfigureGridLayout()
     {
@@ -74,282 +141,149 @@ public class PolicyItem : MonoBehaviour
         ScrollRect scrollRect = itemScrollViewContent.GetComponentInParent<ScrollRect>();
         if (scrollRect != null)
         {
-            scrollRect.scrollSensitivity = 80.0f;
+            scrollRect.scrollSensitivity = 120.0f;
         }
     }
 
-    void InitializeDefaultEquippedStates()
+    private void HandleJobButtonClick(string jobName, Button clickedButton)
     {
-        foreach (var itemInfo in policyItemInfo.itemInfos)
+        // 이전 선택된 버튼 상태 초기화
+        if (currentlySelectedButton != null)
         {
-            string[] itemDetails = itemInfo.Split('|');
-            if (itemDetails.Length > 0)
-            {
-                string itemName = itemDetails[0];
-                equippedStatesByJob[itemName] = new Dictionary<string, bool>();
+            ResetButtonAppearance(currentlySelectedButton);
+        }
 
-                // 각 직업별 초기 착용 상태 설정
-                foreach (var jobName in jobNames)
-                {
-                    equippedStatesByJob[itemName][jobName] = false; // 기본값은 착용 해제
-                }
-            }
+        // 현재 선택된 버튼 강조
+        HighlightButton(clickedButton);
+        currentlySelectedButton = clickedButton;
+
+        // 해당 직업에 맞는 아이템 표시
+        ShowItemsForJob(jobName);
+    }
+
+    private void HighlightButton(Button button)
+    {
+        ColorBlock colors = button.colors;
+        // 강조 색상: #CCCCCC (연한 회색)
+        Color highlightColor = new Color(204f / 255f, 204f / 255f, 204f / 255f); // RGB 값을 255로 나눈 값
+
+        colors.normalColor = highlightColor; // 강조 색상
+        colors.selectedColor = highlightColor; // 클릭 시 색상
+        colors.highlightedColor = highlightColor; // 하이라이트 색상
+        button.colors = colors;
+    }
+
+    private void ResetButtonAppearance(Button button)
+    {
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white; // 기본 흰색
+        colors.selectedColor = Color.white;
+        colors.highlightedColor = Color.white;
+        button.colors = colors;
+    }
+
+    private void CreateItemEntry(string[] itemDetails)
+    {
+        GameObject itemInstance = Instantiate(itemInfoPrefab, itemScrollViewContent);
+        itemInstance.name = $"ItemInfoPrefab_{itemDetails[0]}";
+
+        string itemName = itemDetails[0];
+        string itemPrice = itemDetails[1];
+        string itemEffect = itemDetails[2];
+        string itemInformation = itemDetails[3];
+        string itemMoreInfo = itemDetails[4];
+
+        Image itemIcon = itemInstance.transform.Find("ItemImageSlot/ItemIcon").GetComponent<Image>();
+        TextMeshProUGUI itemNameText = itemInstance.transform.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemPriceText = itemInstance.transform.Find("ItemInfoSlot/ItemPrice").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemEffectText = itemInstance.transform.Find("ItemInfoSlot/ItemEffect").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemInformationText = itemInstance.transform.Find("ItemInfoSlot/ItemInfomation").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemMoreInfoText = itemInstance.transform.Find("ItemInfoSlot/ItemMore").GetComponent<TextMeshProUGUI>();
+        Sprite itemSprite = Resources.Load<Sprite>($"Sprites/ItemSprites/{itemName}");
+        Button itemEquipmentButton = itemInstance.transform.Find("ItemEquipmentButton").GetComponent<Button>();
+
+        TextMeshProUGUI itemEquipmentText = itemEquipmentButton.transform.Find("ItemEquipmentText").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemIsEquipText = itemInstance.transform.Find("ItemEquipment/ItemIsEquipText").GetComponent<TextMeshProUGUI>();
+
+        itemNameText.text = itemName;
+        itemPriceText.text = itemPrice + " SCH(인당)";
+        itemEffectText.text = itemEffect;
+        itemInformationText.text = itemInformation;
+        itemMoreInfoText.text = itemMoreInfo;
+        itemIcon.sprite = itemSprite;
+
+        // 초기 장착 상태 업데이트
+        UpdateItemUI(itemName, itemEquipmentText, itemIsEquipText);
+
+        // 아이템 착용/해제 버튼 클릭 이벤트
+        itemEquipmentButton.onClick.AddListener(() =>
+        {
+            ToggleItemEquippedState(itemName);
+            UpdateItemUI(itemName, itemEquipmentText, itemIsEquipText);
+            UpdateNPCEquipment(itemName, isEquipped: equippedStatesByJob[selectedJob][itemName]);
+            HandleMutuallyExclusiveItems(itemName); // 중복 착용 해제 로직 호출
+        });
+    }
+
+    private void ToggleItemEquippedState(string itemName)
+    {
+        if (equippedStatesByJob[selectedJob].ContainsKey(itemName))
+        {
+            equippedStatesByJob[selectedJob][itemName] = !equippedStatesByJob[selectedJob][itemName];
         }
     }
 
-    void CreateItemEntries()
+    private void UpdateItemUI(string itemName, TextMeshProUGUI equipmentText, TextMeshProUGUI equipStatusText)
     {
-        for (int i = 0; i < policyItemInfo.itemInfos.Length; i++)
+        if (equippedStatesByJob[selectedJob].ContainsKey(itemName) && equippedStatesByJob[selectedJob][itemName])
         {
-            string itemInfo = policyItemInfo.itemInfos[i];
-            string[] itemDetails = itemInfo.Split('|');
-
-            if (itemDetails.Length == 5)
-            {
-                GameObject itemInstance = Instantiate(itemInfoPrefab, itemScrollViewContent);
-
-                itemInstance.name = $"ItemInfoPrefab_{i + 1}";
-
-                string itemName = itemDetails[0];
-                string itemPrice = itemDetails[1];
-                string itemEffect = itemDetails[2];
-                string itemInformation = itemDetails[3];
-                string itemMoreInfo = itemDetails[4];
-
-                Image itemIcon = itemInstance.transform.Find("ItemImageSlot/ItemIcon").GetComponent<Image>();
-                TextMeshProUGUI itemNameText = itemInstance.transform.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
-                TextMeshProUGUI itemPriceText = itemInstance.transform.Find("ItemInfoSlot/ItemPrice").GetComponent<TextMeshProUGUI>();
-                TextMeshProUGUI itemEffectText = itemInstance.transform.Find("ItemInfoSlot/ItemEffect").GetComponent<TextMeshProUGUI>();
-                TextMeshProUGUI itemInformationText = itemInstance.transform.Find("ItemInfoSlot/ItemInfomation").GetComponent<TextMeshProUGUI>();
-                TextMeshProUGUI itemMoreInfoText = itemInstance.transform.Find("ItemInfoSlot/ItemMore").GetComponent<TextMeshProUGUI>();
-                Sprite itemSprite = Resources.Load<Sprite>($"Sprites/ItemSprites/{itemName}");
-
-                itemNameText.text = itemName;
-                itemPriceText.text = itemPrice + " SCH(인당)";
-                itemEffectText.text = itemEffect;
-                itemInformationText.text = itemInformation;
-                itemMoreInfoText.text = itemMoreInfo;
-                itemIcon.sprite = itemSprite;
-
-                Slider[] itemSwitches = new Slider[6];
-
-                for (int j = 0; j < itemSwitches.Length; j++)
-                {
-                    int switchIndex = j;
-                    int toggleNumber = i + 1; // 현재 선택한 토글 번호(1~8s)
-
-                    string switchPath = $"ItemWearToggle/ItemToggle{j + 1}/Outline/ItemSwitch";
-                    Slider itemSwitch = itemInstance.transform.Find(switchPath).GetComponent<Slider>();
-                    itemSwitch.onValueChanged.AddListener(delegate (float value) {
-                        int toggleState = value == 1 ? 1 : 0;
-                        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.gear, toggleNumber, switchIndex + 1, toggleState);
-                        OnSwitchValueChanged(itemName, jobNames[switchIndex], itemInstance);
-                    });
-                    itemSwitches[j] = itemSwitch;
-
-                    // 10초 동안 상호작용 비활성화 처리
-                    itemSwitch.interactable = false;
-                    StartCoroutine(ReenableSwitchAfterCooldown(itemSwitch, 10f)); // 10초 후 다시 활성화
-                }
-
-                if (itemName != "Dental 마스크" && itemName != "N95 마스크")
-                {
-                    for (int k = 2; k <= 5; k++)
-                    {
-                        Image switchBackground = itemInstance.transform.Find($"ItemWearToggle/ItemToggle{k + 1}/Outline/ItemSwitch/Background").GetComponent<Image>();
-                        itemSwitches[k].interactable = false;
-                        switchBackground.color = Color.gray;
-                    }
-                }
-            }
-            else
-            {
-                //Debug.LogError($"Item details format is incorrect for item {i + 1}.");
-            }
+            equipmentText.text = "장착 해제";
+            equipStatusText.text = "장착 중";
+        }
+        else
+        {
+            equipmentText.text = "장착";
+            equipStatusText.text = "장착 안함";
         }
     }
 
-    void OnSwitchValueChanged(string itemName, string jobName, GameObject itemInstance)
+    private void UpdateNPCEquipment(string itemName, bool isEquipped)
     {
-        Slider itemSwitch = itemInstance.transform.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
-        bool isEquipping = itemSwitch.value == 1;
-
-        BtnSoundManager.Instance.PlayButtonSound();
-
-        // 직업별 착용 상태 업데이트
-        if (equippedStatesByJob.ContainsKey(itemName))
-        {
-            equippedStatesByJob[itemName][jobName] = isEquipping;
-        }
-
         List<Person> persons = PersonManager.Instance.GetAllPersons();
         foreach (Person person in persons)
         {
-            if (person.role == GetRoleFromJobName(jobName))
+            if (person.role == GetRoleFromJobName(selectedJob))
             {
                 if (person.Inventory.TryGetValue(itemName, out Item item))
                 {
-                    item.isEquipped = isEquipping;
-                    person.UpdateInfectionResistance(); // 방어율 갱신
-
-                    // 겹치는 아이템 해제 처리
-                    HandleItemExclusivity(person, itemName, jobName, isEquipping, itemInstance);
-
-                    // Level C 장착 시 나머지 아이템 해제
-                    NPCController npcController = person.GetComponent<NPCController>();
-                    if (isEquipping && itemName == "Level C")
-                    {
-                        UnequipAllExcept(person, "Level C", jobName, itemInstance, isEquipping);
-                        npcController.meshRenderer.enabled = false;
-                        npcController.protectedGear.meshRenderer.enabled = true;
-
-                    }
-                    else if (!isEquipping && itemName == "Level C")
-                    {
-                        // Level C 해제 시 외형 복구
-                        UnequipAllExcept(person, "Level C", jobName, itemInstance, isEquipping);
-                        npcController.meshRenderer.enabled = true;
-                        npcController.protectedGear.meshRenderer.enabled = false;
-
-                    }
-                    else if (itemName != "Level C" && person.Inventory.ContainsKey("Level C") && person.Inventory["Level C"].isEquipped)
-                    {
-                        person.Inventory["Level C"].isEquipped = false;
-                        equippedStatesByJob["Level C"][jobName] = false;
-
-                        // UI에서 `Level C` 토글 해제
-                        Transform contentTransform = itemInstance.transform.parent;
-                        foreach (Transform itemPrefab in contentTransform)
-                        {
-                            if (itemPrefab.name.Contains("ItemInfoPrefab_"))
-                            {
-                                TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
-                                if (itemNameText.text == "Level C")
-                                {
-                                    Slider levelCSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
-                                    levelCSwitch.value = 0; // `Level C` 해제
-                                    Debug.Log($"Level C 착용: {person.Name}");
-                                    npcController.meshRenderer.enabled = false;
-                                    npcController.protectedGear.meshRenderer.enabled = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-
-        // Canvas 갱신은 루프 바깥에서 호출
-        Canvas.ForceUpdateCanvases();
-    }
-
-    // 겹치는 아이템 해제 함수
-    void HandleItemExclusivity(Person person, string itemName, string jobName, bool isEquipping, GameObject itemInstance)
-    {
-        // 마스크와 장갑의 겹침 방지 규칙 정의
-        Dictionary<string, string> exclusiveItems = new Dictionary<string, string>
-    {
-        { "Dental 마스크", "N95 마스크" },
-        { "N95 마스크", "Dental 마스크" },
-        { "일회용 장갑", "라텍스 장갑" },
-        { "라텍스 장갑", "일회용 장갑" }
-    };
-
-        // 현재 아이템이 겹치는 아이템 목록에 존재하는 경우만 처리
-        if (isEquipping && exclusiveItems.ContainsKey(itemName))
-        {
-            string conflictingItemName = exclusiveItems[itemName];
-
-            // 만약 겹치는 아이템이 착용 중이면 해제
-            if (person.Inventory.TryGetValue(conflictingItemName, out Item conflictingItem) && conflictingItem.isEquipped)
-            {
-                conflictingItem.isEquipped = false;
-                equippedStatesByJob[conflictingItemName][jobName] = false;
-
-                // UI 업데이트
-                Transform contentTransform = itemInstance.transform.parent;
-                foreach (Transform itemPrefab in contentTransform)
-                {
-                    if (itemPrefab.name.Contains("ItemInfoPrefab_"))
-                    {
-                        TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
-
-                        if (itemNameText.text == conflictingItemName)
-                        {
-                            Slider conflictingSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
-                            conflictingSwitch.value = 0;
-                            break;
-                        }
-                    }
+                    item.isEquipped = isEquipped;
+                    person.UpdateInfectionResistance(); // NPC 방어율 업데이트
                 }
             }
         }
     }
 
-    // Level C 장착 시 다른 아이템 모두 해제
-    void UnequipAllExcept(Person person, string exclusiveItemName, string jobName, GameObject itemInstance, bool isEquipping)
+    private void HandleMutuallyExclusiveItems(string itemName)
     {
-        foreach (var itemEntry in person.Inventory)
+        if (mutuallyExclusiveItems.ContainsKey(itemName))
         {
-            string itemName = itemEntry.Key;
-            Item item = itemEntry.Value;
-
-            // Level C를 제외한 모든 아이템 해제
-            if (itemName != exclusiveItemName && item.isEquipped)
+            foreach (var exclusiveItem in mutuallyExclusiveItems[itemName])
             {
-                item.isEquipped = false;
-                equippedStatesByJob[itemName][jobName] = false;
-
-                // UI 업데이트 - 해당 아이템의 토글 상태 해제
-                Transform contentTransform = itemInstance.transform.parent;
-                foreach (Transform itemPrefab in contentTransform)
+                if (equippedStatesByJob[selectedJob].ContainsKey(exclusiveItem) && equippedStatesByJob[selectedJob][exclusiveItem])
                 {
-                    if (itemPrefab.name.Contains("ItemInfoPrefab_"))
+                    equippedStatesByJob[selectedJob][exclusiveItem] = false;
+                    UpdateNPCEquipment(exclusiveItem, isEquipped: false);
+                    Transform otherItem = itemScrollViewContent.Find($"ItemInfoPrefab_{exclusiveItem}");
+                    if (otherItem != null)
                     {
-                        TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
-                        if (itemNameText.text == itemName)
-                        {
-                            Slider itemSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
-                            itemSwitch.value = 0;
-                            break;
-                        }
+                        TextMeshProUGUI otherEquipmentText = otherItem.Find("ItemEquipmentButton/ItemEquipmentText").GetComponent<TextMeshProUGUI>();
+                        TextMeshProUGUI otherEquipStatusText = otherItem.Find("ItemEquipment/ItemIsEquipText").GetComponent<TextMeshProUGUI>();
+                        UpdateItemUI(exclusiveItem, otherEquipmentText, otherEquipStatusText);
                     }
                 }
             }
         }
-        // `Level C`를 착용 중일 때 다른 아이템 착용 시 `Level C` 해제 처리
-        if (exclusiveItemName != "Level C" && person.Inventory.ContainsKey("Level C") && person.Inventory["Level C"].isEquipped)
-        {
-            person.Inventory["Level C"].isEquipped = false;
-            equippedStatesByJob["Level C"][jobName] = false;
-
-            // UI에서 `Level C` 토글 해제
-            Transform contentTransform = itemInstance.transform.parent;
-            foreach (Transform itemPrefab in contentTransform)
-            {
-                if (itemPrefab.name.Contains("ItemInfoPrefab_"))
-                {
-                    TextMeshProUGUI itemNameText = itemPrefab.Find("ItemNameSlot/ItemName").GetComponent<TextMeshProUGUI>();
-                    if (itemNameText.text == "Level C")
-                    {
-                        Slider levelCSwitch = itemPrefab.Find($"ItemWearToggle/ItemToggle{System.Array.IndexOf(jobNames, jobName) + 1}/Outline/ItemSwitch").GetComponent<Slider>();
-                        levelCSwitch.value = 0; // `Level C` 해제
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
-    private IEnumerator ReenableSwitchAfterCooldown(Slider itemSwitch, float cooldownTime)
-    {
-        yield return YieldInstructionCache.WaitForSeconds(cooldownTime);
-        itemSwitch.interactable = true;
+        UpdateNPCEquipment(itemName, isEquipped: equippedStatesByJob[selectedJob][itemName]);
     }
 
     private Role GetRoleFromJobName(string jobName)
@@ -365,4 +299,32 @@ public class PolicyItem : MonoBehaviour
             _ => throw new System.ArgumentException("Invalid job name")
         };
     }
+
+    private void ShowItemsForJob(string jobName)
+    {
+        selectedJob = jobName;
+
+        // 기존 아이템 제거
+        foreach (Transform child in itemScrollViewContent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 현재 직업에 맞는 아이템 목록 가져오기
+        List<string> allowedItems = GetAllowedItemsForJob(jobName);
+
+        // 아이템 목록 생성
+        foreach (string itemInfo in policyItemInfo.itemInfos)
+        {
+            string[] itemDetails = itemInfo.Split('|');
+            string itemName = itemDetails[0];
+
+            if (allowedItems.Contains(itemName))
+            {
+                CreateItemEntry(itemDetails);
+            }
+        }
+    }
+
 }
+

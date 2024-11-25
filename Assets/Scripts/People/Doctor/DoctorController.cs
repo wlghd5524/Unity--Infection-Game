@@ -106,7 +106,7 @@ public class DoctorController : NPCController
     public IEnumerator ERDoctorMove()
     {
         isWaiting = true;
-        if (ERWaitingList.Count > 0)
+        if (ERWaitingList.Count > 0 && Managers.PatientCreator.startSignal)
         {
             isWorking = true;
             int random = 0;
@@ -117,7 +117,7 @@ public class DoctorController : NPCController
             patient = ERWaitingList[random].gameObject;
             agent.SetDestination(ERWaitingList[random].bedWaypoint.GetRandomPointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            if(ERWaitingList[random].bedWaypoint == null || random >= ERWaitingList.Count)
+            if(random >= ERWaitingList.Count || ERWaitingList[random].bedWaypoint == null)
             {
                 isWaiting = false;
                 yield break;

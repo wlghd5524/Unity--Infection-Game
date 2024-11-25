@@ -93,7 +93,7 @@ public class InfectionManager
         {
             foreach (PatientController patient in ward.inpatients)
             {
-                if (patient.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.infectionStatus != InfectionStatus.Normal)
                 {
                     numberOfInfectedNPC[0]++;
                 }
@@ -101,7 +101,7 @@ public class InfectionManager
             }
             foreach (PatientController patient in ward.outpatients)
             {
-                if (patient.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.infectionStatus != InfectionStatus.Normal)
                 {
                     numberOfInfectedNPC[1]++;
                 }
@@ -110,7 +110,7 @@ public class InfectionManager
             }
             foreach (PatientController patient in ward.emergencyPatients)
             {
-                if (patient.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.infectionStatus != InfectionStatus.Normal)
                 {
                     numberOfInfectedNPC[2]++;
                 }
@@ -119,7 +119,7 @@ public class InfectionManager
             }
             foreach (PatientController patient in ward.icuPatients)
             {
-                if (patient.personComponent.status != InfectionState.Normal)
+                if (patient.personComponent.infectionStatus != InfectionStatus.Normal)
                 {
                     numberOfInfectedNPC[3]++;
                 }
@@ -129,7 +129,7 @@ public class InfectionManager
 
             foreach (NurseController nurse in ward.nurses)
             {
-                if (nurse.personComponent.status != InfectionState.Normal)
+                if (nurse.personComponent.infectionStatus != InfectionStatus.Normal)
                 {
                     numberOfInfectedNPC[4]++;
                 }
@@ -138,7 +138,7 @@ public class InfectionManager
 
             foreach (DoctorController doctor in ward.doctors)
             {
-                if (doctor.personComponent.status != InfectionState.Normal)
+                if (doctor.personComponent.infectionStatus != InfectionStatus.Normal)
                 {
                     numberOfInfectedNPC[5]++;
                 }

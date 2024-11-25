@@ -5,7 +5,7 @@ public class Virus : MonoBehaviour
     public float infectionProbability = 0.1f;  //감염 확률(50%)
 
     private float lifetime = 5;              //바이러스 기본 수명 5초
-    private InfectionState infectionState;   //감염 상태
+    private InfectionStatus infectionState;   //감염 상태
 
     public static float virusLifetime = 5f;                    //바이러스 수명
     public static float virusDropProbability = 0.05f;          //바이러스가 생성될 확률
@@ -20,7 +20,7 @@ public class Virus : MonoBehaviour
     }
 
     // 바이러스 감염 상태
-    public void SetInfectionState(InfectionState State)
+    public void SetInfectionState(InfectionStatus State)
     {
         infectionState = State;
     }
@@ -29,14 +29,16 @@ public class Virus : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         Person person = other.GetComponent<Person>();  //충돌한 오브젝트 확인
-        if (person != null && person.status == InfectionState.Normal)
+        if (person != null && person.infectionStatus == InfectionStatus.Normal)
         {
-            if (Random.value < infectionProbability)
+            int random = Random.Range(0, 101);
+            //감염되는 사람의 감염 저항성을 고려하여 감염 확률 계산
+            if (random + InfectionController.GetFinalProtectionRate(person) <= Managers.Infection.infectionProbability)
             {
+                Debug.Log(random + " || " + InfectionController.GetFinalProtectionRate(person) + "||" + Managers.Infection.infectionProbability);
+                //other.GetComponent<NPCController>().wardComponent.infectedNPC++;
                 person.ChangeStatus(infectionState);
-                //Debug.Log($"바이러스에 의해 감염됨 (상태: {infectionState})");
             }
-            //else { Debug.Log($"바이러스에 의해 감염되지 않음 (상태: {infectionState})"); }
         }
     }
 
