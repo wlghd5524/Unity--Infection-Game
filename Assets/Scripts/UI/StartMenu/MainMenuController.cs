@@ -142,7 +142,7 @@ public class MainMenuController : MonoBehaviour
     // 회원가입 메뉴 클릭
     private void OnAccountCreationClicked()
     {
-        Debug.Log("Account Creation Clicked");
+        //Debug.Log("Account Creation Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         signupCanvas.SetActive(true);  // 회원가입 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정

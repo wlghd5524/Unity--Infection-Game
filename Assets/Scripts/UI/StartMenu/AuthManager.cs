@@ -263,7 +263,7 @@ public class AuthManager : MonoBehaviour
     // 팝업창에서 뒤로가기 클릭
     private void OnBackButtonClicked(GameObject popup)
     {
-        Debug.Log("Back Button Clicked");
+        //Debug.Log("Back Button Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         InitializePopup(); // 팝업 초기화 (적혀있는 내용 삭제)
         popup.SetActive(false);

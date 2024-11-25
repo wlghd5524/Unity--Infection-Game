@@ -50,17 +50,14 @@ public class GameDataManager : MonoBehaviour
     public bool[] difference20More = new bool[15];     // 차이가 20 이상인 인덱스 저장 => 피드백 문자열에 추가
     public Dictionary<int, string> feedbackContent = new Dictionary<int, string>();
 
-    GameObject scoreGraphCanvas;
-    public Transform graphContainer;
+    public GameObject scoreGraphCanvas;
     public Transform graphContainerArea;
-    public Transform xLabelContainer;
-    public Transform feedbackContainer;
     public GameObject gameClearPanel;
     public GameObject gameOverPanel;
     public Button gameClearNextButton;
     public Button gameOverNextButton;
     public TextMeshProUGUI selectedLevel;
-    List<string> steps = new List<string>();
+    //List<string> steps = new List<string>();
     TextMeshProUGUI feedbackText;
     Coroutine _co;
 
@@ -84,23 +81,20 @@ public class GameDataManager : MonoBehaviour
     void Start()
     {
         scoreGraphCanvas = GameObject.Find("ScoreGraphCanvas");
-        graphContainer = GameObject.Find("graphContainer").transform;
-        graphContainerArea = GameObject.Find("GraphContainerArea").transform;
-        xLabelContainer = GameObject.Find("X-axis").transform;
-        feedbackContainer = GameObject.Find("FeedgraphContainer").transform;
-        feedbackTotalToggle = GameObject.Find("FeedbackTotalToggle").GetComponent<Toggle>();
+        graphContainerArea = GameObject.Find("GraphContainerArea").GetComponent<RectTransform>();
+        /*feedbackTotalToggle = GameObject.Find("FeedbackTotalToggle").GetComponent<Toggle>();
         feedbackDoctorToggle = GameObject.Find("FeedbackDoctorlToggle").GetComponent<Toggle>();
         feedbackNurseToggle = GameObject.Find("FeedbackNurseToggle").GetComponent<Toggle>();
         feedbackInpatientToggle = GameObject.Find("FeedbackInpatientToggle").GetComponent<Toggle>();
         feedbackOutpatientToggle = GameObject.Find("FeedbackOutpatientToggle").GetComponent<Toggle>();
         feedbackEmergencyToggle = GameObject.Find("FeedbackEmergencyToggle").GetComponent<Toggle>();
-        feedbackIcuToggle = GameObject.Find("FeedbackIcuToggle").GetComponent<Toggle>();
+        feedbackIcuToggle = GameObject.Find("FeedbackIcuToggle").GetComponent<Toggle>();*/
         gameClearPanel = GameObject.Find("GameClearPanel");
         gameOverPanel = GameObject.Find("GameOverPanel");
         gameClearNextButton = GameObject.Find("GameClearNextButton").GetComponent<Button>();
         gameOverNextButton = GameObject.Find("GameOverNextButton").GetComponent<Button>();
         selectedLevel = GameObject.Find("SelectedLevel").GetComponent<TextMeshProUGUI>();
-        feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
+        //feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
 
         for (int i = 0; i < 15; i++)
             difference20More[i] = false;
@@ -369,7 +363,6 @@ public class GameDataManager : MonoBehaviour
                     continue;
             }
 
-
             updatedContent += line + "\n";
         }
 
@@ -579,7 +572,6 @@ public class GameDataManager : MonoBehaviour
         {
             StopCoroutine(_co);
             _co = null;
-
         }
         scoreGraphCanvas.SetActive(true);
         showPanel.SetActive(true);
