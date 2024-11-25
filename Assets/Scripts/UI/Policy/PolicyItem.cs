@@ -27,6 +27,9 @@ public class PolicyItem : MonoBehaviour
 {
     public static PolicyItem Instance { get; private set; } // 싱글톤 인스턴스
 
+    public NurseController nurses;
+    public bool isAllItemsEquipped = false;
+
     public GameObject itemInfoPrefab;
     public Transform itemScrollViewContent;
     private PolicyItemInfo policyItemInfo = new PolicyItemInfo();
@@ -35,10 +38,11 @@ public class PolicyItem : MonoBehaviour
     private string selectedJob; // 선택된 직업 이름
     private Button currentlySelectedButton; // 현재 선택된 버튼
 
-    private string[] doctorJobs = { "Doctor", "Nurse", "IsolationNurse" }; // 모든 아이템 착용 가능 직업
-    private string[] patientJobs = { "Outpatient", "Inpatient", "EmergencyPatient", "ICUPatient" }; // 제한된 아이템 착용 가능 직업
+
+    private string[] doctorJobs = { "Doctor", "Nurse", "QuarantineNurse" }; // 모든 아이템 착용 가능 직업
 
     private Dictionary<string, Dictionary<string, bool>> equippedStatesByJob = new Dictionary<string, Dictionary<string, bool>>(); // 직업별 아이템 상태 저장
+    private string[] requireItem = { "N95 마스크", "라텍스 장갑", "의료용 고글", "AP 가운" };
     private readonly Dictionary<string, string[]> mutuallyExclusiveItems = new Dictionary<string, string[]>
     {
     { "Dental 마스크", new[] { "N95 마스크" } },
@@ -70,7 +74,7 @@ public class PolicyItem : MonoBehaviour
 
         doctorButton.onClick.AddListener(() => HandleJobButtonClick("Doctor", doctorButton));
         nurseButton.onClick.AddListener(() => HandleJobButtonClick("Nurse", nurseButton));
-        isolationNurseButton.onClick.AddListener(() => HandleJobButtonClick("IsolationNurse", isolationNurseButton));
+        isolationNurseButton.onClick.AddListener(() => HandleJobButtonClick("QuarantineNurse", isolationNurseButton));
         patientButton.onClick.AddListener(() => HandleJobButtonClick("Patient", patientButton));
     }
 
@@ -98,6 +102,20 @@ public class PolicyItem : MonoBehaviour
                 equippedStatesByJob["Patient"][itemName] = false; // 초기 상태: 미장착
             }
         }
+    }
+
+    public void IsAllItemsEquipped(string itemName)
+    {
+        if (selectedJob != "QuarantineNurse") return;
+
+        // QuarantineNurse의 모든 필수 아이템이 착용되었는지 확인
+        isAllItemsEquipped = requireItem.All(itemName =>
+            equippedStatesByJob.ContainsKey(selectedJob) &&
+            equippedStatesByJob[selectedJob].ContainsKey(itemName) &&
+            equippedStatesByJob[selectedJob][itemName]);
+
+        if (isAllItemsEquipped)
+            Debug.Log("이잉 기모띠");
     }
 
 
@@ -222,6 +240,7 @@ public class PolicyItem : MonoBehaviour
             UpdateItemUI(itemName, itemEquipmentText, itemIsEquipText);
             UpdateNPCEquipment(itemName, isEquipped: equippedStatesByJob[selectedJob][itemName]);
             HandleMutuallyExclusiveItems(itemName); // 중복 착용 해제 로직 호출
+            IsAllItemsEquipped(itemName);
         });
     }
 
@@ -252,7 +271,27 @@ public class PolicyItem : MonoBehaviour
         List<Person> persons = PersonManager.Instance.GetAllPersons();
         foreach (Person person in persons)
         {
-            if (person.role == GetRoleFromJobName(selectedJob))
+            if (person.role == Role.Nurse)
+            {
+                NurseController nurseController = person.GetComponent<NurseController>();
+                if (nurseController.isQuarantineNurse && selectedJob == "QuarantineNurse")
+                {
+                    if (person.Inventory.TryGetValue(itemName, out Item item))
+                    {
+                        item.isEquipped = isEquipped;
+                        person.UpdateInfectionResistance(); // NPC 방어율 업데이트
+                    }
+                }
+                else if (!nurseController.isQuarantineNurse && selectedJob == "Nurse")
+                {
+                    if (person.Inventory.TryGetValue(itemName, out Item item))
+                    {
+                        item.isEquipped = isEquipped;
+                        person.UpdateInfectionResistance(); // NPC 방어율 업데이트
+                    }
+                }
+            }
+            else if (person.role == GetRoleFromJobName(selectedJob))
             {
                 if (person.Inventory.TryGetValue(itemName, out Item item))
                 {
@@ -291,11 +330,12 @@ public class PolicyItem : MonoBehaviour
         return jobName switch
         {
             "Doctor" => Role.Doctor,
-            "Nurse" => Role.Nurse,
             "Outpatient" => Role.Outpatient,
             "Inpatient" => Role.Inpatient,
             "EmergencyPatient" => Role.EmergencyPatient,
             "ICUPatient" => Role.ICUPatient,
+            "Nurse" => Role.Nurse,
+            "QuarantineNurse" => Role.Nurse,
             _ => throw new System.ArgumentException("Invalid job name")
         };
     }
@@ -304,16 +344,13 @@ public class PolicyItem : MonoBehaviour
     {
         selectedJob = jobName;
 
-        // 기존 아이템 제거
         foreach (Transform child in itemScrollViewContent)
         {
             Destroy(child.gameObject);
         }
 
-        // 현재 직업에 맞는 아이템 목록 가져오기
         List<string> allowedItems = GetAllowedItemsForJob(jobName);
 
-        // 아이템 목록 생성
         foreach (string itemInfo in policyItemInfo.itemInfos)
         {
             string[] itemDetails = itemInfo.Split('|');

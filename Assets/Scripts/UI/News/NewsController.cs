@@ -5,6 +5,7 @@ using UnityEngine;
 public class NewsController : MonoBehaviour
 {
     public int GameLevel = 0;
+    private int count = 0;
 
     private bool startNewsTriggered = false;
 
@@ -72,6 +73,7 @@ public class NewsController : MonoBehaviour
         {
             EnqueueNews("국내 최초 감염자 발생! 각 병원은 감염병을 주의하시기 바랍니다!");
             policyResearch.FirstInfectedAppear();
+            PolicyWard.Instance.isIsolation_1 = true;
             startNewsTriggered = true;
         }
     }

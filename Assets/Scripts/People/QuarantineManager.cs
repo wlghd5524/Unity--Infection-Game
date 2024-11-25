@@ -24,7 +24,7 @@ public class QuarantineManager : MonoBehaviour
             // 각 간호사의 NurseController 컴포넌트를 가져옵니다.
             NurseController nurseController = nurse.GetComponent<NurseController>();
             // 간호사가 근무 중이고 의사 사무실에서 대기 중이면 건너뜁니다.
-            if (nurseController.isWorking || nurseController.isWaitingAtDoctorOffice || nurseController.isRest)
+            if (nurseController.isWorking || nurseController.isWaitingAtDoctorOffice || nurseController.isRest || !nurseController.isQuarantineNurse)
             {
                 continue;
             }
@@ -89,6 +89,7 @@ public class QuarantineManager : MonoBehaviour
                 }
                 else
                 {
+                    PolicyWard.Instance.isIsolation_2 = true;
                     // 격리 병동에서 빈 병상 찾기
                     BedWaypoint nextBed = Ward.wards
                         .Where(ward => ward.status == Ward.WardStatus.Quarantined && ward.num >= 4 && ward.num <= 7)
@@ -126,7 +127,7 @@ public class QuarantineManager : MonoBehaviour
 
         GameObject closestNurse = SearchNurse(patientController.transform.position);
 
-        if (!IsValidForQuarantine(patientController, closestNurse))
+        if (closestNurse == null || !IsValidForQuarantine(patientController, closestNurse))
         {
             CancelQuarantine(patientController, prevBed);
             return;
@@ -143,7 +144,8 @@ public class QuarantineManager : MonoBehaviour
                !patientController.isWaitingForNurse &&
                !patientController.isExiting &&
                !patientController.isWaitingForDoctor &&
-               !(patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3);
+               !(patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3) &&
+               PolicyItem.Instance.isAllItemsEquipped;
     }
     private void CancelQuarantine(PatientController patientController, BedWaypoint prevBed)
     {

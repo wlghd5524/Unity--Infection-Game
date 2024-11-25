@@ -83,7 +83,6 @@ public class ProfileInventoryManager : MonoBehaviour
                 Debug.LogError("Item prefab is missing required TextMeshProUGUI components.");
                 continue;
             }
-
             itemNameText.text = item.Key;
             if (item.Value.isEquipped)
             {

@@ -7,6 +7,7 @@ using System.Linq;
 
 public class PolicyWard : MonoBehaviour
 {
+    public static PolicyWard Instance { get; private set; }
     public TMP_Dropdown wardDropdown;
     public TextMeshProUGUI wardNameText;
 
@@ -23,8 +24,8 @@ public class PolicyWard : MonoBehaviour
     public Button quarantineWardButton; // 격리 병동 전환 버튼
     public Button closeWardButton;
 
-    private bool isIsolation_1 = false; // 격리 1단계 활성화 여부
-    private bool isIsolation_2 = false; // 격리 2단계 활성화 여부
+    public bool isIsolation_1 = false; // 격리 1단계 활성화 여부
+    public bool isIsolation_2 = false; // 격리 2단계 활성화 여부
 
 
     private string[] wardNames = {
@@ -37,6 +38,15 @@ public class PolicyWard : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         InitializeDropdown();
         wardDropdown.onValueChanged.AddListener(UpdateWardName);
     }
@@ -86,15 +96,15 @@ public class PolicyWard : MonoBehaviour
     private void UpdateQuarantineButtonState(Ward currentWard)
     {
         // 격리 병동 전환 버튼은 입원 병동에서만 활성화
-        if (currentWard.WardName.StartsWith("입원 병동"))
-        {
-            quarantineWardButton.gameObject.SetActive(true);
-            closeWardButton.gameObject.SetActive(true);
-        }
-        else
+        if (!currentWard.WardName.StartsWith("입원 병동"))
         {
             quarantineWardButton.gameObject.SetActive(false);
             closeWardButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            quarantineWardButton.gameObject.SetActive(true);
+            closeWardButton.gameObject.SetActive(true);
         }
     }
 
@@ -116,13 +126,15 @@ public class PolicyWard : MonoBehaviour
     // 격리 1단계 발령
     private void ActivateIsolationPhaseOne()
     {
-
+        // 격리실 Open 로직 작성
+        // 격리 간호사 4종 보호구 장착 시 격리 환자 
     }
 
     // 격리 2단계 발령
     private void ActivateIsolationPhaseTwo()
     {
         infoPanel.SetActive(false);
+        // 격리 병동 기능 활성화
     }
 
 

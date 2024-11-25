@@ -16,6 +16,7 @@ public class NurseController : NPCController
     public bool isRest = false;
     public bool isWaitingAtDoctorOffice = false;
     public bool isReturning = false;
+    public bool isQuarantineNurse = false;
     public DoctorController doctor;
 
     //public GameObject targetPatient; // 타겟 환자
@@ -451,7 +452,20 @@ public class NurseController : NPCController
     private IEnumerator MoveToQuarantineRoom(AutoDoorWaypoint autoDoor, PatientController patient)
     {
         agent.SetDestination(autoDoor.GetMiddlePointInRange()); // 자동문 앞으로 이동
-        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
+        while (!Managers.NPCManager.isArrived(agent))
+        {
+            yield return YieldInstructionCache.WaitForSeconds(0.5f);
+            float distance = Vector3.Distance(gameObject.transform.position, patient.transform.position);
+            if (distance > 3.0f)
+            {
+                agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
+            }
+        }
 
         autoDoor.quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
@@ -468,7 +482,19 @@ public class NurseController : NPCController
     private IEnumerator MoveToQuarantinedWard(PatientController patient)
     {
         agent.SetDestination(patient.bedWaypoint.GetRandomPointInRange());
-        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        while (!Managers.NPCManager.isArrived(agent))
+        {
+            yield return YieldInstructionCache.WaitForSeconds(0.5f);
+            float distance = Vector3.Distance(gameObject.transform.position, patient.transform.position);
+            if (distance > 3.0f)
+            {
+                agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
+            }
+        }
     }
     private void InitializeQuarantineState(PatientController patient)
     {
