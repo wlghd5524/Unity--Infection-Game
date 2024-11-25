@@ -81,6 +81,6 @@ Material:
     m_Colors:
     - _Color: {r: 0, g: 0, b: 0, a: 0.9411765}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MaskRect: {r: 0, g: 0, b: 0, a: 0}
+    - _MaskRect: {r: 0.062, g: 0.112, b: 0.12, a: 0.2}
     - _OverlayColor: {r: 0, g: 0, b: 0, a: 0.9411765}
   m_BuildTextureStacks: []
