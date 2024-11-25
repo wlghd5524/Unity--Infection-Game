@@ -16,6 +16,7 @@ public class NewsController : MonoBehaviour
     private Dictionary<int, HashSet<int>> wardInfectionLevelsTriggered = new Dictionary<int, HashSet<int>>(); // 감염률 뉴스 단계 트리거
 
     public NewsTicker moveTextController;
+    public PolicyResearch policyResearch;
 
     private bool virusOutbreakNewsTriggered = false;    // 감염병 발생 뉴스
 
@@ -24,6 +25,7 @@ public class NewsController : MonoBehaviour
         if (moveTextController == null)
         {
             moveTextController = FindObjectOfType<NewsTicker>();
+            policyResearch = FindObjectOfType<PolicyResearch>();
         }
         InitializeNewsTriggers();
     }
@@ -69,6 +71,7 @@ public class NewsController : MonoBehaviour
         if (!startNewsTriggered && InfectionManager.Instance.GetOverallInfectionRate(wards) > 0)
         {
             EnqueueNews("국내 최초 감염자 발생! 각 병원은 감염병을 주의하시기 바랍니다!");
+            policyResearch.FirstInfectedAppear();
             startNewsTriggered = true;
         }
     }
