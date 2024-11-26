@@ -6,6 +6,7 @@ public class CameraHandler : MonoBehaviour
 {
     public bool isPolicyMenuOpen = false; // 정책 창이 열려 있는지 여부
     public bool isTutoralMoveActive = false;    // 무브 튜토리얼 중에는 뷰 전환 막기 여부
+    public bool isTutorialKeyActive = false;    // 키 누르는 튜토리얼 중 T 한번만 누르게 하기
 
     public enum ViewMode { TopView, QuarterView }
     public ViewMode currentViewMode = ViewMode.TopView;
@@ -53,7 +54,7 @@ public class CameraHandler : MonoBehaviour
         }
 
         // 튜토리얼 중일 때는 T 키 입력을 막음
-        if (!isTutoralMoveActive && Input.GetKeyDown(KeyCode.T))
+        if (!isTutoralMoveActive && Input.GetKeyDown(KeyCode.T) && !isTutorialKeyActive)
         {
             cameraController.ToggleViewMode();
             SetViewMode();

@@ -198,7 +198,7 @@ public class NurseController : NPCController
             {
                 PatientController targetInpatientController = bed.patient.GetComponent<PatientController>();
                 //targetInpatientController.StartCoroutine(targetInpatientController.WaitForNurse());
-                agent.SetDestination(bed.patient.transform.position);
+                agent.SetDestination(bed.gameObject.transform.position);
                 yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
                 //Managers.NPCManager.FaceEachOther(bed.patient, gameObject);
                 if (bed.patient == null)
@@ -466,7 +466,7 @@ public class NurseController : NPCController
                 agent.isStopped = false;
             }
         }
-
+        agent.isStopped = false;
         autoDoor.quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
 
@@ -495,13 +495,14 @@ public class NurseController : NPCController
                 agent.isStopped = false;
             }
         }
+        agent.isStopped = false;
     }
     private void InitializeQuarantineState(PatientController patient)
     {
         patient.StopAllCoroutines();
         patient.StartCoroutine(patient.QuarantineTimeCounter());
         Managers.NPCManager.FaceEachOther(gameObject, patient.gameObject);
-
+        patient.personComponent.role = Role.QuarantinedPatient;
         patient.agent.stoppingDistance = 0f;
         patient.isFollowingNurse = false;
         patient.isQuarantined = true;

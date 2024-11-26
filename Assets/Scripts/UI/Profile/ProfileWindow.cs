@@ -487,7 +487,7 @@ public class ProfileWindow : MonoBehaviour
                 emergencyInfo.SetActive(true);
                 icupatientInfo.SetActive(false);
                 changeImage.sprite = icuIcon;
-                NowWard.text = $"중환자실\n격리실";
+                NowWard.text = $"중환자실/격리실";
                 DoctorCountText.text = $"{nowWard.doctorCount}";
                 NurseCountText.text = $"{nowWard.nurseCount}";
                 OutpatientCountText.text = $"{nowWard.outpatientCount}";
