@@ -379,6 +379,10 @@ public class NurseController : NPCController
         {
             DoctorController.ERWaitingList.Remove(patient);
         }
+        if (patient.personComponent.role == Role.EmergencyPatient)
+        {
+            DoctorController.ERWaitingList.Remove(patient);
+        }
 
         //4종 보호구 입기
         //personComponent.Inventory["Level C"].isEquipped = true;
@@ -402,6 +406,9 @@ public class NurseController : NPCController
         }
 
         Managers.NPCManager.FaceEachOther(gameObject, patient.gameObject); // 간호사와 환자가 서로를 바라보게 설정
+        patient.agent.ResetPath();
+        yield return YieldInstructionCache.WaitForSeconds(2.0f);
+
         patient.StopCoroutine(patient.moveCoroutine);
         patient.waypoints.Clear();
         patient.wardComponent.RemoveFromPatientList(patient);
@@ -446,8 +453,7 @@ public class NurseController : NPCController
         }
 
         // 복귀 처리
-        FinalizeReturn(agent);
-
+        StartCoroutine(FinalizeReturn(agent));
     }
 
     private IEnumerator MoveToQuarantineRoom(AutoDoorWaypoint autoDoor, PatientController patient)
@@ -476,7 +482,7 @@ public class NurseController : NPCController
             Debug.Log("격리실 null");
         }
 
-        agent.SetDestination(patient.bedWaypoint.GetRandomPointInRange()); // 음압실로 이동
+        agent.SetDestination(patient.bedWaypoint.GetRandomPointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         autoDoor.quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
     }
@@ -503,13 +509,31 @@ public class NurseController : NPCController
         patient.StopAllCoroutines();
         patient.StartCoroutine(patient.QuarantineTimeCounter());
         Managers.NPCManager.FaceEachOther(gameObject, patient.gameObject);
+        // 환자의 역할에 따라 환자 수 차감
+        if(patient.personComponent.role == Role.Outpatient)
+        {
+            Managers.PatientCreator.numberOfOutpatient--;
+        }
+        else if(patient.personComponent.role == Role.Inpatient)
+        {
+            Managers.PatientCreator.numberOfInpatient--;
+        }
+        else if(patient.personComponent.role == Role.EmergencyPatient)
+        {
+            Managers.PatientCreator.numberOfEmergencyPatient--;
+        }
+        else if(patient.personComponent.role == Role.ICUPatient)
+        {
+            Managers.PatientCreator.numberOfICUPatient--;
+        }
         patient.personComponent.role = Role.QuarantinedPatient;
         patient.agent.stoppingDistance = 0f;
         patient.isFollowingNurse = false;
         patient.isQuarantined = true;
         patient.isWaiting = false;
-        patient.ward = 9;
-        patient.wardComponent = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")].GetComponentInParent<Ward>();
+        patient.ward = patient.bedWaypoint.ward;
+        patient.wardComponent = patient.bedWaypoint.wardComponent;
+        patient.wardComponent.quarantinedPatients.Add(patient);
     }
     private IEnumerator CompleteQuarantineProcess(AutoDoorWaypoint[] autoDoors)
     {
@@ -539,14 +563,14 @@ public class NurseController : NPCController
         agent.SetDestination(waypoints[0].GetRandomPointInRange());
         yield return YieldInstructionCache.WaitForSeconds(10.0f);
         //4종 보호구 벗기
-        //personComponent.Inventory["Level C"].isEquipped = false;
+        MoneyManager.Instance.DeductQuarantineNurseExpense();
         meshRenderer.enabled = true;
         protectedGear.meshRenderer.enabled = false;
     }
 
     private IEnumerator FinalizeReturn(NavMeshAgent agent)
     {
-        agent.SetDestination(waypoints[0].GetMiddlePointInRange());
+        agent.SetDestination(waypoints[0].GetSampledPosition());
         isReturning = true;
         agent.stoppingDistance = 0f;
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));

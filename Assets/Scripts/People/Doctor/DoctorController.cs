@@ -118,13 +118,18 @@ public class DoctorController : NPCController
             patient = ERWaitingList[random].gameObject;
             agent.SetDestination(ERWaitingList[random].bedWaypoint.GetRandomPointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            if(random >= ERWaitingList.Count || ERWaitingList[random].bedWaypoint == null)
+            if(random >= ERWaitingList.Count || ERWaitingList[random].bedWaypoint.isEmpty == true)
             {
                 isWaiting = false;
                 yield break;
             }
             transform.LookAt(ERWaitingList[random].bedWaypoint.bedGameObject.transform);
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
+            if(random >= ERWaitingList.Count || ERWaitingList[random].bedWaypoint.isEmpty == true)
+            {
+                isWaiting = false;
+                yield break;
+            }
             ERWaitingList[random].doctorSignal = true;
             ERWaitingList.RemoveAt(random);
         }

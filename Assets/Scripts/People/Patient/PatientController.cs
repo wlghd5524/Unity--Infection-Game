@@ -85,10 +85,11 @@ public class PatientController : NPCController
             Managers.NPCManager.PlayWakeUpAnimation(this);
             agent.radius = 0.175f;
         }
-        else if (standingState == StandingState.LayingDown)
+        else
         {
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
         }
+
         if (isExiting)
         {
             standingState = StandingState.Standing;
@@ -96,7 +97,7 @@ public class PatientController : NPCController
         }
         if (isQuarantined)
         {
-            if (standingState == StandingState.LayingDown)
+            if (standingState != StandingState.Standing)
             {
                 if(ward == 9)
                 {
@@ -140,7 +141,7 @@ public class PatientController : NPCController
             {
                 return;
             }
-            if (standingState == StandingState.LayingDown)
+            if (standingState != StandingState.Standing)
             {
                 agent.radius = 0.000001f;
                 if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 0, 0))
@@ -193,7 +194,11 @@ public class PatientController : NPCController
         }
         if (personComponent.role == Role.EmergencyPatient)
         {
-            if (standingState == StandingState.LayingDown)
+            if(moveCoroutine == null)
+            {
+                moveCoroutine = StartCoroutine(EmergencyPatientMove());
+            }
+            if (standingState != StandingState.Standing)
             {
                 agent.radius = 0;
                 if (bedWaypoint.bedGameObject.transform.parent.eulerAngles == new Vector3(0, 270, 0))
@@ -209,7 +214,7 @@ public class PatientController : NPCController
         }
         if (personComponent.role == Role.ICUPatient)
         {
-            if (standingState == StandingState.LayingDown)
+            if (standingState != StandingState.Standing)
             {
                 agent.radius = 0;
                 transform.eulerAngles = new Vector3(bedWaypoint.bedGameObject.transform.parent.eulerAngles.x, bedWaypoint.bedGameObject.transform.parent.eulerAngles.y + 90, bedWaypoint.bedGameObject.transform.parent.eulerAngles.z);
@@ -539,10 +544,11 @@ public class PatientController : NPCController
 
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
             yield return YieldInstructionCache.WaitForSeconds(2.0f);
-            bedWaypoint.isEmpty = true;
-            if(bedWaypoint.patient == gameObject)
+            
+            if (bedWaypoint.patient == gameObject)
             {
                 bedWaypoint.patient = null;
+                bedWaypoint.isEmpty = true;
             }
 
             agent.SetDestination(waypoints[2].GetRandomPointInRange());
@@ -782,9 +788,10 @@ public class PatientController : NPCController
 
         if (bedWaypoint != null)
         {
-            bedWaypoint.isEmpty = true;
+            
             if(bedWaypoint.patient == gameObject)
             {
+                bedWaypoint.isEmpty = true;
                 bedWaypoint.patient = null;
             }
         }
@@ -844,8 +851,8 @@ public class PatientController : NPCController
         if(bedWaypoint.patient == gameObject)
         {
             bedWaypoint.patient = null;
+            bedWaypoint.isEmpty = true;
         }
-        bedWaypoint.isEmpty = true;
         bedWaypoint = null;
         StartCoroutine(ExitHospital());
     }

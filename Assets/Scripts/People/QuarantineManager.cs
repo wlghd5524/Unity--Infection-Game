@@ -149,9 +149,9 @@ public class QuarantineManager : MonoBehaviour
     }
     private void CancelQuarantine(PatientController patientController, BedWaypoint prevBed)
     {
-        patientController.bedWaypoint.isEmpty = true;
         if(patientController.bedWaypoint.patient == patientController.gameObject)
         {
+            patientController.bedWaypoint.isEmpty = true;
             patientController.bedWaypoint.patient = null;
         }
         if (prevBed != null)

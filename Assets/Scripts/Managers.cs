@@ -11,8 +11,8 @@ public class Managers : MonoBehaviour
     public static StageManager Stage { get; private set; } = new StageManager();
     public static PatientCreator PatientCreator { get; private set; } = new PatientCreator();
     public static LayerChangeManager LayerChanger { get; private set; } = new LayerChangeManager();
-
     public static ItemManager Item { get; private set; } = new ItemManager();
+
     private void Awake()
     {
         Instance = this;
