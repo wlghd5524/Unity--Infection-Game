@@ -478,7 +478,7 @@ public class ProfileWindow : MonoBehaviour
             }
 
         }
-        else if (currentFloor == "중환자실/격리실")
+        else if (currentFloor == "중환자실\n격리실")
         {
             if (nowWard != null)
             {

@@ -31,9 +31,9 @@ public class PolicyWard : MonoBehaviour
     private string[] wardNames = {
         "내과 1", "내과 2",
         "외과 1", "외과 2",
-        "입원 병동 1", "입원 병동 2",
-        "입원 병동 3", "입원 병동 4",
-        "응급실", "중환자실"
+        "입원병동 1", "입원병동 2",
+        "입원병동 3", "입원병동 4",
+        "응급실", "중환자실/격리실"
     };
 
     private void Awake()
@@ -47,6 +47,7 @@ public class PolicyWard : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
         InitializeDropdown();
         wardDropdown.onValueChanged.AddListener(UpdateWardName);
     }
@@ -60,7 +61,6 @@ public class PolicyWard : MonoBehaviour
         wardDropdown.AddOptions(new List<string>(wardNames));
     }
 
-    // 병동 선택 시 호출
     public void UpdateWardName(int index)
     {
         UpdateWardInfomation(index);

@@ -381,7 +381,7 @@ public class NurseController : NPCController
         }
 
         //4종 보호구 입기
-        personComponent.Inventory["Level C"].isEquipped = true;
+        //personComponent.Inventory["Level C"].isEquipped = true;
         meshRenderer.enabled = false;
         protectedGear.meshRenderer.enabled = true;
 
