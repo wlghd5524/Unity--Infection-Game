@@ -50,6 +50,8 @@ public class GameDataManager : MonoBehaviour
     public bool[] difference20More = new bool[15];     // 차이가 20 이상인 인덱스 저장 => 피드백 문자열에 추가
     public Dictionary<int, string> feedbackContent = new Dictionary<int, string>();
 
+    List<string> gearItems = new List<string>();
+
     public GameObject scoreGraphCanvas;
     public Transform graphContainerArea;
     public GameObject gameClearPanel;
@@ -57,7 +59,6 @@ public class GameDataManager : MonoBehaviour
     public Button gameClearNextButton;
     public Button gameOverNextButton;
     public TextMeshProUGUI selectedLevel;
-    //List<string> steps = new List<string>();
     TextMeshProUGUI feedbackText;
     Coroutine _co;
 
@@ -119,6 +120,18 @@ public class GameDataManager : MonoBehaviour
         {
             gameOverPanel.SetActive(false);
         });
+
+        InitialListData();
+    }
+
+    void InitialListData()
+    {
+        // 연구정책 - 보호구 종류 
+        List<Item> list = ItemManager.InitItems();
+        foreach (var item in list)
+        {
+            gearItems.Add(item.itemName);
+        }
     }
 
     // 초기 데이터 삽입 (Flask API로 전송)
@@ -287,7 +300,6 @@ public class GameDataManager : MonoBehaviour
         }
         else
             feedbackContent[index - 1] = "";
-        //Debug.Log($"이전 로그 저장: {feedbackContent[index - 1]}");
 
         // index월 연구데이터에 대한 피드백 추가
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
@@ -310,12 +322,10 @@ public class GameDataManager : MonoBehaviour
                 {
                     if (mode == ResearchDBManager.ResearchMode.gear)
                     {
-                        //Debug.Log($"이전, 보호구 취소 {btnNum}, {targetNum}");
                         RemoveFeedbackByKeyword(index, $"{GetGearResearchFeedback(btnNum, targetNum, 1)}");
                     }
                     else if (mode == ResearchDBManager.ResearchMode.patient)
                     {
-                        //Debug.Log($"이전, 폐쇄 취소 {btnNum}, {targetNum}");
                         RemoveFeedbackByKeyword(index, $"({GetPatientResearchFeedback(btnNum, targetNum, 1)}");
                     }
                 }
@@ -338,6 +348,7 @@ public class GameDataManager : MonoBehaviour
                     feedbackContent[index - 1] += $"{feedback} ({currentMoment})\n";
                 }
             }
+            Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
         }
     }
 
@@ -372,10 +383,10 @@ public class GameDataManager : MonoBehaviour
     // Gear Research 모드의 피드백 생성
     private string GetGearResearchFeedback(int btnNum, int target, int toggleState)
     {
-        string[] gearItems = { "Dental 마스크", "일회용 장갑", "N95 마스크", "라텍스 장갑", "의료용 고글", "의료용 헤어캡", "AP 가운", "Level C" };
-        string[] gearTarget = { "의사", "간호사", "외래 환자", "입원 환자", "응급 환자", "중환자" };
+        string[] gearTarget = { "의사", "간호사", "격리 간호사", "환자" };
 
-        if (btnNum >= 1 && btnNum <= 8 && target >= 1 && target <= 6)
+        //if (btnNum >= 1 && btnNum <= 7 && target >= 1 && target <= 6)
+        if(btnNum <= gearItems.Count && target <= gearTarget.Length)
         {
             string itemName = gearItems[btnNum - 1];
             string targetName = gearTarget[target - 1];
@@ -401,6 +412,7 @@ public class GameDataManager : MonoBehaviour
             string tartgetName = patientTarget[target - 1];
             return $"{tartgetName} {itemName} {(toggleState == 1 ? "진행" : "취소")}";
         }
+
         return "";
     }
 
@@ -410,28 +422,21 @@ public class GameDataManager : MonoBehaviour
         string[] advancedItems = { "연구", "백신", "치료제" };
         string[] advancedTarget = { "내과1", "내과2", "외과1", "외과2", "입원병동1", "입원병동2", "입원병동3", "입원병동4", "응급실", "중환자실" };
 
-        if (btnNum >= 1 && btnNum <= advancedItems.Length)
+        if (btnNum <= advancedItems.Length && target <= advancedTarget.Length)
         {
             string itemName = advancedItems[btnNum - 1];
-
-            if (target >= 1 && target <= advancedTarget.Length)
+    
+            if (target ==0)
             {
-                string tartgetName = advancedTarget[target - 1];
-
-                if (btnNum == 1)
-                {
-                    return $"바이러스 연구 개시";
-                }
-                else
-                {
-                    return $"{itemName} {toggleState}개 사용";
-                }
+                return $"바이러스 연구 개시";
             }
             else
             {
-                Debug.LogWarning($"GetAdvancedResearchFeedback: target 값이 유효하지 않습니다 (target: {target})");
+                string tartgetName = advancedTarget[target - 1];
+                return $"{itemName} {toggleState}개 사용";
             }
         }
+
         return "";
     }
 
