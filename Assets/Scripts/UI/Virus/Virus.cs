@@ -4,28 +4,28 @@ public class Virus : MonoBehaviour
 {    
     public float infectionProbability = 0.1f;  //감염 확률(50%)
 
-    private float lifetime = 5;              //바이러스 기본 수명 5초
+    private float lifetime = 5;              //병원체 기본 수명 5초
     private InfectionStatus infectionState;   //감염 상태
 
-    public static float virusLifetime = 5f;                    //바이러스 수명
-    public static float virusDropProbability = 0.05f;          //바이러스가 생성될 확률
+    public static float virusLifetime = 5f;                    //병원체 수명
+    public static float virusDropProbability = 0.05f;          //병원체가 생성될 확률
     public static float checkInterval = 1f;                  //감염 체크 간격
     public static int currentGameLevel_1 = 1;
 
-    // 바이러스의 수명 관리
+    // 병원체의 수명 관리
     public void SetLifetime(float time)
     {
         lifetime = time;
-        Destroy(gameObject, lifetime);  //lifetime 후에 바이러스 게임 오브젝트 파괴
+        Destroy(gameObject, lifetime);  //lifetime 후에 병원체 게임 오브젝트 파괴
     }
 
-    // 바이러스 감염 상태
+    // 병원체 감염 상태
     public void SetInfectionState(InfectionStatus State)
     {
         infectionState = State;
     }
 
-    //바이러스가 사람과 충돌할 때
+    //병원체가 사람과 충돌할 때
     void OnTriggerEnter(Collider other)
     {
         Person person = other.GetComponent<Person>();  //충돌한 오브젝트 확인
@@ -46,6 +46,6 @@ public class Virus : MonoBehaviour
     public void Disinfect()
     {
         Destroy(gameObject);
-        //Debug.Log("바이러스 하나를 소독했습니다.");  
+        //Debug.Log("병원체 하나를 소독했습니다.");  
     }
 }

@@ -56,6 +56,7 @@ public class GameDataManager : MonoBehaviour
     public Button gameClearNextButton;
     public Button gameOverNextButton;
     public TextMeshProUGUI selectedLevel;
+    public TextMeshProUGUI gameOverResonText;
     TextMeshProUGUI feedbackText;
     Coroutine _co;
 
@@ -63,6 +64,7 @@ public class GameDataManager : MonoBehaviour
     private int pointsPerMinute = 6;        // 1분 동안의 감염률 평균 내기(10초*6)
     public string originalContent;
 
+    public GameObject inGameUI;
     private void Awake()
     {
         if (Instance == null)
@@ -92,6 +94,7 @@ public class GameDataManager : MonoBehaviour
         gameClearNextButton = GameObject.Find("GameClearNextButton").GetComponent<Button>();
         gameOverNextButton = GameObject.Find("GameOverNextButton").GetComponent<Button>();
         selectedLevel = GameObject.Find("SelectedLevel").GetComponent<TextMeshProUGUI>();
+        gameOverResonText = GameObject.Find("GameOverResonText").GetComponent<TextMeshProUGUI>();
         //feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
 
         for (int i = 0; i < 15; i++)
@@ -107,7 +110,6 @@ public class GameDataManager : MonoBehaviour
         feedbackIcuToggle.onValueChanged.AddListener(isOn => ToggleFeedbackVisibility("icuPatients", isOn));
 
         //게임 클리어창 설정
-        //gameClearPanel.SetActive(false);
         gameClearNextButton.onClick.AddListener(() =>
         {
             gameClearPanel.SetActive(false);
@@ -165,16 +167,15 @@ public class GameDataManager : MonoBehaviour
 
         while (elapsedTime < totalTime)
         {
-            //yield return YieldInstructionCache.WaitForSecondsRealtime(interval);
             yield return YieldInstructionCache.WaitForSeconds(interval);
 
             float infectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);  // 현재 감염률 가져오기
-            
+
             // 감염률이 80%를 초과할 시 게임 오버
             if (infectionRate > 80)
             {
+                gameOverResonText.text = "감염률이 80%를 넘었습니다.";
                 GameOverClearShow(gameOverPanel, "np");
-                //yield break;
             }
 
             infectionRates.Add(infectionRate);
@@ -293,7 +294,7 @@ public class GameDataManager : MonoBehaviour
         if (index > 1 && feedbackContent.ContainsKey(index - 2))
         {
             feedbackContent[index - 1] = feedbackContent[index - 2];
-            RemoveFeedbackByKeyword(index);     
+            RemoveFeedbackByKeyword(index);
         }
         else
             feedbackContent[index - 1] = "";
@@ -302,7 +303,7 @@ public class GameDataManager : MonoBehaviour
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
         {
             List<string> recordList = researchManager.researchRecords[mode]
-                .Where(record => int.Parse(record.Split('.')[0]) == index) 
+                .Where(record => int.Parse(record.Split('.')[0]) == index)
                 .ToList();
 
             for (int i = 0; i < recordList.Count; i++)
@@ -346,7 +347,7 @@ public class GameDataManager : MonoBehaviour
                     feedbackContent[index - 1] += $"{feedback}\n";
                 }
             }
-            //Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
+            Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
         }
     }
 
@@ -360,7 +361,7 @@ public class GameDataManager : MonoBehaviour
 
         foreach (var line in lines)
         {
-            if(select != null)
+            if (select != null)
             {
                 if (line.Contains(select))
                     continue;
@@ -383,8 +384,7 @@ public class GameDataManager : MonoBehaviour
     {
         string[] gearTarget = { "의사", "간호사", "격리 간호사", "환자" };
 
-        //if (btnNum >= 1 && btnNum <= 7 && target >= 1 && target <= 6)
-        if(btnNum <= gearItems.Count && target <= gearTarget.Length)
+        if (btnNum <= gearItems.Count && target <= gearTarget.Length)
         {
             string itemName = gearItems[btnNum - 1];
             string targetName = gearTarget[target - 1];
@@ -401,6 +401,8 @@ public class GameDataManager : MonoBehaviour
     // Patient Research 모드의 피드백 생성
     private string GetPatientResearchFeedback(int btnNum, int target, int toggleState)
     {
+        //string[] patientItems = { "폐쇄", "소독" };
+        //string[] patientTarget = { "내과1", "내과2", "외과1", "외과2", "입원병동1", "입원병동2", "입원병동3", "입원병동4" };
         string[] patientItems = { "1단계", "2단계" };
         string[] patientTarget = PolicyWard.Instance.wardNames;
         string[] state = { "격리병동", "폐쇄병동" };
@@ -418,6 +420,7 @@ public class GameDataManager : MonoBehaviour
             {
                 string wardState = state[toggleState - 1];
                 return $"{tartgetName} {wardState}으로 전환";
+                //return $"{tartgetName} {itemName} {(toggleState == 1 ? "진행" : "취소")}";
             }
         }
 
@@ -433,10 +436,10 @@ public class GameDataManager : MonoBehaviour
         if (btnNum <= advancedItems.Length && target <= advancedTarget.Length)
         {
             string itemName = advancedItems[btnNum - 1];
-    
-            if (target ==0)
+
+            if (target == 0)
             {
-                return $"바이러스 연구 개시";
+                return $"병원체 연구 개시";
             }
             else
             {
@@ -580,8 +583,9 @@ public class GameDataManager : MonoBehaviour
     // 게임 오버 시
     public void GameOverClearShow(GameObject showPanel, string isPass)
     {
+        inGameUI.SetActive(false);
         Time.timeScale = 0;
-        if (_co !=null)
+        if (_co != null)
         {
             StopCoroutine(_co);
             _co = null;

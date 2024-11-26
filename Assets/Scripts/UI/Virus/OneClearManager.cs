@@ -98,8 +98,8 @@ public class OneClearManager : MonoBehaviour
             if (virus != null)
             {
                 virus.Disinfect(); // 소독 실행
-                //Debug.Log("바이러스 소독됨: " + virus.gameObject.name);
-                break; // 첫 번째 바이러스를 소독한 후 종료
+                //Debug.Log("병원체 소독됨: " + virus.gameObject.name);
+                break; // 첫 번째 병원체를 소독한 후 종료
             }
         }
     }

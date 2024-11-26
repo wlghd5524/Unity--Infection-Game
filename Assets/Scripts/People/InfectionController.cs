@@ -27,7 +27,7 @@ public class InfectionController : MonoBehaviour
         selectedLevel = Assign(selectedLevel, "SelectedLevel");
     }
 
-    // 감염이면 바이러스 떨어뜨리기 반복
+    // 감염이면 병원체 떨어뜨리기 반복
     void Start()
     {
         person = GetComponent<Person>();
@@ -57,7 +57,7 @@ public class InfectionController : MonoBehaviour
     }
 
 
-    //감염이면 바이러스 떨어뜨리기 시도
+    //감염이면 병원체 떨어뜨리기 시도
     IEnumerator TryDropVirus()
     {
         while (person.infectionStatus != InfectionStatus.Normal)
@@ -70,13 +70,13 @@ public class InfectionController : MonoBehaviour
         }
     }
 
-    //바이러스 떨어뜨리기
-    //현재 위치에서 무작위로 약간 이동된 위치에 바이러스 생성
+    //병원체 떨어뜨리기
+    //현재 위치에서 무작위로 약간 이동된 위치에 병원체 생성
     void DropVirus()
     {
         Vector3 dropPosition = transform.position + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
         createVirusManager.CreateVirusObject(dropPosition, person);
-        //Debug.Log("바이러스 떨어뜨리기 작동"); //수정
+        //Debug.Log("병원체 떨어뜨리기 작동"); //수정
     }
 
     void OnTriggerEnter(Collider other)
