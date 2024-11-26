@@ -38,6 +38,10 @@ public class NurseCreator : MonoBehaviour
                         break;
                     }
                 }
+                if (roleNum >= 0 && roleNum <= 1)
+                {
+                    newNurseController.isQuarantineNurse = true;
+                }
             }
             else if (roleNum >= 4 && roleNum <= 7)
             {
@@ -65,6 +69,10 @@ public class NurseCreator : MonoBehaviour
             }
             if (i >= 0 && i <= 5)
             {
+                if (0 <= i && i <= 1)
+                {
+                    newNurseController.isQuarantineNurse = true;
+                }
                 newNurseController.chair = newNurseController.waypoints[0].chairsDictionary[i].Item1;
             }
             else if (i >= 6 && i <= 8)
@@ -97,6 +105,10 @@ public class NurseCreator : MonoBehaviour
                         break;
                     }
                 }
+                if (0 <= roleNum && roleNum <= 1)
+                {
+                    newNurseController.isQuarantineNurse = true;
+                }
             }
             else if (4 <= roleNum && roleNum <= 7)
             {
@@ -128,6 +140,10 @@ public class NurseCreator : MonoBehaviour
                         newNurseController.chair = newNurseController.waypoints[0].chairsDictionary[j].Item1;
                         break;
                     }
+                }
+                if (0 <= newNurseController.num && newNurseController.num <= 1)
+                {
+                    newNurseController.isQuarantineNurse = true;
                 }
             }
             else if (3 <= newNurseController.num && newNurseController.num <= 5)

@@ -62,22 +62,22 @@ public class Ward : MonoBehaviour
                 WardName = "외과 2";
                 break;
             case 4:
-                WardName = "입원병동1";
+                WardName = "입원병동 1";
                 break;
             case 5:
-                WardName = "입원병동2";
+                WardName = "입원병동 2";
                 break;
             case 6:
-                WardName = "입원병동3";
+                WardName = "입원병동 3";
                 break;
             case 7:
-                WardName = "입원병동4";
+                WardName = "입원병동 4";
                 break;
             case 8:
                 WardName = "응급실";
                 break;
             case 9:
-                WardName = "중환자실";
+                WardName = "중환자실/격리실";
                 break;
         }
         wards.Sort((w1, w2) => w1.num.CompareTo(w2.num));

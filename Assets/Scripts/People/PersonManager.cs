@@ -53,7 +53,6 @@ public class PersonManager : MonoBehaviour
                 return person;
             }
         }
-        Debug.Log($"Person with ID {id} not found.");
         return null;
     }
 

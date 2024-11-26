@@ -6,6 +6,7 @@ public class MinimapRaycaster : MonoBehaviour
 {
     public static MinimapRaycaster Instance { get; private set; }
 
+    public ProfileWindow profileWindow;
     public Camera minimapCamera; // 미니맵 카메라
     public MinimapController minimapController; // 미니맵 컨트롤러
     public RectTransform minimapRectTransform; // 미니맵 UI의 RectTransform
@@ -28,6 +29,7 @@ public class MinimapRaycaster : MonoBehaviour
         {
             Destroy(gameObject);  // 중복된 인스턴스를 방지
         }
+        profileWindow = FindObjectOfType<ProfileWindow>();
     }
 
     void Update()
@@ -128,6 +130,7 @@ public class MinimapRaycaster : MonoBehaviour
         {
             Debug.Log("Mouse button down detected on: " + floorInfo.floorName);
             FindObjectOfType<FloorManager>().ChangeFloor(floorInfo); // 층 이동 처리
+            profileWindow.UpdateButtonTexts(floorInfo.floorName);
             BtnSoundManager.Instance.PlayButtonSound();
         }
     }

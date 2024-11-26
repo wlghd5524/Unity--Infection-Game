@@ -12,6 +12,7 @@ public class ProfileInventoryManager : MonoBehaviour
     public TextMeshProUGUI moneyText;       // 게임 재화 Text
     public GameObject decreaseTextPrefab;   // 감소 텍스트 프리팹
 
+
     void Start()
     {
         inventoryContainer = Assign(inventoryContainer, "InventoryContent");
@@ -83,7 +84,6 @@ public class ProfileInventoryManager : MonoBehaviour
                 Debug.LogError("Item prefab is missing required TextMeshProUGUI components.");
                 continue;
             }
-
             itemNameText.text = item.Key;
             if (item.Value.isEquipped)
             {

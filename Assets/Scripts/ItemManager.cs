@@ -32,12 +32,9 @@ public class ItemManager
         {
             new Item("Dental 마스크",false, 66),
             new Item("N95 마스크",false, 83),
-            new Item("일회용 장갑",false, 25),
-            new Item("라텍스 장갑",false, 50),
-            new Item("의료용 헤어캡",false, 30),
+            new Item("의료용 장갑",false, 50),
             new Item("의료용 고글",false, 15),
-            new Item("AP 가운",false, 30),
-            new Item("Level C",false, 80)
+            new Item("AP 가운",false, 30)
         };
     }
 

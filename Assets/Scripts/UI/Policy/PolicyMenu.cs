@@ -58,7 +58,7 @@ public class PolicyMenu : MonoBehaviour
         });
         // 각 연구 버튼 클릭 시 연구 변경
         AddEventTrigger(gearTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Gear", gearTabButton); BtnSoundManager.Instance.PlayButtonSound(); });
-        AddEventTrigger(wardTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Ward", wardTabButton); BtnSoundManager.Instance.PlayButtonSound(); policyWard.UpdateWardInfomation(0); });
+        AddEventTrigger(wardTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Ward", wardTabButton); BtnSoundManager.Instance.PlayButtonSound();});
         AddEventTrigger(researchTabButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangePolicy("Research", researchTabButton); BtnSoundManager.Instance.PlayButtonSound(); });
 
         // 각 버튼에 마우스 오버 및 클릭 효과 추가
