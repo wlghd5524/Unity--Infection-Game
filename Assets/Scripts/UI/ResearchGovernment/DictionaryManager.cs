@@ -17,7 +17,7 @@ public class DictionaryManager : MonoBehaviour
     //public Image dicVirusImage;
     //public string[] virusTypes = { "CRE", "COVID-19" };
 
-    //private int currentLevel;       //현재 바이러스(초기값 0(=CRE))
+    //private int currentLevel;       //현재 병원체(초기값 0(=CRE))
     //private Button currentlySelectedButton;     // 현재 선택된 버튼 추적
     //private string[][] virusDescriptions = new string[][]
     //{
@@ -30,10 +30,10 @@ public class DictionaryManager : MonoBehaviour
     //    },
     //    new string[]
     //    {
-    //        "- 바이러스 원인\nSARS-CoV-2라는 바이러스에 의해 발생하며, 주로 호흡기 증상을 유발한다.\n\n- 변이 바이러스\n여러 변이 바이러스가 등장하여 전파력과 증증도에 영향을 미치고 있다. 델타, 오미크론 변이가 대표적이다.",
+    //        "- 병원체 원인\nSARS-CoV-2라는 병원체에 의해 발생하며, 주로 호흡기 증상을 유발한다.\n\n- 변이 병원체\n여러 변이 병원체가 등장하여 전파력과 증증도에 영향을 미치고 있다. 델타, 오미크론 변이가 대표적이다.",
     //        "비말(기침, 재채기)과 가까운 접촉을 통해 전파되며, 공기 중에 떠 있는 미세한 에어로졸을 통해서도 전파될 수 있다.",
     //        "발열, 기침, 피로, 호흡 곤란, 근육통, 두통, 인후통 등이 있으며, 심한 경우 폐렴, 다발성 장기 부전, 사망에 이를 수 있다.",
-    //        "백신 접종이 주요 예방 수단이며, 마스크 착용, 사회적 거리두기, 손 씻기 등이 전파를 줄이는 데 효과적이다. 항바이러스제, 산소 치료 등이 중증 환자에게 사용된다."
+    //        "백신 접종이 주요 예방 수단이며, 마스크 착용, 사회적 거리두기, 손 씻기 등이 전파를 줄이는 데 효과적이다. 항병원체제, 산소 치료 등이 중증 환자에게 사용된다."
     //    }
     //};
 
@@ -82,16 +82,16 @@ public class DictionaryManager : MonoBehaviour
     //    dicCloseButton.onClick.AddListener(() => OnClosePanel());
     //}
 
-    ////바이러스 사전 열람 관리(디폴트 값 관리)
+    ////병원체 사전 열람 관리(디폴트 값 관리)
     //public void OpenDictionaryPanel()
     //{
-    //    UpdateVirusDetail();            //현재 바이러스에 맞게 UI 변경
+    //    UpdateVirusDetail();            //현재 병원체에 맞게 UI 변경
     //    OnChangeDicText(1);             //메뉴 버튼 상태 초기화
     //    HighlightButton(dicMenus[0]);   //1번 메뉴 선택된 상태
     //    dictionaryPanel.SetActive(true);
     //}
 
-    ////바이러스 정보 업데이트
+    ////병원체 정보 업데이트
     //private void UpdateVirusDetail()
     //{
     //    dicTitle.text = currentLevel == 0 ?

@@ -12,7 +12,7 @@ class ResearchInfomation
     public string medicalResearch_1_1 = "N95 마스크 착용|의료진이 N95 마스크를 착용하여 공기 중에\n떠다니는 미세 입자로부터 보호를 받습니다.\n이 마스크는 고위험 상황에서 감염을 \n방지하는 것에 중요한 역할을 합니다.";
     public string medicalResearch_1_2 = "라텍스 장갑 착용|의료진이 환자의 체액 및 혈액으로부터 손을\n보호하기 위해 고품질의 라텍스 장갑을 착용합니다.\n이 장갑은 민감한 의료 절차 시 안전을 보장합니다.";
 
-    public string medicalResearch_2_1 = "의료용 고글 착용|의료진이 눈을 통해 바이러스가 \n침투하는 것을 막기 위해 \n의료용 고글을 착용합니다.";
+    public string medicalResearch_2_1 = "의료용 고글 착용|의료진이 눈을 통해 병원체가 \n침투하는 것을 막기 위해 \n의료용 고글을 착용합니다.";
     public string medicalResearch_2_2 = "의료용 헤어캡 착용|의료진이 머리카락을 통한 \n오염을 막기 위해 \n의료용 헤어캡을 착용합니다.";
     public string medicalResearch_2_3 = "AP 가운 착용|다양한 유해물질로부터 \n보호받기 위해 의료진이\nAP 가운을 착용하여\n전신을 보호합니다.";
 

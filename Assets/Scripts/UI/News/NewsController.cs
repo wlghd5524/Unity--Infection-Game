@@ -48,7 +48,7 @@ public class NewsController : MonoBehaviour
         }
     }
 
-    // 바이러스 발생 뉴스
+    // 병원체 발생 뉴스
     public void TriggerVirusOutbreakNews()
     {
         if (!virusOutbreakNewsTriggered)

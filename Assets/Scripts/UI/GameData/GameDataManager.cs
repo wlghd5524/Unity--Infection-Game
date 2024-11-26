@@ -64,6 +64,7 @@ public class GameDataManager : MonoBehaviour
     private int pointsPerMinute = 6;        // 1분 동안의 감염률 평균 내기(10초*6)
     public string originalContent;
 
+    public GameObject inGameUI;
     private void Awake()
     {
         if (Instance == null)
@@ -169,7 +170,7 @@ public class GameDataManager : MonoBehaviour
             yield return YieldInstructionCache.WaitForSeconds(interval);
 
             float infectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);  // 현재 감염률 가져오기
-            
+
             // 감염률이 80%를 초과할 시 게임 오버
             if (infectionRate > 80)
             {
@@ -293,7 +294,7 @@ public class GameDataManager : MonoBehaviour
         if (index > 1 && feedbackContent.ContainsKey(index - 2))
         {
             feedbackContent[index - 1] = feedbackContent[index - 2];
-            RemoveFeedbackByKeyword(index);     
+            RemoveFeedbackByKeyword(index);
         }
         else
             feedbackContent[index - 1] = "";
@@ -302,7 +303,7 @@ public class GameDataManager : MonoBehaviour
         foreach (ResearchDBManager.ResearchMode mode in Enum.GetValues(typeof(ResearchDBManager.ResearchMode)))
         {
             List<string> recordList = researchManager.researchRecords[mode]
-                .Where(record => int.Parse(record.Split('.')[0]) == index) 
+                .Where(record => int.Parse(record.Split('.')[0]) == index)
                 .ToList();
 
             for (int i = 0; i < recordList.Count; i++)
@@ -360,7 +361,7 @@ public class GameDataManager : MonoBehaviour
 
         foreach (var line in lines)
         {
-            if(select != null)
+            if (select != null)
             {
                 if (line.Contains(select))
                     continue;
@@ -383,7 +384,7 @@ public class GameDataManager : MonoBehaviour
     {
         string[] gearTarget = { "의사", "간호사", "격리 간호사", "환자" };
 
-        if(btnNum <= gearItems.Count && target <= gearTarget.Length)
+        if (btnNum <= gearItems.Count && target <= gearTarget.Length)
         {
             string itemName = gearItems[btnNum - 1];
             string targetName = gearTarget[target - 1];
@@ -435,10 +436,10 @@ public class GameDataManager : MonoBehaviour
         if (btnNum <= advancedItems.Length && target <= advancedTarget.Length)
         {
             string itemName = advancedItems[btnNum - 1];
-    
-            if (target ==0)
+
+            if (target == 0)
             {
-                return $"바이러스 연구 개시";
+                return $"병원체 연구 개시";
             }
             else
             {
@@ -582,8 +583,9 @@ public class GameDataManager : MonoBehaviour
     // 게임 오버 시
     public void GameOverClearShow(GameObject showPanel, string isPass)
     {
+        inGameUI.SetActive(false);
         Time.timeScale = 0;
-        if (_co !=null)
+        if (_co != null)
         {
             StopCoroutine(_co);
             _co = null;

@@ -167,7 +167,7 @@ public class InfectionManager
         return random - infectionResistance >= totalRandom;  //감염 여부 반환
     }
 
-    //모든 바이러스 소독
+    //모든 병원체 소독
     public void DisinfectAllViruses()
     {
         Virus[] viruses = Object.FindObjectsOfType<Virus>();
@@ -175,7 +175,7 @@ public class InfectionManager
         {
             virus.Disinfect();
         }
-        Debug.Log("모든 바이러스 소독 완료"); //수정
+        Debug.Log("모든 병원체 소독 완료"); //수정
     }
 
     // 자동 할당 코드

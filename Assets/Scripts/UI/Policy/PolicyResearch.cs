@@ -166,6 +166,7 @@ public class PolicyResearch : MonoBehaviour
 
         // 연구 시작 시 텍스트 초기화
         researchingTimeText.gameObject.SetActive(true);
+        researchStartButton.gameObject.SetActive(false);
         researchCoroutine = StartCoroutine(ResearchCoroutine());
     }
     private IEnumerator ResearchCoroutine()
@@ -173,7 +174,7 @@ public class PolicyResearch : MonoBehaviour
         int remainingTime = 60; // 연구 시간 10초
         while (remainingTime > 0)
         {
-            researchingTimeText.text = $"바이러스 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
+            researchingTimeText.text = $"병원체 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
             yield return YieldInstructionCache.WaitForSecondsRealtime(1f);
             remainingTime--;
         }
