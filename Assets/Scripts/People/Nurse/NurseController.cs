@@ -522,7 +522,7 @@ public class NurseController : NPCController
         yield return YieldInstructionCache.WaitForSeconds(1.0f);
 
         //4종 보호구 벗기
-        //personComponent.Inventory["Level C"].isEquipped = false;
+        MoneyManager.Instance.DeductQuarantineNurseExpense();
         meshRenderer.enabled = true;
         protectedGear.meshRenderer.enabled = false;
 

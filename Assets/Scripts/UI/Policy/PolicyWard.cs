@@ -23,13 +23,16 @@ public class PolicyWard : MonoBehaviour
     public GameObject infoPanel; // 병동 관리 탭 위 설명표
     public Button quarantineWardButton; // 격리 병동 전환 버튼
     public Button closeWardButton;
+
+    public Button startLevel1;
+    public Button startLevel2;
     public GameObject isolation1Text;
     public GameObject isolation2Text;
 
+    public Ward selectWard;
+
     public bool isIsolation_1 = false; // 격리 1단계 활성화 여부
     public bool isIsolation_2 = false; // 격리 2단계 활성화 여부
-
-    private Ward currentWard;
 
 
     private string[] wardNames = {
@@ -55,6 +58,8 @@ public class PolicyWard : MonoBehaviour
         InitializeDropdown();
         wardDropdown.onValueChanged.AddListener(UpdateWardName);
         quarantineWardButton.onClick.AddListener(ChangeWardToQuarantine);
+        startLevel1.onClick.AddListener(GoLevel1);
+        startLevel2.onClick.AddListener(GoLevel2);
     }
 
     private void Update()
@@ -80,7 +85,8 @@ public class PolicyWard : MonoBehaviour
     // 병동 정보 업데이트
     public void UpdateWardInfomation(int index)
     {
-        currentWard = Ward.wards.Find(w => w.num == index);
+        Ward currentWard = Ward.wards.Find(w => w.num == index);
+        selectWard = currentWard;
 
         if (currentWard == null)
         {
@@ -92,7 +98,7 @@ public class PolicyWard : MonoBehaviour
         // 격리 병동 전환 버튼 활성화 상태 설정
         UpdateQuarantineButtonState(currentWard);
 
-        MinimapRaycaster.Instance.SetExternalHighlightActive(true, currentWard.WardName);
+        MinimapRaycaster.Instance.SetExternalHighlightActive(true, currentWard.name);
 
         // 인원 수 및 감염 수 업데이트
         UpdateCountText(currentWard.doctors, doctorCountText, doctorInfCountText, doctorBack, currentWard.WardName);
@@ -126,20 +132,29 @@ public class PolicyWard : MonoBehaviour
         if (isIsolation_1)
         {
             isolation1Text.SetActive(true);
+            startLevel1.gameObject.SetActive(false);
         }
 
         // 격리 2단계 발령 조건
         if (isIsolation_2)
         {
             infoPanel.SetActive(false);
-            isolation1Text.SetActive(false);
-            isolation2Text.SetActive(true);
         }
+    }
+
+    public void GoLevel1()
+    {
+        isIsolation_1 = true;
+    }
+
+    public void GoLevel2()
+    {
+        isIsolation_2 = true;
     }
 
     public void ChangeWardToQuarantine()
     {
-        currentWard.QuarantineWard();
+        selectWard.QuarantineWard();
     }
 
     // 제네릭 메서드로 리스트 데이터 처리

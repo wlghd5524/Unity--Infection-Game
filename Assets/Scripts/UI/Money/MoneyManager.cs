@@ -88,7 +88,7 @@ public class MoneyManager : MonoBehaviour
 
         monthlyReportUI.AddExpenseDetail("백신", amount);
         currentMoneyManager.CurrentMoneyGetter -= amount;
-        
+
         return true;
     }
 
@@ -157,6 +157,13 @@ public class MoneyManager : MonoBehaviour
 
             foreach (var roleEntry in itemEntry.Value)
             {
+                // 격리 간호사는 비용 계산에서 제외
+                if (roleEntry.Key == "QuarantineNurse")
+                {
+                    wearerInfo += $"{roleEntry.Key}({roleEntry.Value}, 비용 제외) ";
+                    continue;
+                }
+
                 wearerInfo += $"{roleEntry.Key}({roleEntry.Value}) ";
                 totalWearerCount += roleEntry.Value;
             }
@@ -171,23 +178,91 @@ public class MoneyManager : MonoBehaviour
 
         // 총 일일 비용 차감
         currentMoneyManager.CurrentMoneyGetter -= totalDailyExpense;
+
+        Debug.Log($"총 일일 비용: {totalDailyExpense}");
     }
 
-
-
-    // 특정 아이템을 착용 중인 사람 수 계산
-    private int GetEquippedPersonCount(string itemName)
+    public int CalculateQuarantineNurseExpense()
     {
-        int count = 0;
+        int totalQuarantineNurseExpense = 0;
+
+        // 아이템 이름 배열 (ItemManager와 동일한 순서로 설정)
+        string[] itemNames = { "Dental 마스크", "N95 마스크", "의료용 장갑", "의료용 고글", "AP 가운" };
+
+        // 아이템 금액 배열 (itemNames와 1:1 매칭)
+        int[] itemPrices = { 1, 2, 3, 4, 5 };
+
+        // 아이템별, 직업별 착용자 수를 저장하는 딕셔너리
+        Dictionary<string, int> quarantineNurseItemUsage = new Dictionary<string, int>();
+
         foreach (Person person in PersonManager.Instance.GetAllPersons())
         {
-            if (person.Inventory.TryGetValue(itemName, out Item item) && item.isEquipped)
+            // NurseController 확인하여 격리 간호사만 처리
+            if (person.role == Role.Nurse)
             {
-                count++;
+                NurseController nurseController = person.GetComponent<NurseController>();
+                if (nurseController != null && nurseController.isQuarantineNurse)
+                {
+                    foreach (var item in person.Inventory.Values)
+                    {
+                        if (item.isEquipped)
+                        {
+                            if (!quarantineNurseItemUsage.ContainsKey(item.itemName))
+                            {
+                                quarantineNurseItemUsage[item.itemName] = 0;
+                            }
+                            quarantineNurseItemUsage[item.itemName]++;
+                        }
+                    }
+                }
             }
         }
-        return count;
+
+        // 비용 계산
+        foreach (var itemEntry in quarantineNurseItemUsage)
+        {
+            string itemName = itemEntry.Key;
+
+            // 아이템 금액을 배열에서 가져오기
+            int itemIndex = System.Array.IndexOf(itemNames, itemName);
+            if (itemIndex < 0)
+            {
+                Debug.LogWarning($"아이템 {itemName}에 대한 금액 정보를 찾을 수 없습니다.");
+                continue;
+            }
+            int itemPrice = itemPrices[itemIndex];
+
+            int itemTotalCost = itemPrice * itemEntry.Value;
+            totalQuarantineNurseExpense += itemTotalCost;
+
+            Debug.Log($"격리 간호사 {itemName} 비용: {itemTotalCost} (착용 수: {itemEntry.Value})");
+        }
+
+        Debug.Log($"격리 간호사 총 비용: {totalQuarantineNurseExpense}");
+        return totalQuarantineNurseExpense;
     }
+
+
+    public void DeductQuarantineNurseExpense()
+    {
+        // 격리 간호사 비용 계산
+        int quarantineNurseCost = CalculateQuarantineNurseExpense();
+
+        // 현재 재화 차감
+        if (currentMoneyManager.CurrentMoneyGetter >= quarantineNurseCost)
+        {
+            currentMoneyManager.CurrentMoneyGetter -= quarantineNurseCost;
+            Debug.Log($"격리 간호사 비용 {quarantineNurseCost} 차감 완료.");
+
+            // 월 정산 UI 업데이트
+            monthlyReportUI.AddExpenseDetail("격리 간호사 비용", quarantineNurseCost);
+        }
+        else
+        {
+            Debug.LogWarning("재화가 부족하여 격리 간호사 비용을 차감할 수 없습니다.");
+        }
+    }
+
 
     // 오브젝트 자동 할당
     private T Assign<T>(T obj, string objectName) where T : Object

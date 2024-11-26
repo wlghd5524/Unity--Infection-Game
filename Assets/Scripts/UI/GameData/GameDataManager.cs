@@ -322,7 +322,6 @@ public class GameDataManager : MonoBehaviour
                 {
                     if (mode == ResearchDBManager.ResearchMode.gear)
                     {
-                        Debug.Log($"보호구 비활성화) {day}, {GetGearResearchFeedback(btnNum, targetNum, 1)}");
                         RemoveFeedbackByKeyword(index, $"{GetGearResearchFeedback(btnNum, targetNum, 1)}");
                     }
                     else if (mode == ResearchDBManager.ResearchMode.patient)
@@ -350,7 +349,7 @@ public class GameDataManager : MonoBehaviour
                     feedbackContent[index - 1] += $"{feedback}\n";
                 }
             }
-            Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
+            //Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
         }
     }
 
