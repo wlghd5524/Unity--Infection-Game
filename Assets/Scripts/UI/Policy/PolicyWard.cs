@@ -92,7 +92,7 @@ public class PolicyWard : MonoBehaviour
         // 격리 병동 전환 버튼 활성화 상태 설정
         UpdateQuarantineButtonState(currentWard);
 
-        MinimapRaycaster.Instance.SetExternalHighlightActive(true, currentWard.name);
+        MinimapRaycaster.Instance.SetExternalHighlightActive(true, currentWard.WardName);
 
         // 인원 수 및 감염 수 업데이트
         UpdateCountText(currentWard.doctors, doctorCountText, doctorInfCountText, doctorBack, currentWard.WardName);

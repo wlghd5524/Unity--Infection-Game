@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using UnityEngine;
-using UnityEngine.iOS;
+﻿using UnityEngine;
 
 public class MinimapRaycaster : MonoBehaviour
 {
