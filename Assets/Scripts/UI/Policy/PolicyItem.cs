@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System.Linq;
+using System;
+using System.Reflection;
+using UnityEditor;
 
 
 
@@ -253,7 +256,34 @@ public class PolicyItem : MonoBehaviour
         if (equippedStatesByJob[selectedJob].ContainsKey(itemName))
         {
             equippedStatesByJob[selectedJob][itemName] = !equippedStatesByJob[selectedJob][itemName];
+
+            int isSetItem = equippedStatesByJob[selectedJob][itemName] ? 1 : 0;
+            SaveButtonData(itemName, selectedJob, isSetItem);
         }
+    }
+
+    // researchDB에 연구 버튼 데이터 저장
+    void SaveButtonData(string itemName, string selectedJob, int toggleIsOn)
+    {
+        // 아이템 번호
+        int btnNum = 1;
+        foreach (var itemInfo in policyItemInfo.itemInfos)
+        {
+            string item = itemInfo.Split('|')[0];
+            if (item == itemName) break;
+            btnNum++;
+        }
+
+        // 타겟 번호
+        int targetNum = 1;
+        foreach (string item in doctorJobs)
+        {
+            if (item == selectedJob)   break;
+            targetNum++;
+        }
+
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.gear, btnNum, targetNum, toggleIsOn);
+        //Debug.Log($"researchDB TEST: {itemName}, {selectedJob}, {toggleIsOn}");
     }
 
     private void UpdateItemUI(string itemName, TextMeshProUGUI equipmentText, TextMeshProUGUI equipStatusText)
@@ -323,6 +353,7 @@ public class PolicyItem : MonoBehaviour
                 if (equippedStatesByJob[selectedJob].ContainsKey(exclusiveItem) && equippedStatesByJob[selectedJob][exclusiveItem])
                 {
                     equippedStatesByJob[selectedJob][exclusiveItem] = false;
+                    SaveButtonData(exclusiveItem, selectedJob, 0);   
                     UpdateNPCEquipment(exclusiveItem, isEquipped: false);
                     Transform otherItem = itemScrollViewContent.Find($"ItemInfoPrefab_{exclusiveItem}");
                     if (otherItem != null)

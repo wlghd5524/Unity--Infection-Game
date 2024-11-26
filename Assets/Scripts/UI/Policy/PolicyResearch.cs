@@ -483,7 +483,7 @@ public class PolicyResearch : MonoBehaviour
         }
 
         // 연구 버튼에 대한 데이터 저장
-        //Debug.Log($"백신개수: {vaccineWard.num+1}, {vaccineCount}");
+        //Debug.Log($"researchDB TEST: {vaccineWard.num+1}, {vaccineCount}");
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.research, 2, vaccineWard.num + 1, vaccineCount);
 
         vaccineCount = 0;

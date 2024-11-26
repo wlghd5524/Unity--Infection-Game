@@ -3,14 +3,19 @@ using TMPro;
 using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
     // 메뉴 텍스트 버튼 4개 참조
-    public TextMeshProUGUI loginMenu;
+    /*public TextMeshProUGUI loginMenu;
     public TextMeshProUGUI signupMenu; // LoadGameText를 AccountCreationText로 변경
     public TextMeshProUGUI settingMenu;
-    public TextMeshProUGUI ExitGameMenu;
+    public TextMeshProUGUI ExitGameMenu;*/
+    public Button startLoginButton;
+    public Button startSignUpButton;
+    public Button startExitButton;
+    public Button startOptionButton;
 
     public GameObject loginCanvas;
     public GameObject signupCanvas;
@@ -23,10 +28,14 @@ public class MainMenuController : MonoBehaviour
 
     private void Start()
     {
-        loginMenu = Assign(loginMenu, "LoginMenu");
+        /*loginMenu = Assign(loginMenu, "LoginMenu");
         signupMenu = Assign(signupMenu, "SignUpMenu");
         settingMenu = Assign(settingMenu, "OptionMenu");
-        ExitGameMenu = Assign(ExitGameMenu, "ExitGameMenu");
+        ExitGameMenu = Assign(ExitGameMenu, "ExitGameMenu");*/
+        startLoginButton = Assign(startLoginButton, "StartLoginButton");
+        startSignUpButton = Assign(startSignUpButton, "StartSignUpButton");
+        startExitButton = Assign(startExitButton, "StartExitButton");
+        startOptionButton = Assign(startOptionButton, "StartOptionButton");
         loginCanvas = Assign(loginCanvas, "LoginCanvas");
         signupCanvas = Assign(signupCanvas, "SignUpCanvas");
         settingWindow = Assign(settingWindow, "SettingWindow");
@@ -37,7 +46,7 @@ public class MainMenuController : MonoBehaviour
         //signupCanvas.transform.SetAsLastSibling();
         //exitGameCanvas.transform.SetAsLastSibling();
 
-        // 각 텍스트에 클릭 이벤트 및 마우스 오버 이벤트 추가
+        /*// 각 텍스트에 클릭 이벤트 및 마우스 오버 이벤트 추가
         AddEventTrigger(loginMenu, OnStartGameClicked);
         AddEventTrigger(signupMenu, OnAccountCreationClicked);
         AddEventTrigger(settingMenu, OnSettingsClicked);
@@ -47,7 +56,11 @@ public class MainMenuController : MonoBehaviour
         AddHoverEvent(loginMenu);
         AddHoverEvent(signupMenu);
         AddHoverEvent(settingMenu);
-        AddHoverEvent(ExitGameMenu);
+        AddHoverEvent(ExitGameMenu);*/
+        startLoginButton.onClick.AddListener(OnStartGameClicked);
+        startSignUpButton.onClick.AddListener(OnAccountCreationClicked);
+        startExitButton.onClick.AddListener(OnQuitGameClicked);
+        startOptionButton.onClick.AddListener(OnSettingsClicked);
 
     }
 
@@ -67,7 +80,7 @@ public class MainMenuController : MonoBehaviour
         return obj;
     }
 
-    // 텍스트 클릭 시 이벤트 발생 구현
+    /*// 텍스트 클릭 시 이벤트 발생 구현
     private void AddEventTrigger(TextMeshProUGUI text, UnityEngine.Events.UnityAction action)
     {
         EventTrigger trigger = text.gameObject.GetComponent<EventTrigger>() ?? text.gameObject.AddComponent<EventTrigger>();
@@ -115,12 +128,12 @@ public class MainMenuController : MonoBehaviour
         }
 
         text.transform.localScale = targetScaleVector;
-    }
+    }*/
 
     // 로그인 메뉴 클릭
     private void OnStartGameClicked()
     {
-        Debug.Log("Start Game Clicked");
+        //Debug.Log("Start Game Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         loginCanvas.SetActive(true);    // 로그인 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정
@@ -129,7 +142,7 @@ public class MainMenuController : MonoBehaviour
     // 회원가입 메뉴 클릭
     private void OnAccountCreationClicked()
     {
-        Debug.Log("Account Creation Clicked");
+        //Debug.Log("Account Creation Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         signupCanvas.SetActive(true);  // 회원가입 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정

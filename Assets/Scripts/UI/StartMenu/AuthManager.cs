@@ -263,7 +263,7 @@ public class AuthManager : MonoBehaviour
     // 팝업창에서 뒤로가기 클릭
     private void OnBackButtonClicked(GameObject popup)
     {
-        Debug.Log("Back Button Clicked");
+        //Debug.Log("Back Button Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         InitializePopup(); // 팝업 초기화 (적혀있는 내용 삭제)
         popup.SetActive(false);
@@ -275,7 +275,7 @@ public class AuthManager : MonoBehaviour
     private void OnAuthButtonClicked(AuthMode mode)
     {
         currentMode = mode;
-        Debug.Log($"{mode} Button Clicked");
+        //Debug.Log($"{mode} Button Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
 
         // 입력된 ID 및 이름 가져오기
@@ -369,7 +369,7 @@ public class AuthManager : MonoBehaviour
         }
 
         // 확인된 유저 정보를 바탕으로 게임 데이터 테이블에 데이터 추가
-        gameDataMager.InsertInitialData();
+        //gameDataMager.InsertInitialData();
         researchDBManager.SendResearchDataToServer();
         StartCoroutine(LoginSuccessCoroutine());
     }

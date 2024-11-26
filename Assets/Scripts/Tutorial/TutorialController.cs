@@ -124,12 +124,13 @@ public class TutorialController : MonoBehaviour
     public void CompletedAllTutorials()
     {
         currentTutorial = null;
-        Debug.Log("Compleye All");
+        //Debug.Log("Compleye All");
         newscontroller = FindObjectOfType<NewsController>();
         Managers.PatientCreator.startSignal = true;         // 튜토리얼 끝나면 npc 생성 시작
         GoToGame.Instance.calendarManager.StartCalendar();  // 튜토리얼 끝나면 시간 흐름
         newscontroller.TriggerVirusOutbreakNews();          // 뉴스 발생
-        UserManager.Instance.AddUser(id, username, AuthManager.Instance.password, 1, " ", " ", " ");      // 튜토리얼은 진행됐을 테니 미리 1로 전환
+        UserManager.Instance.AddUser(id, username, AuthManager.Instance.password, 1, " ", " ", " ");      // 튜토리얼 완료 여부 DB에 저장
+        GameDataManager.Instance.InsertInitialData();       // 감염률 수집 시작
         // 칸막이 비활성화
         if (blockPanel != null)
         {

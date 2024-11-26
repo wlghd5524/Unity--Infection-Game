@@ -13,16 +13,17 @@ public class GraphManager : MonoBehaviour
 
     public GameObject feedbackGraphPanel;
     public Transform feedgraphContainer;    // 피드백 그래프를 그릴 부모 객체
+    public Transform feedbackContainerArea;    
     public Button feedBackButton;
     public Button backButton;
     public Button graphCloseButton;
     public Button feedbackCloseButton;
 
     public Transform feedbackContainer;
-    public GameDataManager gameDataManager;
+    GameDataManager gameDataManager;
     public TextMeshProUGUI feedbackText;
     public float spacing = 50f;     // 프리팹 간의 간격 설정
-
+    bool isFeedbackOpen = false;
     Dictionary<string, List<GameObject>> graphLines = new Dictionary<string, List<GameObject>>();
 
     void Start()
@@ -37,6 +38,7 @@ public class GraphManager : MonoBehaviour
         icuToggle = GameObject.Find("IcuToggle").GetComponent<Toggle>();
         feedbackGraphPanel = GameObject.Find("FeedbackGraphPanel");
         feedgraphContainer = GameObject.Find("FeedgraphContainer").transform;
+        feedbackContainerArea = GameObject.Find("FeedbackContainerArea").transform;
         feedBackButton = GameObject.Find("FeedBackButton").GetComponent<Button>();
         backButton = GameObject.Find("BackButton").GetComponent<Button>();
         graphCloseButton = GameObject.Find("GraphCloseButton").GetComponent<Button>();
@@ -74,10 +76,18 @@ public class GraphManager : MonoBehaviour
     public void DrawGraph(List<float> scores, string role, Transform container)
     {
         RectTransform graphRectTransform = container.GetComponent<RectTransform>();
-        float graphWidth = graphRectTransform.sizeDelta.x;
-        float graphHeight = graphRectTransform.sizeDelta.y;
-        float yMax = 80f;                                   // y축 최댓값
-        float xSpacing = graphWidth / (scores.Count - 1);    // 점 간의 x 간격 계산
+        Vector2 sizeDelta = graphRectTransform.sizeDelta;
+
+        if (role == "total" && scores.Count <= 90)
+        {
+            int currentMonth = (scores.Count - 1) / 6 + 1;
+            //Debug.Log($"drawgraph, 현재 월: {container}에 {currentMonth}월 (총 데이터: {scores.Count}개)");
+            sizeDelta.x = graphRectTransform.sizeDelta.x / 15 * currentMonth;
+            graphRectTransform.sizeDelta = sizeDelta;
+        }
+
+        float yMax = 80f;    
+        float xSpacing = sizeDelta.x / (scores.Count - 1);    
         Vector2 previousPointPosition = Vector2.zero;
 
         // 선 생성
@@ -85,10 +95,9 @@ public class GraphManager : MonoBehaviour
         {
             float xPosition = i * xSpacing;
             float yValue = float.IsNaN(scores[i]) ? 0f : scores[i];
-            float yPosition = (yValue / yMax) * graphHeight;
-            yPosition = Mathf.Min(yPosition, graphHeight);  // y 값 최대 80으로 제한
-
-            Vector2 currentPointPosition = new Vector2(xPosition + graphWidth / 2 * (-1), yPosition - graphHeight / 2);
+            float yPosition = (yValue / yMax) * sizeDelta.y;  
+            yPosition = Mathf.Min(yPosition, sizeDelta.y);  // y 값 최대 80으로 제한
+            Vector2 currentPointPosition = new Vector2(xPosition + sizeDelta.x / 2 * (-1), yPosition - sizeDelta.y / 2);
 
             // 이전 점과 현재 점 사이에 선 그리기
             if (i > 0)
@@ -102,6 +111,7 @@ public class GraphManager : MonoBehaviour
     }
 
     // 선 생성하는 메소드
+    // 라인 랜더러
     GameObject CreateLine(Vector2 start, Vector2 end, string role, Transform container)
     {
         GameObject linePrefab = Resources.Load<GameObject>($"Graph/{role}Line");
@@ -135,13 +145,19 @@ public class GraphManager : MonoBehaviour
     {
         feedbackGraphPanel.SetActive(true);
 
-        DrawGraph(GameDataManager.Instance.infectionRates, "total", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.doctorInfectionRates, "doctor", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.nurseInfectionRates, "nurse", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.inpatientsRates, "inpatients", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.outpatientsRates, "outpatients", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.emergencyPatientsRates, "emergencyPatients", feedgraphContainer);
-        DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedgraphContainer);
+        if (!isFeedbackOpen)
+        {
+            DrawGraph(GameDataManager.Instance.infectionRates, "total", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.doctorInfectionRates, "doctor", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.nurseInfectionRates, "nurse", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.inpatientsRates, "inpatients", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.outpatientsRates, "outpatients", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.emergencyPatientsRates, "emergencyPatients", feedbackContainerArea);
+            DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedbackContainerArea);
+            //DrawGraph(GameDataManager.Instance.icuPatientsRates, "icuPatients", feedgraphContainer);
+
+            isFeedbackOpen = true;
+        }
 
         string str = "";
 
@@ -158,19 +174,16 @@ public class GraphManager : MonoBehaviour
             }
 
             // 내용 설정
-            if (gameDataManager.feedbackContent.ContainsKey(i))
+            if (gameDataManager.feedbackContent.ContainsKey(i) && !string.IsNullOrWhiteSpace(gameDataManager.feedbackContent[i]))
             {
                 string[] lines = gameDataManager.feedbackContent[i].Split('\n');
 
                 foreach (string line in lines)
                 {
-                    if (!string.IsNullOrWhiteSpace(line)) // 빈 줄은 무시
-                    {
+                    if(!string.IsNullOrEmpty(line))
                         str += $"- {line}\n";
-                    }
                 }
             }
-            //str += $"- {gameDataManager.feedbackContent[i]}\n";
             else
                 str += $"No research done\n";
 
@@ -195,10 +208,10 @@ public class GraphManager : MonoBehaviour
 
     void QuitGame()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
             Application.Quit();
-#endif
+        #endif
     }
 }

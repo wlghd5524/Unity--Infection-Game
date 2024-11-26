@@ -32,7 +32,7 @@ public class PolicyHospital : MonoBehaviour
 
     Ward ward;
     ResearchDBManager researchDBManager;
-    string[] wards = new string[] { "내과 1", "내과 2", "외과 1", "외과 2", "입원병동1", "입원병동2", "입원병동3", "입원병동4" };
+    string[] wards = new string[] { "내과 1", "내과 2", "외과 1", "외과 2", "입원병동 1", "입원병동 2", "입원병동 3", "입원병동 4" };
     bool[] isClosed = new bool[8];
     bool[] isDisinfected = new bool[8];
     int nowIndex;
