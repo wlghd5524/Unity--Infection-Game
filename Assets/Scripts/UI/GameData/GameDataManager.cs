@@ -310,18 +310,19 @@ public class GameDataManager : MonoBehaviour
 
             for (int i = 0; i < recordList.Count; i++)
             {
-                string[] parts = recordList[i].Split('.');  // 데이터 분할 (day.btnNum.targetNum.toggleIsOn.currentMoment)
+                string[] parts = recordList[i].Split('.');  // 데이터 분할 (day.btnNum.targetNum.toggleIsOn)  //.currentMoment
                 int day = int.Parse(parts[0]);              // day 값 추출
                 int btnNum = int.Parse(parts[1]);           // 연구 항목 번호
                 int targetNum = int.Parse(parts[2]);        // 타겟 번호
                 int toggleState = int.Parse(parts[3]);      // 상태 값 (1 또는 0)
-                string currentMoment = parts[4];            // 시간 값 (mm:ss 형식)
+                //string currentMoment = parts[4];            // 시간 값 (mm:ss 형식)
                 string feedback = "";
 
                 if (toggleState == 0)
                 {
                     if (mode == ResearchDBManager.ResearchMode.gear)
                     {
+                        Debug.Log($"보호구 비활성화) {day}, {GetGearResearchFeedback(btnNum, targetNum, 1)}");
                         RemoveFeedbackByKeyword(index, $"{GetGearResearchFeedback(btnNum, targetNum, 1)}");
                     }
                     else if (mode == ResearchDBManager.ResearchMode.patient)
@@ -345,7 +346,8 @@ public class GameDataManager : MonoBehaviour
 
                 if (!feedbackContent[index - 1].Contains(feedback))
                 {
-                    feedbackContent[index - 1] += $"{feedback} ({currentMoment})\n";
+                    //feedbackContent[index - 1] += $"{feedback} ({currentMoment})\n";
+                    feedbackContent[index - 1] += $"{feedback}\n";
                 }
             }
             Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
@@ -432,8 +434,8 @@ public class GameDataManager : MonoBehaviour
             }
             else
             {
-                string tartgetName = advancedTarget[target - 1];
-                return $"{itemName} {toggleState}개 사용";
+                string targetName = advancedTarget[target - 1];
+                return $"{itemName} {targetName}에 {toggleState}개 사용";
             }
         }
 
