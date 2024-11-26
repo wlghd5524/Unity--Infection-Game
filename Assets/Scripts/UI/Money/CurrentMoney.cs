@@ -6,12 +6,14 @@ public class CurrentMoney : MonoBehaviour
     public TextMeshProUGUI moneyInfo;       // 현재 금액
     public MonthlyReportUI monthlyReport;
     public GameObject gameOverPanel;
+    public TextMeshProUGUI gameOverResonText;
 
     void Start()
     {
         moneyInfo = Assign(moneyInfo, "MoneyInfo");
         monthlyReport = Assign(monthlyReport, "InGameUI Manager");
         gameOverPanel = GameObject.Find("GameOverPanel");
+        gameOverResonText = GameObject.Find("GameOverResonText").GetComponent<TextMeshProUGUI>();
     }
 
     //외부에서 현재 금액을 변수처럼 사용하기
@@ -48,7 +50,7 @@ public class CurrentMoney : MonoBehaviour
             // 금액이 0원이 되었을 때 게임 멈추고 그래프 생성
             if (value <= 0)
             {
-                //Debug.Log($"drawgraph, 돈 부족으로 게임 아웃");
+                gameOverResonText.text = "재화가 0이 되었습니다.";
                 GameDataManager.Instance.GameOverClearShow(gameOverPanel, "np");
             }
         }

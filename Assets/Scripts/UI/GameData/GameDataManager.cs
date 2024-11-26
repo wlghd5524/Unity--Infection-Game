@@ -56,6 +56,7 @@ public class GameDataManager : MonoBehaviour
     public Button gameClearNextButton;
     public Button gameOverNextButton;
     public TextMeshProUGUI selectedLevel;
+    public TextMeshProUGUI gameOverResonText;
     TextMeshProUGUI feedbackText;
     Coroutine _co;
 
@@ -92,6 +93,7 @@ public class GameDataManager : MonoBehaviour
         gameClearNextButton = GameObject.Find("GameClearNextButton").GetComponent<Button>();
         gameOverNextButton = GameObject.Find("GameOverNextButton").GetComponent<Button>();
         selectedLevel = GameObject.Find("SelectedLevel").GetComponent<TextMeshProUGUI>();
+        gameOverResonText = GameObject.Find("GameOverResonText").GetComponent<TextMeshProUGUI>();
         //feedbackText = GameObject.Find("FeedbackText").GetComponent<TextMeshProUGUI>();
 
         for (int i = 0; i < 15; i++)
@@ -171,6 +173,7 @@ public class GameDataManager : MonoBehaviour
             // 감염률이 80%를 초과할 시 게임 오버
             if (infectionRate > 80)
             {
+                gameOverResonText.text = "감염률이 80%를 넘었습니다.";
                 GameOverClearShow(gameOverPanel, "np");
             }
 
