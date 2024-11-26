@@ -74,7 +74,7 @@ public class CalendarManager : MonoBehaviour
     void IncrementDay()
     {
         currentDay++;
-        //MoneyManager.Instance.DeductDailyExpense(); // 매일 비용 차감
+        MoneyManager.Instance.DeductDailyExpense(); // 매일 비용 차감
 
         if (currentDay > maxDaysInMonth)
         {

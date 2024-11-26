@@ -96,8 +96,14 @@ public class MoneyManager : MonoBehaviour
     {
         int totalDailyExpense = 0;
 
+        // 아이템 이름 배열 (ItemManager와 동일한 순서로 설정)
+        string[] itemNames = { "Dental 마스크", "N95 마스크", "의료용 장갑", "의료용 고글", "AP 가운" };
+
+        // 아이템 금액 배열 (itemNames와 1:1 매칭)
+        int[] itemPrices = { 1, 2, 3, 4, 5 };
+
         // 아이템별, 직업별 착용자 수를 저장하는 딕셔너리
-        Dictionary<string, Dictionary<Role, int>> itemUsageByRole = new Dictionary<string, Dictionary<Role, int>>();
+        Dictionary<string, Dictionary<string, int>> itemUsageByRoleAndType = new Dictionary<string, Dictionary<string, int>>();
 
         foreach (Person person in PersonManager.Instance.GetAllPersons())
         {
@@ -105,24 +111,46 @@ public class MoneyManager : MonoBehaviour
             {
                 if (item.isEquipped)
                 {
-                    if (!itemUsageByRole.ContainsKey(item.itemName))
+                    string roleKey = person.role.ToString();
+
+                    // NurseController를 확인하여 일반 간호사와 격리 간호사를 구분
+                    if (person.role == Role.Nurse)
                     {
-                        itemUsageByRole[item.itemName] = new Dictionary<Role, int>();
-                        foreach (Role role in System.Enum.GetValues(typeof(Role)))
+                        NurseController nurseController = person.GetComponent<NurseController>();
+                        if (nurseController != null)
                         {
-                            itemUsageByRole[item.itemName][role] = 0;
+                            roleKey = nurseController.isQuarantineNurse ? "QuarantineNurse" : "Nurse";
                         }
                     }
-                    itemUsageByRole[item.itemName][person.role]++;
+
+                    if (!itemUsageByRoleAndType.ContainsKey(item.itemName))
+                    {
+                        itemUsageByRoleAndType[item.itemName] = new Dictionary<string, int>();
+                    }
+
+                    if (!itemUsageByRoleAndType[item.itemName].ContainsKey(roleKey))
+                    {
+                        itemUsageByRoleAndType[item.itemName][roleKey] = 0;
+                    }
+
+                    itemUsageByRoleAndType[item.itemName][roleKey]++;
                 }
             }
         }
 
         // 비용 계산 및 직업별 착용자 수 출력
-        foreach (var itemEntry in itemUsageByRole)
+        foreach (var itemEntry in itemUsageByRoleAndType)
         {
             string itemName = itemEntry.Key;
-            int itemPrice = Mathf.RoundToInt(RoleInventoryManager.GetInventoryByRole(Role.Doctor)[itemName].protectionRate);
+
+            // 아이템 금액을 배열에서 가져오기
+            int itemIndex = System.Array.IndexOf(itemNames, itemName);
+            if (itemIndex < 0)
+            {
+                Debug.LogWarning($"아이템 {itemName}에 대한 금액 정보를 찾을 수 없습니다.");
+                continue;
+            }
+            int itemPrice = itemPrices[itemIndex];
 
             string wearerInfo = $"{itemName} 착용 중: ";
             int totalWearerCount = 0;
@@ -135,7 +163,7 @@ public class MoneyManager : MonoBehaviour
 
             Debug.Log(wearerInfo.Trim());
             int itemTotalCost = itemPrice * totalWearerCount;
-            totalDailyExpense += itemPrice * totalWearerCount;
+            totalDailyExpense += itemTotalCost;
 
             // 각 아이템별 지출 내역을 월정산 UI에 추가
             monthlyReportUI.AddExpenseDetail(itemName, itemTotalCost);

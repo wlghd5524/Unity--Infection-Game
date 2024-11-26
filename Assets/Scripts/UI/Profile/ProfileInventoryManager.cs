@@ -56,15 +56,9 @@ public class ProfileInventoryManager : MonoBehaviour
         Person person = PersonManager.Instance.GetPerson(personID);
         if (person == null)
         {
-            Debug.LogError($"Person with ID {personID} not found.");
             return;
         }
 
-        if (person.IsResting)
-        {
-            Debug.Log($"Person {person.Name} is resting. Inventory will not be shown.");
-            return;
-        }
         foreach (var item in person.Inventory)
         {
             if (person.role != Role.Doctor && person.role != Role.Nurse)
@@ -72,7 +66,6 @@ public class ProfileInventoryManager : MonoBehaviour
                 if (item.Key != "Dental 마스크" && item.Key != "N95 마스크")
                     continue;
             }
-
             GameObject itemObj = Instantiate(itemPrefab, inventoryContainer);
             TextMeshProUGUI itemNameText = itemObj.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI itemStatusText = itemObj.transform.Find("ItemStatusText").GetComponent<TextMeshProUGUI>();

@@ -236,7 +236,6 @@ public class ProfileWindow : MonoBehaviour
             IsAbleManager.Instance.OpenWindow(windowPanel);
             ClearProfilesList(); // 창을 열 때 기존 프로필을 지웁니다.
             ShowProfiles(currentJob); // 현재 선택된 직업에 따라 프로필을 다시 표시합니다.
-            Time.timeScale = 0.0f;
         }
         else if (windowPanel.activeSelf) // 이미 창이 열려 있는 경우
         {
@@ -246,7 +245,6 @@ public class ProfileWindow : MonoBehaviour
             ClearProfilesList();
             profileInventoryManager.ClearInventory();
             IsAbleManager.Instance.CloseWindow(windowPanel);
-            Time.timeScale = 1.0f;
         }
     }
 
@@ -478,7 +476,7 @@ public class ProfileWindow : MonoBehaviour
             }
 
         }
-        else if (currentFloor == "중환자실\n격리실")
+        else if (currentFloor == "중환자실/격리실")
         {
             if (nowWard != null)
             {

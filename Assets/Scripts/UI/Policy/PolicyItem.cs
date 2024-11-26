@@ -302,42 +302,47 @@ public class PolicyItem : MonoBehaviour
 
     private void UpdateNPCEquipment(string itemName, bool isEquipped)
     {
-        List<Person> persons = PersonManager.Instance.GetAllPersons();
-        foreach (Person person in persons)
-        {
-            if (person.role == Role.Nurse)
-            {
-                NurseController nurseController = person.GetComponent<NurseController>();
+        List<Role> selectedRoles = GetRolesFromJobName(selectedJob); // 여러 Role 반환
 
-                // 선택된 직업에 따라 격리 간호사와 일반 간호사 처리
-                if (selectedJob == "QuarantineNurse" && nurseController.isQuarantineNurse)
-                {
-                    if (person.Inventory.TryGetValue(itemName, out Item item))
-                    {
-                        item.isEquipped = isEquipped;
-                        person.UpdateInfectionResistance(); // NPC 방어율 업데이트
-                    }
-                }
-                else if (selectedJob == "Nurse" && !nurseController.isQuarantineNurse)
-                {
-                    if (person.Inventory.TryGetValue(itemName, out Item item))
-                    {
-                        item.isEquipped = isEquipped;
-                        person.UpdateInfectionResistance(); // NPC 방어율 업데이트
-                    }
-                }
-            }
-            else if (person.role == GetRoleFromJobName(selectedJob))
+        foreach (Person person in PersonManager.Instance.GetAllPersons())
+        {
+            if (selectedRoles.Contains(person.role))
             {
-                if (person.Inventory.TryGetValue(itemName, out Item item))
+                // Nurse 분기 처리
+                if (person.role == Role.Nurse)
                 {
-                    item.isEquipped = isEquipped;
-                    person.UpdateInfectionResistance(); // NPC 방어율 업데이트
+                    NurseController nurseController = person.GetComponent<NurseController>();
+                    if (nurseController != null)
+                    {
+                        // 격리 간호사와 일반 간호사를 구분
+                        if (selectedJob == "QuarantineNurse" && nurseController.isQuarantineNurse)
+                        {
+                            EquipItemForPerson(person, itemName, isEquipped);
+                        }
+                        else if (selectedJob == "Nurse" && !nurseController.isQuarantineNurse)
+                        {
+                            EquipItemForPerson(person, itemName, isEquipped);
+                        }
+                    }
+                }
+                // Nurse 외 다른 역할 처리
+                else
+                {
+                    EquipItemForPerson(person, itemName, isEquipped);
                 }
             }
         }
     }
 
+    // 개별 Person의 아이템 장착 상태 업데이트
+    private void EquipItemForPerson(Person person, string itemName, bool isEquipped)
+    {
+        if (person.Inventory.TryGetValue(itemName, out Item item))
+        {
+            item.isEquipped = isEquipped;
+            person.UpdateInfectionResistance(); // NPC 방어율 업데이트
+        }
+    }
 
     private void HandleMutuallyExclusiveItems(string itemName)
     {
@@ -363,20 +368,18 @@ public class PolicyItem : MonoBehaviour
         UpdateNPCEquipment(itemName, isEquipped: equippedStatesByJob[selectedJob][itemName]);
     }
 
-    private Role GetRoleFromJobName(string jobName)
+    private List<Role> GetRolesFromJobName(string jobName)
     {
         return jobName switch
         {
-            "Doctor" => Role.Doctor,
-            "Outpatient" => Role.Outpatient,
-            "Inpatient" => Role.Inpatient,
-            "EmergencyPatient" => Role.EmergencyPatient,
-            "ICUPatient" => Role.ICUPatient,
-            "Nurse" => Role.Nurse,
-            "QuarantineNurse" => Role.Nurse,
+            "Doctor" => new List<Role> { Role.Doctor },
+            "Nurse" => new List<Role> { Role.Nurse },
+            "QuarantineNurse" => new List<Role> { Role.Nurse },
+            "Patient" => new List<Role> { Role.Outpatient, Role.Inpatient, Role.EmergencyPatient, Role.ICUPatient },
             _ => throw new System.ArgumentException("Invalid job name")
         };
     }
+
 
     private void ShowItemsForJob(string jobName)
     {

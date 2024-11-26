@@ -23,9 +23,13 @@ public class PolicyWard : MonoBehaviour
     public GameObject infoPanel; // 병동 관리 탭 위 설명표
     public Button quarantineWardButton; // 격리 병동 전환 버튼
     public Button closeWardButton;
+    public GameObject isolation1Text;
+    public GameObject isolation2Text;
 
     public bool isIsolation_1 = false; // 격리 1단계 활성화 여부
     public bool isIsolation_2 = false; // 격리 2단계 활성화 여부
+
+    private Ward currentWard;
 
 
     private string[] wardNames = {
@@ -50,6 +54,12 @@ public class PolicyWard : MonoBehaviour
 
         InitializeDropdown();
         wardDropdown.onValueChanged.AddListener(UpdateWardName);
+        quarantineWardButton.onClick.AddListener(ChangeWardToQuarantine);
+    }
+
+    private void Update()
+    {
+        CheckIsolationStatus(); // 격리 상태 확인
     }
 
 
@@ -70,7 +80,7 @@ public class PolicyWard : MonoBehaviour
     // 병동 정보 업데이트
     public void UpdateWardInfomation(int index)
     {
-        Ward currentWard = Ward.wards.Find(w => w.num == index);
+        currentWard = Ward.wards.Find(w => w.num == index);
 
         if (currentWard == null)
         {
@@ -81,6 +91,8 @@ public class PolicyWard : MonoBehaviour
 
         // 격리 병동 전환 버튼 활성화 상태 설정
         UpdateQuarantineButtonState(currentWard);
+
+        MinimapRaycaster.Instance.SetExternalHighlightActive(true, currentWard.name);
 
         // 인원 수 및 감염 수 업데이트
         UpdateCountText(currentWard.doctors, doctorCountText, doctorInfCountText, doctorBack, currentWard.WardName);
@@ -96,7 +108,7 @@ public class PolicyWard : MonoBehaviour
     private void UpdateQuarantineButtonState(Ward currentWard)
     {
         // 격리 병동 전환 버튼은 입원 병동에서만 활성화
-        if (!currentWard.WardName.StartsWith("입원 병동"))
+        if (!currentWard.WardName.StartsWith("입원병동"))
         {
             quarantineWardButton.gameObject.SetActive(false);
             closeWardButton.gameObject.SetActive(false);
@@ -108,36 +120,27 @@ public class PolicyWard : MonoBehaviour
         }
     }
 
-    private void CheckIsolationStatus()
+    public void CheckIsolationStatus()
     {
         // 격리 1단계 발령 조건
         if (isIsolation_1)
         {
-            ActivateIsolationPhaseOne();
+            isolation1Text.SetActive(true);
         }
 
         // 격리 2단계 발령 조건
         if (isIsolation_2)
         {
-            ActivateIsolationPhaseTwo();
+            infoPanel.SetActive(false);
+            isolation1Text.SetActive(false);
+            isolation2Text.SetActive(true);
         }
     }
 
-    // 격리 1단계 발령
-    private void ActivateIsolationPhaseOne()
+    public void ChangeWardToQuarantine()
     {
-        // 격리실 Open 로직 작성
-        // 격리 간호사 4종 보호구 장착 시 격리 환자 
+        currentWard.QuarantineWard();
     }
-
-    // 격리 2단계 발령
-    private void ActivateIsolationPhaseTwo()
-    {
-        infoPanel.SetActive(false);
-        // 격리 병동 기능 활성화
-    }
-
-
 
     // 제네릭 메서드로 리스트 데이터 처리
     private void UpdateCountText<T>(List<T> list, TextMeshProUGUI countText, TextMeshProUGUI infCountText, Image backImage, string wardName) where T : NPCController

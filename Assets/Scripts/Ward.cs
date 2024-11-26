@@ -297,6 +297,7 @@ public class Ward : MonoBehaviour
     public void QuarantineWard()
     {
         status = WardStatus.Quarantined;
+        Debug.Log($"{WardName} 을 격리병동으로 전환함!");
 
         MoveOutpatients(num);
         MoveInpatientsToAvailableBeds();
