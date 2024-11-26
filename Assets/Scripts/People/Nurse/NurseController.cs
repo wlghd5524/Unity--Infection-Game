@@ -532,7 +532,6 @@ public class NurseController : NPCController
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         autoDoors[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
 
-        agent.SetDestination(waypoints[0].GetMiddlePointInRange());
     }
 
     private IEnumerator ExitQuarantinedWard()
@@ -547,6 +546,7 @@ public class NurseController : NPCController
 
     private IEnumerator FinalizeReturn(NavMeshAgent agent)
     {
+        agent.SetDestination(waypoints[0].GetMiddlePointInRange());
         isReturning = true;
         agent.stoppingDistance = 0f;
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
