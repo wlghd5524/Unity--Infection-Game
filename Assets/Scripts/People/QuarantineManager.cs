@@ -71,10 +71,6 @@ public class QuarantineManager : MonoBehaviour
                 {
                     yield break;
                 }
-                if (patientController.personComponent.role == Role.EmergencyPatient)
-                {
-                    DoctorController.ERWaitingList.Remove(patientController);
-                }
 
                 Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
 
