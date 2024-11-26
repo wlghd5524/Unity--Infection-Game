@@ -385,6 +385,7 @@ public class RandomQuest : MonoBehaviour
         //클릭된 버튼의 쿨타임 패널만 활성화
         if (cooldownTimers[currentLevel] > 0)
         {
+            //Debug.Log($"퀴즈 쿨타임 남은 시간: {cooldownTimers[currentLevel]}");
             ShowCooltimePanel(currentLevel);
         }
         else

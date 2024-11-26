@@ -8,7 +8,7 @@ public class CoolTime : MonoBehaviour
     public TMP_Text cooltimeText;
     public Image fillImage;
     private float maxCooldown;
-    float startTime;        // 쿨타임 시작 시간
+    float startTime;        
     public string currentLevelName;
     RandomQuest randomQuest;
     private System.Action onCooldownComplete;  //쿨타임이 끝나면 호출
@@ -42,9 +42,9 @@ public class CoolTime : MonoBehaviour
     {
         float endTime = startTime + randomQuest.cooldownTimers[currentLevelName]; 
 
-        while (Time.realtimeSinceStartup < endTime)
+        while (Time.unscaledTime < endTime)
         {
-            randomQuest.cooldownTimers[currentLevelName] = endTime - Time.realtimeSinceStartup; 
+            randomQuest.cooldownTimers[currentLevelName] = endTime - Time.unscaledTime; 
             UpdateCooltimeUI();
             yield return null;
         }

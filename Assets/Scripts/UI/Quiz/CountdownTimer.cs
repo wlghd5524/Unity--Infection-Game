@@ -9,9 +9,9 @@ public class CountdownTimer : MonoBehaviour
     public TextMeshProUGUI timerText;
     public Image shadowImage;
 
-    private float maxDuration;        // 최대 타이머 시간
-    private float timeRemaining;      // 남은 시간
-    private bool isTiming;            // 타이머 진행 중인지 확인
+    private float maxDuration;        
+    private float timeRemaining;      
+    private bool isTiming;            // 타이머 진행 여부
     private System.Action onTimerEnd; // 타이머 종료 시 호출될 콜백
 
     void Start()
