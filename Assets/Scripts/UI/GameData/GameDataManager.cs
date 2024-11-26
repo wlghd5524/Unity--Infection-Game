@@ -370,7 +370,7 @@ public class GameDataManager : MonoBehaviour
             }
             else
             {
-                if (line.Contains("소독") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제") || line.Contains("취소") ||
+                if (line.Contains("격리단계") || line.Contains("전환") || line.Contains("연구") || line.Contains("백신") || line.Contains("치료제") || line.Contains("취소") ||
                     line.Contains("No research done"))
                     continue;
             }
@@ -404,14 +404,24 @@ public class GameDataManager : MonoBehaviour
     // Patient Research 모드의 피드백 생성
     private string GetPatientResearchFeedback(int btnNum, int target, int toggleState)
     {
-        string[] patientItems = { "폐쇄", "소독" };
-        string[] patientTarget = { "내과1", "내과2", "외과1", "외과2", "입원병동1", "입원병동2", "입원병동3", "입원병동4" };
+        string[] patientItems = { "1단계", "2단계" };
+        string[] patientTarget = PolicyWard.Instance.wardNames;
+        string[] state = { "격리병동", "폐쇄병동" };
 
-        if (btnNum >= 1 && btnNum <= 2)
+        if (btnNum <= patientItems.Length && target <= patientTarget.Length && toggleState <= state.Length)
         {
             string itemName = patientItems[btnNum - 1];
             string tartgetName = patientTarget[target - 1];
-            return $"{tartgetName} {itemName} {(toggleState == 1 ? "진행" : "취소")}";
+
+            if (btnNum == 1)
+            {
+                return $"격리단계 {itemName}로 격상";
+            }
+            else
+            {
+                string wardState = state[toggleState - 1];
+                return $"{tartgetName} {wardState}으로 전환";
+            }
         }
 
         return "";

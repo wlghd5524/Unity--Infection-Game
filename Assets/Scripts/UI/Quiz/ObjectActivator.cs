@@ -53,7 +53,7 @@ public class ObjectActivator : MonoBehaviour
     public void OnActivateButtonClick()
     {
         SetQuestCanvasVisible(true);
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
 
         // 레벨 1을 기본으로 설정
         if (randomQuest != null)
@@ -72,7 +72,7 @@ public class ObjectActivator : MonoBehaviour
     public void OnDisactivateButtonClick()
     {
         SetQuestCanvasVisible(false);
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
 
         // 카운트다운 타이머 멈추기
         if (countdownTimer != null)

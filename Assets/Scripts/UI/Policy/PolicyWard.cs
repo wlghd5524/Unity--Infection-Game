@@ -35,7 +35,7 @@ public class PolicyWard : MonoBehaviour
     public bool isIsolation_2 = false; // 격리 2단계 활성화 여부
 
 
-    private string[] wardNames = {
+    public string[] wardNames = {
         "내과 1", "내과 2",
         "외과 1", "외과 2",
         "입원병동 1", "입원병동 2",
@@ -145,16 +145,27 @@ public class PolicyWard : MonoBehaviour
     public void GoLevel1()
     {
         isIsolation_1 = true;
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 0);
     }
 
     public void GoLevel2()
     {
         isIsolation_2 = true;
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 2, 0);
     }
 
     public void ChangeWardToQuarantine()
     {
         selectWard.QuarantineWard();
+
+        //격리 병동으로 전환된 병동 정보 업데이트
+        int index = 1;
+        foreach (string ward in wardNames)
+        {
+            if (ward == selectWard.WardName)
+                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 1);
+            index++;
+        }
     }
 
     // 제네릭 메서드로 리스트 데이터 처리

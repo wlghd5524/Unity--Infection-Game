@@ -25,11 +25,11 @@ public class Splash : MonoBehaviour
         SetAlpha(splashText, 0f);
         mainMenuCanvas.alpha = 0f;
 
-        // 메인 메뉴 텍스트에 테두리 추가
+        /*// 메인 메뉴 텍스트에 테두리 추가
         foreach (TextMeshProUGUI text in mainMenuCanvas.GetComponentsInChildren<TextMeshProUGUI>())
         {
             SetOutline(text, Color.black, 0.3f);
-        }
+        }*/
 
         // 스플래시 시퀀스 시작
         StartCoroutine(SplashSequence());

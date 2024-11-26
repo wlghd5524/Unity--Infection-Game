@@ -53,7 +53,7 @@ public class NewsController : MonoBehaviour
     {
         if (!virusOutbreakNewsTriggered)
         {
-            EnqueueNews("원인불명의 바이러스 병이 발생했습니다.");
+            EnqueueNews("원인불명의 병원체가 발생했습니다.");
             virusOutbreakNewsTriggered = true;
         }
     }
