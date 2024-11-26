@@ -183,7 +183,8 @@ public class MonthlyReportUI : MonoBehaviour
         {
             UpdateNowMoney();
             monthlyReportCanvas.SetActive(true);
-            Time.timeScale = 0;
+            //Time.timeScale = 0;
+            CloseMonthlyReport();
         }
     }
 

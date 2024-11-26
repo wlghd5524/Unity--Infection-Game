@@ -7,11 +7,6 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
-    // 메뉴 텍스트 버튼 4개 참조
-    /*public TextMeshProUGUI loginMenu;
-    public TextMeshProUGUI signupMenu; // LoadGameText를 AccountCreationText로 변경
-    public TextMeshProUGUI settingMenu;
-    public TextMeshProUGUI ExitGameMenu;*/
     public Button startLoginButton;
     public Button startSignUpButton;
     public Button startExitButton;
@@ -28,10 +23,6 @@ public class MainMenuController : MonoBehaviour
 
     private void Start()
     {
-        /*loginMenu = Assign(loginMenu, "LoginMenu");
-        signupMenu = Assign(signupMenu, "SignUpMenu");
-        settingMenu = Assign(settingMenu, "OptionMenu");
-        ExitGameMenu = Assign(ExitGameMenu, "ExitGameMenu");*/
         startLoginButton = Assign(startLoginButton, "StartLoginButton");
         startSignUpButton = Assign(startSignUpButton, "StartSignUpButton");
         startExitButton = Assign(startExitButton, "StartExitButton");
@@ -41,27 +32,23 @@ public class MainMenuController : MonoBehaviour
         settingWindow = Assign(settingWindow, "SettingWindow");
         exitGameCanvas = Assign(exitGameCanvas, "ExitGameCanvas");
 
-        //// Canvas를 올바른 순서로 배치
-        //loginCanvas.transform.SetAsLastSibling();
-        //signupCanvas.transform.SetAsLastSibling();
-        //exitGameCanvas.transform.SetAsLastSibling();
+        // Canvas를 올바른 순서로 배치
+        loginCanvas.transform.SetAsLastSibling();
+        signupCanvas.transform.SetAsLastSibling();
+        exitGameCanvas.transform.SetAsLastSibling();
 
-        /*// 각 텍스트에 클릭 이벤트 및 마우스 오버 이벤트 추가
-        AddEventTrigger(loginMenu, OnStartGameClicked);
-        AddEventTrigger(signupMenu, OnAccountCreationClicked);
-        AddEventTrigger(settingMenu, OnSettingsClicked);
-        AddEventTrigger(ExitGameMenu, OnQuitGameClicked);
+        startLoginButton.onClick.AddListener(()=> OnButtonClicked(OnStartGameClicked));
+        startSignUpButton.onClick.AddListener(()=> OnButtonClicked(OnAccountCreationClicked));
+        startExitButton.onClick.AddListener(() => OnButtonClicked(OnQuitGameClicked));
+        startOptionButton.onClick.AddListener(() => OnButtonClicked(OnSettingsClicked));
+    }
 
-        // 텍스트 영역 들어오고 나가는 이벤트 추가
-        AddHoverEvent(loginMenu);
-        AddHoverEvent(signupMenu);
-        AddHoverEvent(settingMenu);
-        AddHoverEvent(ExitGameMenu);*/
-        startLoginButton.onClick.AddListener(OnStartGameClicked);
-        startSignUpButton.onClick.AddListener(OnAccountCreationClicked);
-        startExitButton.onClick.AddListener(OnQuitGameClicked);
-        startOptionButton.onClick.AddListener(OnSettingsClicked);
-
+    void OnButtonClicked(System.Action buttonAction)
+    {
+        if (!isPopupActive)
+            buttonAction.Invoke();
+        else
+            return;
     }
 
     // 자동 할당 코드
@@ -79,56 +66,6 @@ public class MainMenuController : MonoBehaviour
         }
         return obj;
     }
-
-    /*// 텍스트 클릭 시 이벤트 발생 구현
-    private void AddEventTrigger(TextMeshProUGUI text, UnityEngine.Events.UnityAction action)
-    {
-        EventTrigger trigger = text.gameObject.GetComponent<EventTrigger>() ?? text.gameObject.AddComponent<EventTrigger>();
-        var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
-        entry.callback.AddListener((eventData) => { if (!isPopupActive) action(); BtnSoundManager.Instance.PlayButtonSound(); });
-        trigger.triggers.Add(entry);
-    }
-
-    // 텍스트 영역과 마우스 포인터 간 상호작용
-    private void AddHoverEvent(TextMeshProUGUI text)
-    {
-        EventTrigger trigger = text.gameObject.GetComponent<EventTrigger>() ?? text.gameObject.AddComponent<EventTrigger>();
-
-        // 포인터가 텍스트 영역 내로 들어왔을 때
-        var pointerEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
-        pointerEnter.callback.AddListener((eventData) => { if (!isPopupActive) OnPointerEnter(text); });
-        trigger.triggers.Add(pointerEnter);
-
-        // 포인터가 텍스트 영역 외부로 벗어났을 때
-        var pointerExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
-        pointerExit.callback.AddListener((eventData) => { if (!isPopupActive) OnPointerExit(text); });
-        trigger.triggers.Add(pointerExit);
-    }
-
-    // 포인터가 텍스트 영역 내에 있을 때는 글자 크기가 커짐 (강조효과)
-    private void OnPointerEnter(TextMeshProUGUI text)
-    {
-        StartCoroutine(ScaleText(text, hoverScale, scaleDuration));
-    }
-    private void OnPointerExit(TextMeshProUGUI text)
-    {
-        StartCoroutine(ScaleText(text, 1f, scaleDuration));
-    }
-    private IEnumerator ScaleText(TextMeshProUGUI text, float targetScale, float duration)
-    {
-        Vector3 initialScale = text.transform.localScale;
-        Vector3 targetScaleVector = new Vector3(targetScale, targetScale, targetScale);
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            text.transform.localScale = Vector3.Lerp(initialScale, targetScaleVector, elapsed / duration);
-            yield return null;
-        }
-
-        text.transform.localScale = targetScaleVector;
-    }*/
 
     // 로그인 메뉴 클릭
     private void OnStartGameClicked()
@@ -151,15 +88,16 @@ public class MainMenuController : MonoBehaviour
     // 설정 메뉴 클릭
     private void OnSettingsClicked()
     {
-        Debug.Log("Settings Clicked");
+        //Debug.Log("Settings Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         settingWindow.SetActive(true);// 설정 창 실행
+        isPopupActive = true;
     }
 
     // 게임종료 메뉴 클릭
     private void OnQuitGameClicked()
     {
-        Debug.Log("Quit Game Clicked");
+        //Debug.Log("Quit Game Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         exitGameCanvas.SetActive(true); // 게임종료 확인 창 실행
         isPopupActive = true; // 팝업 활성 상태로 설정
