@@ -11,7 +11,8 @@ public class OneClearManager : MonoBehaviour
     public GameObject guidGreenImage;            //소독중 표지판
     public Texture2D customCursor;                  //소독 커서 이미지
     public bool isDisinfectionOn = false;       //소독 중인지 여부
-    private LayerMask mainCameraCullingMask;     // Main 카메라의 CullingMask
+    public Camera maincamera;
+    public LayerMask mainCameraCullingMask;     // Main 카메라의 CullingMask
 
     void Awake()
     {
@@ -41,9 +42,6 @@ public class OneClearManager : MonoBehaviour
 
         guidGreenImage.SetActive(false);
         oneClearButton.onClick.AddListener(() => { ToggleDisinfection(); BtnSoundManager.Instance.PlayButtonSound(); });  //버튼 상태 전환
-
-        // Main 카메라의 CullingMask 설정
-        mainCameraCullingMask = Camera.main.cullingMask;
     }
 
     public void ToggleDisinfection()
@@ -77,6 +75,9 @@ public class OneClearManager : MonoBehaviour
 
     void Update()
     {
+        // Main 카메라의 CullingMask 설정
+        mainCameraCullingMask = maincamera.cullingMask;
+
         if (isDisinfectionOn && Input.GetMouseButtonDown(0))
         {
             HandleDisinfection();
