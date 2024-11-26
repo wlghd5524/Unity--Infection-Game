@@ -11,9 +11,17 @@ public class FloorManager : MonoBehaviour
         public string floorName;        // 층 이름
     }
 
+    [System.Serializable]
+    public class WardInfo
+    {
+        public GameObject wardObject;  // 병동을 나타내는 오브젝트
+        public string wardName;        // 병동 이름
+    }
+
     public static FloorManager Instance { get; private set; }  // 싱글톤 인스턴스 생성
 
     public List<FloorInfo> floors = new List<FloorInfo>();  // 모든 층 정보를 담은 리스트
+    public List<WardInfo> wards = new List<WardInfo>();     // 모든 병동 정보를 담은 리스트
     private Color highlightColor = new Color(0.5f, 0.5f, 1.0f, 1.0f); // 연한 파랑색
     private Dictionary<GameObject, Color[]> originalColors = new Dictionary<GameObject, Color[]>(); // 각 층의 원래 색상 저장
 
@@ -41,16 +49,27 @@ public class FloorManager : MonoBehaviour
         // 각 층의 원래 색상 저장
         foreach (FloorInfo floor in floors)
         {
-            Renderer renderer = floor.floorObject.GetComponent<Renderer>();
-            if (renderer != null)
+            StoreOriginalColors(floor.floorObject);
+        }
+
+        // 각 병동의 원래 색상 저장
+        foreach (WardInfo ward in wards)
+        {
+            StoreOriginalColors(ward.wardObject);
+        }
+    }
+
+    private void StoreOriginalColors(GameObject obj)
+    {
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            Color[] colors = new Color[renderer.materials.Length];
+            for (int i = 0; i < renderer.materials.Length; i++)
             {
-                Color[] colors = new Color[renderer.materials.Length];
-                for (int i = 0; i < renderer.materials.Length; i++)
-                {
-                    colors[i] = renderer.materials[i].color;
-                }
-                originalColors.Add(floor.floorObject, colors);
+                colors[i] = renderer.materials[i].color;
             }
+            originalColors.Add(obj, colors);
         }
     }
 
@@ -83,6 +102,7 @@ public class FloorManager : MonoBehaviour
         // 드롭다운에서 선택된 층 이름에 맞는 오브젝트의 색상 변경
         if (Instance != null)
         {
+            // 층 하이라이트
             foreach (FloorInfo floor in Instance.floors)
             {
                 if (floor.floorName == floorName)
@@ -97,6 +117,24 @@ public class FloorManager : MonoBehaviour
         }
     }
 
+    public static void HighlightWardFloor(string floorName)     // 연구실 빌딩 하이라이트
+    {
+        // 드롭다운에서 선택된 층 이름에 맞는 오브젝트의 색상 변경
+        if (Instance != null)
+        {
+            foreach (WardInfo ward in Instance.wards)
+            {
+                if (ward.wardName == floorName)
+                {
+                    Instance.ChangeColor(ward.wardObject, Instance.highlightColor);
+                }
+                else
+                {
+                    Instance.RestoreOriginalColor(ward.wardObject);
+                }
+            }
+        }
+    }
     void ChangeColor(GameObject obj, Color color)
     {
         Renderer renderer = obj.GetComponent<Renderer>();
@@ -123,10 +161,10 @@ public class FloorManager : MonoBehaviour
     }
 
     // 드롭다운에서 선택된 층을 반영할 수 있는 함수 (층 이름 사용하면 해당 층 색상 변경 가능), null 사용하면 다시 색상 초기화
-    //public static void OnFloorDropdownChanged(string selectedFloorName)
-    //{
-    //    HighlightFloor(selectedFloorName);
-    //    MinimapRaycaster.Instance.SetExternalHighlightActive(true, selectedFloorName);
-    //    Debug.Log("하이라이트" + selectedFloorName);
-    //}
+    public static void OnFloorDropdownChanged(string selectedFloorName)
+    {
+        HighlightFloor(selectedFloorName);
+        MinimapRaycaster.Instance.SetExternalHighlightActive(true, selectedFloorName);
+        Debug.Log("하이라이트: " + selectedFloorName);
+    }
 }

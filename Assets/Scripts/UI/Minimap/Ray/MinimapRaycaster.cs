@@ -6,6 +6,7 @@ public class MinimapRaycaster : MonoBehaviour
 
     public ProfileWindow profileWindow;
     public Camera minimapCamera; // 미니맵 카메라
+    public Camera wardCamera; // 건물 전체 표시용 카메라 (새로 추가됨)
     public MinimapController minimapController; // 미니맵 컨트롤러
     public RectTransform minimapRectTransform; // 미니맵 UI의 RectTransform
     private GameObject lastHighlighted = null; // 마지막으로 하이라이트된 오브젝트
@@ -34,15 +35,15 @@ public class MinimapRaycaster : MonoBehaviour
     {
         if (minimapController.IsLargeMapOpen) // 미니맵 패널이 활성화된 상태에서만
         {
-            HandleMinimapInteraction(); // 미니맵 상호작용 처리
-        }
-        else if (externalHighlightActive)
-        {
-            FloorManager.HighlightFloor(currentHighlightedFloorName);
+            HandleMinimapInteraction(minimapCamera); // 미니맵 상호작용 처리
         }
         else
         {
             ResetHighlight(); // 하이라이트 초기화
+        }
+        if (externalHighlightActive)        // 연구실 미니맵 색상 하이라이트
+        {
+            FloorManager.HighlightWardFloor(currentHighlightedFloorName);
         }
     }
 
@@ -60,8 +61,8 @@ public class MinimapRaycaster : MonoBehaviour
         }
     }
 
-    // 미니맵 상호작용을 처리하는 메서드
-    void HandleMinimapInteraction()
+    // 미니맵 상호작용을 처리하는 메서드 (카메라를 인자로 받음)
+    void HandleMinimapInteraction(Camera cameraToUse)
     {
         Vector3 mousePosition = Input.mousePosition;
         Vector2 localPoint;
@@ -75,29 +76,36 @@ public class MinimapRaycaster : MonoBehaviour
                 (localPoint.y / minimapRectTransform.rect.height) + 0.5f
             );
 
-            // 뷰포트 포인트를 사용하여 레이캐스트
-            Ray ray = minimapCamera.ViewportPointToRay(viewportPoint);
-            RaycastHit hit;
+            // 뷰포인트 포인트를 사용하여 레이캐스트
+            Ray ray = cameraToUse.ViewportPointToRay(viewportPoint);
+            PerformRaycast(ray);
+        }
+    }
 
-            if (Physics.Raycast(ray, out hit, rayLength, clickableLayer))
+    // 레이캐스트 수행 및 처리
+    void PerformRaycast(Ray ray)
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, rayLength, clickableLayer))
+        {
+            GameObject hitObject = hit.collider.gameObject;
+
+            var floorInfo = GetFloorInfoFromHit(hitObject);
+
+            if (floorInfo != null)
             {
-                GameObject hitObject = hit.collider.gameObject;
-
-                FloorManager.FloorInfo floorInfo = GetFloorInfoFromHit(hitObject);
-                if (floorInfo != null)
-                {
-                    HandleHighlight(hitObject); // 하이라이트 처리
-                    HandleClick(floorInfo); // 클릭 처리
-                }
-                else
-                {
-                    Debug.Log("Hit object is not clickable: " + hitObject.name);
-                }
+                HandleHighlight(hitObject); // 하이라이트 처리
+                HandleClick(floorInfo); // 클릭 처리
             }
             else
             {
-                ResetHighlight(); // 하이라이트 초기화
+                Debug.Log("Hit object is not clickable: " + hitObject.name);
             }
+        }
+        else
+        {
+            ResetHighlight(); // 하이라이트 초기화
         }
     }
 
@@ -112,6 +120,7 @@ public class MinimapRaycaster : MonoBehaviour
             }
 
             FloorManager.FloorInfo floorInfo = GetFloorInfoFromHit(hitObject);
+
             if (floorInfo != null)
             {
                 FloorManager.HighlightFloor(floorInfo.floorName); // 새로운 오브젝트의 색상 변경
