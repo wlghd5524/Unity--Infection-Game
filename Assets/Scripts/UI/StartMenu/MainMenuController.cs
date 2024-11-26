@@ -37,8 +37,8 @@ public class MainMenuController : MonoBehaviour
         signupCanvas.transform.SetAsLastSibling();
         exitGameCanvas.transform.SetAsLastSibling();
 
-        startLoginButton.onClick.AddListener(()=> OnButtonClicked(OnStartGameClicked));
-        startSignUpButton.onClick.AddListener(()=> OnButtonClicked(OnAccountCreationClicked));
+        startLoginButton.onClick.AddListener(() => OnButtonClicked(OnStartGameClicked));
+        startSignUpButton.onClick.AddListener(() => OnButtonClicked(OnAccountCreationClicked));
         startExitButton.onClick.AddListener(() => OnButtonClicked(OnQuitGameClicked));
         startOptionButton.onClick.AddListener(() => OnButtonClicked(OnSettingsClicked));
     }

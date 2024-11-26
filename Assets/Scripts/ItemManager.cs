@@ -32,7 +32,7 @@ public class ItemManager
         {
             new Item("Dental 마스크",false, 66),
             new Item("N95 마스크",false, 83),
-            new Item("의료용 장갑",false, 50),
+            new Item("의료용 장갑",false, 20),
             new Item("의료용 고글",false, 15),
             new Item("AP 가운",false, 30)
         };

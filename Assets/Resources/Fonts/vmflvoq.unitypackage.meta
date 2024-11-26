@@ -1,7 +1,13 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Resources/Fonts/vmflvoq.unitypackage.meta
 guid: d6f90b87c04c24b4990aba80be7e7dd8
 DefaultImporter:
+========
+guid: 49ab7c232c508a9459f871b811f692d9
+NativeFormatImporter:
+>>>>>>>> upstream/main:Assets/Resources/Fonts/Maplestory OTF Bold SDF.asset.meta
   externalObjects: {}
+  mainObjectFileID: 11400000
   userData: 
   assetBundleName: 
   assetBundleVariant: 

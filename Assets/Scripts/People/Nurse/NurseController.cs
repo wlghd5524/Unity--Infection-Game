@@ -433,6 +433,7 @@ public class NurseController : NPCController
 
         // 환자 격리 상태 설정
         InitializeQuarantineState(patient);
+        transform.LookAt(patient.transform.position);
 
         // 격리 후 이동 처리
         if (inFrontOfAutoDoor.Length > 0)
@@ -512,6 +513,7 @@ public class NurseController : NPCController
     }
     private IEnumerator CompleteQuarantineProcess(AutoDoorWaypoint[] autoDoors)
     {
+        yield return YieldInstructionCache.WaitForSeconds(2.0f);
         agent.speed += 1.0f;
 
         // 자동문 나가기
@@ -530,7 +532,6 @@ public class NurseController : NPCController
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
         autoDoors[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
 
-        agent.SetDestination(waypoints[0].GetMiddlePointInRange());
     }
 
     private IEnumerator ExitQuarantinedWard()
@@ -545,6 +546,7 @@ public class NurseController : NPCController
 
     private IEnumerator FinalizeReturn(NavMeshAgent agent)
     {
+        agent.SetDestination(waypoints[0].GetMiddlePointInRange());
         isReturning = true;
         agent.stoppingDistance = 0f;
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));

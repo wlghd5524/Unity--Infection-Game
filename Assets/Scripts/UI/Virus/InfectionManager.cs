@@ -17,8 +17,8 @@ public class InfectionManager
     private Dictionary<int, float> probabilityMapping = new Dictionary<int, float>();
 
     //유니티에서 테스트를 위한 감염 확률 변수 (테스트 단계에서만 사용, 배포 단계에선 제외)
-    public int stage1InfectionProbability = 30;
-    public int stage2InfectionProbability = 20;
+    public int stage1InfectionProbability = 100;
+    public int stage2InfectionProbability = 120;
 
     public void Init()
     {

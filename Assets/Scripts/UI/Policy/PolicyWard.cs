@@ -145,7 +145,7 @@ public class PolicyWard : MonoBehaviour
     public void GoLevel1()
     {
         isIsolation_1 = true;
-        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 0);    
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 0);
     }
 
     public void GoLevel2()
@@ -158,13 +158,11 @@ public class PolicyWard : MonoBehaviour
     {
         selectWard.QuarantineWard();
 
-        Debug.Log($"selectWard: {selectWard.WardName}");
-
         //격리 병동으로 전환된 병동 정보 업데이트
         int index = 1;
-        foreach(string ward in wardNames)
+        foreach (string ward in wardNames)
         {
-            if(ward == selectWard.WardName)
+            if (ward == selectWard.WardName)
                 ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 1);
             index++;
         }
