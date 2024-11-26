@@ -16,6 +16,11 @@ public class Managers : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        // 화면 비율 설정
+        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+        Screen.SetResolution(1920, 1080, true);
+
         Item = Item;
         LayerChanger = LayerChanger;
         ObjectPooling = ObjectPooling;
