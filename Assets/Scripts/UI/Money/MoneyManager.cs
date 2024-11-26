@@ -12,8 +12,8 @@ public class MoneyManager : MonoBehaviour
 
     //public TextMeshProUGUI moneyText; // 게임 재화 Text (Inspector에서 할당)
     // 병원 의료비 설정 (일단 임의값)
-    public static int MedicalFee = 50;            // 진료비
-    public static int HospitalizationFee = 100;    // 입원비 한달 비용
+    public static int MedicalFee = 10;            // 진료비
+    public static int HospitalizationFee = 25;    // 입원비 한달 비용
     public static int SurgeryFee = 20;            // 수술비
 
     // 치료제 및 백신 가격 설정
@@ -100,7 +100,7 @@ public class MoneyManager : MonoBehaviour
         string[] itemNames = { "Dental 마스크", "N95 마스크", "의료용 장갑", "의료용 고글", "AP 가운" };
 
         // 아이템 금액 배열 (itemNames와 1:1 매칭)
-        int[] itemPrices = { 1, 2, 3, 4, 5 };
+        int[] itemPrices = { 10, 20, 15, 20, 25 };
 
         // 아이템별, 직업별 착용자 수를 저장하는 딕셔너리
         Dictionary<string, Dictionary<string, int>> itemUsageByRoleAndType = new Dictionary<string, Dictionary<string, int>>();
@@ -168,7 +168,7 @@ public class MoneyManager : MonoBehaviour
                 totalWearerCount += roleEntry.Value;
             }
 
-            Debug.Log(wearerInfo.Trim());
+            //Debug.Log(wearerInfo.Trim());
             int itemTotalCost = itemPrice * totalWearerCount;
             totalDailyExpense += itemTotalCost;
 
@@ -190,7 +190,7 @@ public class MoneyManager : MonoBehaviour
         string[] itemNames = { "Dental 마스크", "N95 마스크", "의료용 장갑", "의료용 고글", "AP 가운" };
 
         // 아이템 금액 배열 (itemNames와 1:1 매칭)
-        int[] itemPrices = { 1, 2, 3, 4, 5 };
+        int[] itemPrices = { 10, 20, 15, 20, 25 };
 
         // 아이템별, 직업별 착용자 수를 저장하는 딕셔너리
         Dictionary<string, int> quarantineNurseItemUsage = new Dictionary<string, int>();
@@ -235,10 +235,10 @@ public class MoneyManager : MonoBehaviour
             int itemTotalCost = itemPrice * itemEntry.Value;
             totalQuarantineNurseExpense += itemTotalCost;
 
-            Debug.Log($"격리 간호사 {itemName} 비용: {itemTotalCost} (착용 수: {itemEntry.Value})");
+            //Debug.Log($"격리 간호사 {itemName} 비용: {itemTotalCost} (착용 수: {itemEntry.Value})");
         }
 
-        Debug.Log($"격리 간호사 총 비용: {totalQuarantineNurseExpense}");
+        //Debug.Log($"격리 간호사 총 비용: {totalQuarantineNurseExpense}");
         return totalQuarantineNurseExpense;
     }
 
@@ -252,7 +252,7 @@ public class MoneyManager : MonoBehaviour
         if (currentMoneyManager.CurrentMoneyGetter >= quarantineNurseCost)
         {
             currentMoneyManager.CurrentMoneyGetter -= quarantineNurseCost;
-            Debug.Log($"격리 간호사 비용 {quarantineNurseCost} 차감 완료.");
+            //Debug.Log($"격리 간호사 비용 {quarantineNurseCost} 차감 완료.");
 
             // 월 정산 UI 업데이트
             monthlyReportUI.AddExpenseDetail("격리 간호사 비용", quarantineNurseCost);

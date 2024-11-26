@@ -24,6 +24,7 @@ public class DoctorController : NPCController
 
     private void Start()
     {
+        agent.obstacleAvoidanceType = UnityEngine.AI.ObstacleAvoidanceType.NoObstacleAvoidance;
         if (waypoints[0] is DoctorOffice doctorOffice && role == DoctorRole.Ward)
         {
             chair = doctorOffice.chair;
