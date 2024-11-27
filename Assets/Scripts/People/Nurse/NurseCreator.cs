@@ -146,27 +146,32 @@ public class NurseCreator : MonoBehaviour
                     newNurseController.isQuarantineNurse = true;
                 }
             }
-            else if (3 <= newNurseController.num && newNurseController.num <= 5)
+            else if(3 <= newNurseController.num && newNurseController.num <= 8)
             {
-                for (int j = 0; j < newNurseController.waypoints[1].chairsDictionary.Count; j++)
+                newNurseController.meshRenderer.enabled = false;
+                newNurseController.protectedGear.meshRenderer.enabled = true;
+                if (3 <= newNurseController.num && newNurseController.num <= 5)
                 {
-                    if (newNurseController.waypoints[1].chairsDictionary[j].Item2)
+                    for (int j = 0; j < newNurseController.waypoints[1].chairsDictionary.Count; j++)
                     {
-                        newNurseController.waypoints[1].chairsDictionary[j] = (newNurseController.waypoints[1].chairsDictionary[j].Item1, false);
-                        newNurseController.chair = newNurseController.waypoints[1].chairsDictionary[j].Item1;
-                        break;
+                        if (newNurseController.waypoints[1].chairsDictionary[j].Item2)
+                        {
+                            newNurseController.waypoints[1].chairsDictionary[j] = (newNurseController.waypoints[1].chairsDictionary[j].Item1, false);
+                            newNurseController.chair = newNurseController.waypoints[1].chairsDictionary[j].Item1;
+                            break;
+                        }
                     }
                 }
-            }
-            else if (6 <= newNurseController.num && newNurseController.num <= 8)
-            {
-                for (int j = 0; j < newNurseController.waypoints[2].chairsDictionary.Count; j++)
+                else if (6 <= newNurseController.num && newNurseController.num <= 8)
                 {
-                    if (newNurseController.waypoints[2].chairsDictionary[j].Item2)
+                    for (int j = 0; j < newNurseController.waypoints[2].chairsDictionary.Count; j++)
                     {
-                        newNurseController.waypoints[2].chairsDictionary[j] = (newNurseController.waypoints[2].chairsDictionary[j].Item1, false);
-                        newNurseController.chair = newNurseController.waypoints[2].chairsDictionary[j].Item1;
-                        break;
+                        if (newNurseController.waypoints[2].chairsDictionary[j].Item2)
+                        {
+                            newNurseController.waypoints[2].chairsDictionary[j] = (newNurseController.waypoints[2].chairsDictionary[j].Item1, false);
+                            newNurseController.chair = newNurseController.waypoints[2].chairsDictionary[j].Item1;
+                            break;
+                        }
                     }
                 }
             }
