@@ -307,5 +307,17 @@ public class Ward : MonoBehaviour
         MoveOutpatients(num);
         MoveInpatientsToAvailableBeds();
         ClearEmergencyPatients();
+        NurseWearProtectedGear();
+    }
+    public void NurseWearProtectedGear()
+    {
+        for (int i = nurses.Count - 1; i >= 0; i--)
+        {
+            if (nurses[i] != null)
+            {
+                nurses[i].protectedGear.meshRenderer.enabled = true;
+                nurses[i].meshRenderer.enabled = false;
+            }
+        }
     }
 }

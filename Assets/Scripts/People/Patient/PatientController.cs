@@ -830,8 +830,7 @@ public class PatientController : NPCController
     }
     public IEnumerator QuarantineTimeCounter()
     {
-        yield return YieldInstructionCache.WaitForSeconds(70f);
-        yield return new WaitUntil(() => personComponent.infectionStatus == InfectionStatus.Normal);
+        yield return YieldInstructionCache.WaitForSeconds(50f);
         StopCoroutine(moveCoroutine);
         isQuarantined = false;
         Managers.NPCManager.PlayWakeUpAnimation(this);

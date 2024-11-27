@@ -58,6 +58,7 @@ public class PolicyWard : MonoBehaviour
         InitializeDropdown();
         wardDropdown.onValueChanged.AddListener(UpdateWardName);
         quarantineWardButton.onClick.AddListener(ChangeWardToQuarantine);
+        closeWardButton.onClick.AddListener(ChangeWardToClose);
         startLevel1.onClick.AddListener(GoLevel1);
         startLevel2.onClick.AddListener(GoLevel2);
     }
@@ -164,6 +165,19 @@ public class PolicyWard : MonoBehaviour
         {
             if (ward == selectWard.WardName)
                 ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 1);
+            index++;
+        }
+    }
+
+    public void ChangeWardToClose()
+    {
+        selectWard.CloseWard();
+        //폐쇄 병동으로 전환된 병동 정보 업데이트
+        int index = 1;
+        foreach (string ward in wardNames)
+        {
+            if (ward == selectWard.WardName)
+                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 2);
             index++;
         }
     }
