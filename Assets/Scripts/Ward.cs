@@ -104,7 +104,7 @@ public class Ward : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count + emergencyPatients.Count + icuPatients.Count;
+        totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count + emergencyPatients.Count + icuPatients.Count + quarantinedPatients.Count;
     }
 
     public void RemoveFromPatientList(PatientController patient)
@@ -211,7 +211,7 @@ public class Ward : MonoBehaviour
     {
         for (int i = nurses.Count - 1; i >= 0; i--)
         {
-            if (nurses[i] != null)
+            if (nurses[i] != null && !nurses[i].isWorking)
             {
                 Managers.ObjectPooling.DeactivateNurse(nurses[i].gameObject);
             }
@@ -265,38 +265,62 @@ public class Ward : MonoBehaviour
 
     public void OpenWard()
     {
-        status = WardStatus.Normal;
-        if (0 <= num && num <= 3)
+        if(status == WardStatus.Closed)
         {
-            for (int i = num * 16; i < (num * 16) + 16; i++)
+            status = WardStatus.Normal;
+            if (0 <= num && num <= 3)
             {
-                GameObject nurse = GameObject.Find($"WardNurse {i}");
-                Managers.ObjectPooling.ActivateNurse(nurse);
+                for (int i = num * 16; i < (num * 16) + 16; i++)
+                {
+                    GameObject nurse = GameObject.Find($"WardNurse {i}");
+                    Managers.ObjectPooling.ActivateNurse(nurse);
+                }
+                for (int i = num * 6; i < (num * 6) + 6; i++)
+                {
+                    GameObject doctor = GameObject.Find($"WardDoctor {i}");
+                    Managers.ObjectPooling.ActivateDoctor(doctor);
+                }
             }
-            for (int i = num * 6; i < (num * 6) + 6; i++)
+            else if (4 <= num && num <= 7)
             {
-                GameObject doctor = GameObject.Find($"WardDoctor {i}");
+                for (int i = (num - 4) * 12; i < ((num - 4) * 12) + 12; i++)
+                {
+                    GameObject nurse = GameObject.Find($"InpatientWardNurse {i}");
+                    Managers.ObjectPooling.ActivateNurse(nurse);
+                }
+            }
+            else if (num == 8)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    GameObject nurse = GameObject.Find($"ERNurse {i}");
+                    Managers.ObjectPooling.ActivateNurse(nurse);
+                }
+                GameObject doctor = GameObject.Find($"ERDoctor 0");
                 Managers.ObjectPooling.ActivateDoctor(doctor);
             }
         }
-        else if (4 <= num && num <= 7)
+        if(status == WardStatus.Quarantined)
         {
-            for (int i = (num - 4) * 12; i < ((num - 4) * 12) + 12; i++)
+            for (int i = nurses.Count - 1; i >= 0; i--)
             {
-                GameObject nurse = GameObject.Find($"InpatientWardNurse {i}");
-                Managers.ObjectPooling.ActivateNurse(nurse);
+                if (nurses[i] != null)
+                {
+                    nurses[i].protectedGear.meshRenderer.enabled = false;
+                    nurses[i].meshRenderer.enabled = true;
+                }
+            }
+
+            for (int i = doctors.Count - 1; i >= 0; i--)
+            {
+                if (doctors[i] != null)
+                {
+                    doctors[i].protectedGear.meshRenderer.enabled = false;
+                    doctors[i].meshRenderer.enabled = true;
+                }
             }
         }
-        else if (num == 8)
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                GameObject nurse = GameObject.Find($"ERNurse {i}");
-                Managers.ObjectPooling.ActivateNurse(nurse);
-            }
-            GameObject doctor = GameObject.Find($"ERDoctor 0");
-            Managers.ObjectPooling.ActivateDoctor(doctor);
-        }
+        
     }
 
     public void QuarantineWard()
@@ -307,5 +331,17 @@ public class Ward : MonoBehaviour
         MoveOutpatients(num);
         MoveInpatientsToAvailableBeds();
         ClearEmergencyPatients();
+        NurseWearProtectedGear();
+    }
+    public void NurseWearProtectedGear()
+    {
+        for (int i = nurses.Count - 1; i >= 0; i--)
+        {
+            if (nurses[i] != null)
+            {
+                nurses[i].protectedGear.meshRenderer.enabled = true;
+                nurses[i].meshRenderer.enabled = false;
+            }
+        }
     }
 }

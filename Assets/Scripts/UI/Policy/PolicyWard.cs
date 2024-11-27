@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class PolicyWard : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class PolicyWard : MonoBehaviour
     public GameObject infoPanel; // 병동 관리 탭 위 설명표
     public Button quarantineWardButton; // 격리 병동 전환 버튼
     public Button closeWardButton;
+    public Button normalWardButton;
 
     public Button startLevel1;
     public Button startLevel2;
@@ -56,8 +58,11 @@ public class PolicyWard : MonoBehaviour
         }
 
         InitializeDropdown();
+        wardDropdown.value = 0;
         wardDropdown.onValueChanged.AddListener(UpdateWardName);
         quarantineWardButton.onClick.AddListener(ChangeWardToQuarantine);
+        closeWardButton.onClick.AddListener(ChangeWardToClose);
+        normalWardButton.onClick.AddListener(ChangeWardToOpen);
         startLevel1.onClick.AddListener(GoLevel1);
         startLevel2.onClick.AddListener(GoLevel2);
     }
@@ -118,11 +123,13 @@ public class PolicyWard : MonoBehaviour
         {
             quarantineWardButton.gameObject.SetActive(false);
             closeWardButton.gameObject.SetActive(false);
+            normalWardButton.gameObject.SetActive(false);
         }
         else
         {
             quarantineWardButton.gameObject.SetActive(true);
             closeWardButton.gameObject.SetActive(true);
+            normalWardButton.gameObject.SetActive(true);
         }
     }
 
@@ -151,6 +158,7 @@ public class PolicyWard : MonoBehaviour
     public void GoLevel2()
     {
         isIsolation_2 = true;
+        UpdateWardInfomation(0);
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 2, 0);
     }
 
@@ -164,6 +172,32 @@ public class PolicyWard : MonoBehaviour
         {
             if (ward == selectWard.WardName)
                 ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 1);
+            index++;
+        }
+    }
+
+    public void ChangeWardToOpen()
+    {
+        selectWard.OpenWard();
+        //일반 병동으로 전환된 병동 정보 업데이트
+        int index = 1;
+        foreach (string ward in wardNames)
+        {
+            if (ward == selectWard.WardName)
+                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 0);
+            index++;
+        }
+    }
+
+    public void ChangeWardToClose()
+    {
+        selectWard.CloseWard();
+        //폐쇄 병동으로 전환된 병동 정보 업데이트
+        int index = 1;
+        foreach (string ward in wardNames)
+        {
+            if (ward == selectWard.WardName)
+                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 2);
             index++;
         }
     }

@@ -65,7 +65,7 @@ public class RadialProgressbars : MonoBehaviour
         hospitalInfectionRateBar.fillAmount = hospitalInfectionRate / 100;
 
         // 감염률이 50%를 넘으면 긴박한 배경음악 재생
-        if (hospitalInfectionRate >= 50)
+        if (hospitalInfectionRate >= 30)
         {
             if (!isTenseBGMPlaying)
             {
@@ -74,7 +74,7 @@ public class RadialProgressbars : MonoBehaviour
             }
         }
         // 감염률이 40% 이하로 떨어지면 일반 배경음악으로 복귀
-        else if (hospitalInfectionRate <= 40 && isTenseBGMPlaying)
+        else if (hospitalInfectionRate <= 20 && isTenseBGMPlaying)
         {
             audioManager.SwitchToNormalBGM();
             isTenseBGMPlaying = false;

@@ -393,6 +393,8 @@ public class ObjectPoolingManager
         nurseController.isWaiting = false;
         nurseController.isWaitingAtDoctorOffice = false;
         nurseController.isWorking = false;
+        nurseController.meshRenderer.enabled = false;
+        nurseController.protectedGear.meshRenderer.enabled = false;
         //nurseController.wardComponent.totalOfNPC--;
         nurseController.wardComponent.nurses.Remove(nurseController);
         profileWindow.RemoveProfile(nurse.GetComponent<Person>().ID);

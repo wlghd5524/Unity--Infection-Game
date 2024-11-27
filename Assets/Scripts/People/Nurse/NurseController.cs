@@ -451,7 +451,11 @@ public class NurseController : NPCController
         {
             yield return ExitQuarantinedWard();
         }
-
+        if (wardComponent.status == Ward.WardStatus.Quarantined)
+        {
+            meshRenderer.enabled = false;
+            protectedGear.meshRenderer.enabled = true;
+        }
         // 복귀 처리
         StartCoroutine(FinalizeReturn(agent));
     }
@@ -510,19 +514,19 @@ public class NurseController : NPCController
         patient.StartCoroutine(patient.QuarantineTimeCounter());
         Managers.NPCManager.FaceEachOther(gameObject, patient.gameObject);
         // 환자의 역할에 따라 환자 수 차감
-        if(patient.personComponent.role == Role.Outpatient)
+        if (patient.personComponent.role == Role.Outpatient)
         {
             Managers.PatientCreator.numberOfOutpatient--;
         }
-        else if(patient.personComponent.role == Role.Inpatient)
+        else if (patient.personComponent.role == Role.Inpatient)
         {
             Managers.PatientCreator.numberOfInpatient--;
         }
-        else if(patient.personComponent.role == Role.EmergencyPatient)
+        else if (patient.personComponent.role == Role.EmergencyPatient)
         {
             Managers.PatientCreator.numberOfEmergencyPatient--;
         }
-        else if(patient.personComponent.role == Role.ICUPatient)
+        else if (patient.personComponent.role == Role.ICUPatient)
         {
             Managers.PatientCreator.numberOfICUPatient--;
         }
@@ -573,11 +577,20 @@ public class NurseController : NPCController
         agent.SetDestination(waypoints[0].GetSampledPosition());
         isReturning = true;
         agent.stoppingDistance = 0f;
+        if (wardComponent.status == Ward.WardStatus.Closed)
+        {
+            meshRenderer.enabled = false;
+            protectedGear.meshRenderer.enabled = false;
+        }
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
         agent.avoidancePriority = 50;
         isReturning = false;
         isWorking = false;
+        if (wardComponent.status == Ward.WardStatus.Closed)
+        {
+            Managers.ObjectPooling.DeactivateNurse(gameObject);
+        }
     }
 
 }

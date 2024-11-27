@@ -143,7 +143,7 @@ public class PolicyResearch : MonoBehaviour
         AddEventTrigger(researchLeftButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangeResearch("Left"); BtnSoundManager.Instance.PlayButtonSound(); });
         AddEventTrigger(researchRightButton.gameObject, EventTriggerType.PointerClick, (data) => { ChangeResearch("Right"); BtnSoundManager.Instance.PlayButtonSound(); });
 
-        researchStartButton.onClick.AddListener(() => { StartResearch(); BtnSoundManager.Instance.PlayButtonSound(); });
+        researchStartButton.onClick.AddListener(() => { StartResearch(); BtnSoundManager.Instance.PlayButtonSound(); MoneyManager.Instance.ResearchExpense(); });
     }
 
     // 첫 감염자 발생 시 연구 시작 가능
@@ -317,6 +317,7 @@ public class PolicyResearch : MonoBehaviour
         return medSelectedWard != null ? medSelectedWard.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName)
             + medSelectedWard.doctors.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName)
             + medSelectedWard.nurses.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName)
+            + medSelectedWard.quarantinedPatients.Count(q => q.infectionController.isInfected && q.isInCurrentWard && q.currentWard == medSelectedWard.WardName)
             : 0;
     }
 
@@ -345,6 +346,13 @@ public class PolicyResearch : MonoBehaviour
 
         // 감염된 환자 수 만큼 치료제를 사용
         foreach (var patient in medSelectedWard.inpatients.Where(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName))
+        {
+            if (remainingCount <= 0) break;
+
+            patient.personComponent.Recover();
+            remainingCount--;
+        }
+        foreach (var patient in medSelectedWard.quarantinedPatients.Where(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == medSelectedWard.WardName))
         {
             if (remainingCount <= 0) break;
 
@@ -431,7 +439,8 @@ public class PolicyResearch : MonoBehaviour
                               vaccineWard.outpatients.Count(o => !o.infectionController.isInfected && o.personComponent.vaccineResist < 40 && o.isInCurrentWard && o.currentWard == vaccineWard.WardName) +
                               vaccineWard.inpatients.Count(i => !i.infectionController.isInfected && i.personComponent.vaccineResist < 40 && i.isInCurrentWard && i.currentWard == vaccineWard.WardName) +
                               vaccineWard.emergencyPatients.Count(e => !e.infectionController.isInfected && e.personComponent.vaccineResist < 40 && e.isInCurrentWard && e.currentWard == vaccineWard.WardName)
-                              + vaccineWard.icuPatients.Count(c => !c.infectionController.isInfected && c.personComponent.vaccineResist < 40 && c.isInCurrentWard && c.currentWard == vaccineWard.WardName)
+                              + vaccineWard.icuPatients.Count(c => !c.infectionController.isInfected && c.personComponent.vaccineResist < 40 && c.isInCurrentWard && c.currentWard == vaccineWard.WardName) +
+                              vaccineWard.quarantinedPatients.Count(c => !c.infectionController.isInfected && c.personComponent.vaccineResist < 40 && c.isInCurrentWard && c.currentWard == vaccineWard.WardName)
                               ;
 
 
@@ -470,6 +479,7 @@ public class PolicyResearch : MonoBehaviour
                                                .Concat(vaccineWard.outpatients)
                                                .Concat(vaccineWard.emergencyPatients)
                                                .Concat(vaccineWard.icuPatients)
+                                               .Concat(vaccineWard.quarantinedPatients)
                                                )
         {
             if (remainingCount <= 0) break;
@@ -543,7 +553,8 @@ public class PolicyResearch : MonoBehaviour
         }
 
         var sortedWards = Ward.wards.Where(w => w.num >= 4 && w.num <= 7)
-            .OrderByDescending(w => w.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == w.WardName)).ToList(); ;
+            .OrderByDescending(w => w.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == w.WardName)
+            + w.quarantinedPatients.Count(q => q.infectionController.isInfected && q.isInCurrentWard && q.currentWard == w.WardName)).ToList(); ;
 
         foreach (var ward in sortedWards) // 입원병동 1 ~ 입원병동 4에 해당
         {
@@ -554,13 +565,15 @@ public class PolicyResearch : MonoBehaviour
             TextMeshProUGUI wardInfectedPatientCount = wardItem.transform.Find("WardInfectedPatientCount").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI researchWardName = wardItem.transform.Find("ResearchWardName").GetComponent<TextMeshProUGUI>();
 
-            int inpatientCount = ward.inpatientCount;
+            int inpatientCount = ward.inpatientCount + ward.outpatientCount +ward.doctorCount + ward.nurseCount;
             int infectedInpatientCount = ward.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
                 + ward.doctors.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
-                + ward.nurses.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName);
+                + ward.nurses.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
+                + ward.quarantinedPatients.Count(q => q.infectionController && q.isInCurrentWard && q.currentWard == ward.WardName);
             int uninfectedInpatientCount = ward.inpatientCount - ward.inpatients.Count(p => p.infectionController.isInfected && p.isInCurrentWard && p.currentWard == ward.WardName)
                 - ward.doctors.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
-                - ward.nurses.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName);
+                - ward.nurses.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName)
+                - ward.quarantinedPatients.Count(q => q.infectionController && q.isInCurrentWard && q.currentWard == ward.WardName);
 
             wardInPatientCount.text = inpatientCount.ToString();
             wardInfectedPatientCount.text = infectedInpatientCount.ToString();
@@ -584,7 +597,8 @@ public class PolicyResearch : MonoBehaviour
                 w.outpatients.Count(o => o.infectionController.isInfected && o.isInCurrentWard && o.currentWard == w.WardName) +
                 w.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == w.WardName) +
                 w.emergencyPatients.Count(e => e.infectionController.isInfected && e.isInCurrentWard && e.currentWard == w.WardName) +
-                w.icuPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == w.WardName))
+                w.icuPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == w.WardName)+
+                w.quarantinedPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == w.WardName))
                     .ToList(); ;
 
         foreach (var ward in sortedWards)
@@ -600,13 +614,15 @@ public class PolicyResearch : MonoBehaviour
                 ward.outpatients.Count(o => o.infectionController.isInfected && o.isInCurrentWard && o.currentWard == ward.WardName) +
                 ward.inpatients.Count(i => i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName) +
                 ward.emergencyPatients.Count(e => e.infectionController.isInfected && e.isInCurrentWard && e.currentWard == ward.WardName) +
-                ward.icuPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName);
+                ward.icuPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName) +
+                ward.quarantinedPatients.Count(c => c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName);
             int unInfectedCount = ward.doctors.Count(d => !d.infectionController.isInfected && d.isInCurrentWard && d.currentWard == ward.WardName) +
                 ward.nurses.Count(n => !n.infectionController.isInfected && n.isInCurrentWard && n.currentWard == ward.WardName) +
                 ward.outpatients.Count(o => !o.infectionController.isInfected && o.isInCurrentWard && o.currentWard == ward.WardName) +
                 ward.inpatients.Count(i => !i.infectionController.isInfected && i.isInCurrentWard && i.currentWard == ward.WardName) +
                 ward.emergencyPatients.Count(e => !e.infectionController.isInfected && e.isInCurrentWard && e.currentWard == ward.WardName) +
-                ward.icuPatients.Count(c => !c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName);
+                ward.icuPatients.Count(c => !c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName) +
+                ward.quarantinedPatients.Count(c => !c.infectionController.isInfected && c.isInCurrentWard && c.currentWard == ward.WardName);
             wardInPatientCount.text = allCount.ToString();
             wardInfectedPatientCount.text = infectedCount.ToString();
             researchWardName.text = ward.WardName;
