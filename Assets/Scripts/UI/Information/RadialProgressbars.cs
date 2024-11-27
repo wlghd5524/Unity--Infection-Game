@@ -60,17 +60,8 @@ public class RadialProgressbars : MonoBehaviour
 
     void UpdateProgressBars()
     {
-        //hospitalInfectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);
-        int infectedNPC = 0, totalNPC = 0;
-        foreach(Person person in PersonManager.Instance.GetAllPersons())
-        {
-            totalNPC++;
-            if (person.infectionStatus != InfectionStatus.Normal)
-            {
-                infectedNPC++;
-            }
-        }
-        hospitalInfectionRateText.text = $"{infectedNPC/totalNPC:F1}%";
+        hospitalInfectionRate = InfectionManager.Instance.GetOverallInfectionRate(Ward.wards);
+        hospitalInfectionRateText.text = $"{hospitalInfectionRate:F1}%";
         hospitalInfectionRateBar.fillAmount = hospitalInfectionRate / 100;
 
         // 감염률이 50%를 넘으면 긴박한 배경음악 재생
