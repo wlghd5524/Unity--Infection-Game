@@ -91,6 +91,20 @@ public class MoneyManager : MonoBehaviour
 
         return true;
     }
+    public void ResearchExpense()
+    {
+        int researchCost = 2500;
+        if (currentMoneyManager.CurrentMoneyGetter >= researchCost)
+        {
+            currentMoneyManager.CurrentMoneyGetter -= researchCost;
+            monthlyReportUI.AddExpenseDetail("연구 비용", researchCost);
+        }
+        else
+        {
+            Debug.LogWarning("NoMoney");
+        }
+
+    }
 
     public void DeductDailyExpense()
     {

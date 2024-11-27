@@ -104,7 +104,7 @@ public class Ward : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count + emergencyPatients.Count + icuPatients.Count;
+        totalOfNPC = doctors.Count + inpatients.Count + nurses.Count + outpatients.Count + emergencyPatients.Count + icuPatients.Count + quarantinedPatients.Count;
     }
 
     public void RemoveFromPatientList(PatientController patient)

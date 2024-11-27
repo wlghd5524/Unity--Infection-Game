@@ -70,7 +70,8 @@ public class InfectionManager
                 + ward.outpatients.Count(o => o.infectionController.isInfected)
                 + ward.inpatients.Count(i => i.infectionController.isInfected)
                 + ward.emergencyPatients.Count(e => e.infectionController.isInfected)
-                + ward.icuPatients.Count(c => c.infectionController.isInfected);
+                + ward.icuPatients.Count(c => c.infectionController.isInfected)
+                + ward.quarantinedPatients.Count(q => q.infectionController.isInfected);
             totalNPCs += ward.totalOfNPC;
         }
 

@@ -56,6 +56,7 @@ public class PolicyWard : MonoBehaviour
         }
 
         InitializeDropdown();
+        wardDropdown.value = 0;
         wardDropdown.onValueChanged.AddListener(UpdateWardName);
         quarantineWardButton.onClick.AddListener(ChangeWardToQuarantine);
         closeWardButton.onClick.AddListener(ChangeWardToClose);
@@ -152,6 +153,7 @@ public class PolicyWard : MonoBehaviour
     public void GoLevel2()
     {
         isIsolation_2 = true;
+        UpdateWardInfomation(0);
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 2, 0);
     }
 
