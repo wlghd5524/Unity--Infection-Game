@@ -211,7 +211,7 @@ public class Ward : MonoBehaviour
     {
         for (int i = nurses.Count - 1; i >= 0; i--)
         {
-            if (nurses[i] != null)
+            if (nurses[i] != null && !nurses[i].isWorking)
             {
                 Managers.ObjectPooling.DeactivateNurse(nurses[i].gameObject);
             }
