@@ -2,13 +2,14 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class CoolTime : MonoBehaviour
 {
     public TMP_Text cooltimeText;
     public Image fillImage;
     private float maxCooldown;
-    float startTime;        // 쿨타임 시작 시간
+    float startTime;
     public string currentLevelName;
     RandomQuest randomQuest;
     private System.Action onCooldownComplete;  //쿨타임이 끝나면 호출
@@ -23,12 +24,13 @@ public class CoolTime : MonoBehaviour
 
     public void StartCooldown(float remainingCooldown, float maxCooldown, System.Action onCooldownComplete)
     {
-        this.maxCooldown = maxCooldown; 
+        this.maxCooldown = maxCooldown;
         this.onCooldownComplete = onCooldownComplete;
         randomQuest.cooldownTimers[currentLevelName] = remainingCooldown;
-        startTime = Time.realtimeSinceStartup; 
+        startTime = Time.unscaledTime;
         UpdateCooltimeUI();
-        gameObject.SetActive(true); 
+        gameObject.SetActive(true);
+
         if (_co != null)
         {
             StopCoroutine(_co);
@@ -40,19 +42,19 @@ public class CoolTime : MonoBehaviour
     //쿨타임 끝나면 onCooldownCompete 호출
     private IEnumerator CooldownCoroutine()
     {
-        float endTime = startTime + randomQuest.cooldownTimers[currentLevelName]; 
+        float endTime = startTime + randomQuest.cooldownTimers[currentLevelName];
 
-        while (Time.realtimeSinceStartup < endTime)
+        while (Time.unscaledTime < endTime)
         {
-            randomQuest.cooldownTimers[currentLevelName] = endTime - Time.realtimeSinceStartup; 
+            randomQuest.cooldownTimers[currentLevelName] = endTime - Time.unscaledTime;
             UpdateCooltimeUI();
-            yield return null;
+            yield return YieldInstructionCache.WaitForSecondsRealtime(0.1f);
         }
 
         randomQuest.cooldownTimers[currentLevelName] = 0;
         UpdateCooltimeUI();
         onCooldownComplete?.Invoke();  //null이 아니면 호출해서 등록된 메서드 실행
-        gameObject.SetActive(false);  
+        gameObject.SetActive(false);
     }
 
     //쿨타임 UI 업데이트
@@ -64,7 +66,8 @@ public class CoolTime : MonoBehaviour
             // 남은 시간 계산
             int hours = Mathf.FloorToInt(currentCooldown / 3600F);
             int minutes = Mathf.FloorToInt((currentCooldown - hours * 3600) / 60F);
-            int seconds = Mathf.FloorToInt(currentCooldown - hours * 3600 - minutes * 60);
+            //int seconds = Mathf.FloorToInt(currentCooldown - hours * 3600 - minutes * 60);
+            int seconds = Mathf.RoundToInt(currentCooldown - hours * 3600 - minutes * 60);
 
             // 텍스트 업데이트
             cooltimeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);

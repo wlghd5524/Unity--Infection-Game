@@ -12,11 +12,11 @@ public class RandomQuest : MonoBehaviour
     public Button[] answerButton;
     public Button[] levelButton;
     public GameObject clickbtn;
-    public TextMeshProUGUI quest;              
+    public TextMeshProUGUI quest;
     public GameObject wrongPanel;
     public GameObject rightPanel;
-    public TMP_Text rightText;                 
-    public Canvas questCanvas;                
+    public TMP_Text rightText;
+    public Canvas questCanvas;
     public GameObject coolTimePanel;
 
     public MySQLConnector mySQLConnector;
@@ -83,12 +83,12 @@ public class RandomQuest : MonoBehaviour
         moneyText = Assign(moneyText, "MoneyText");
         timerText = Assign(timerText, "TimerText");
 
-        if (mySQLConnector != null) 
+        if (mySQLConnector != null)
         {
             usersDB = mySQLConnector.GetUsers();
             answersDB = mySQLConnector.GetAnswers();
         }
-        else 
+        else
         {
             Debug.LogError("MySQLConnector is not assigned.");
         }
@@ -109,14 +109,14 @@ public class RandomQuest : MonoBehaviour
         yield return new WaitUntil(() => mySQLConnector.GetUsers() != null && mySQLConnector.GetUsers().Count > 0);
         usersDB = mySQLConnector.GetUsers();
         answersDB = mySQLConnector.GetAnswers();
-        //Debug.Log($"Loaded {usersDB.Count} users and {answersDB.Count} answers from the database.");
-
-        OnLevelButtonClicked(levelButton[0]);  
+        //Debug.Log($"Loaded {usersDB.Count} users and {answersDB.Count} answers from the database.");  
 
         foreach (var button in levelButton)
         {
             button.onClick.AddListener(() => { OnLevelButtonClicked(button); BtnSoundManager.Instance.PlayButtonSound(); });         // 버튼 클릭 이벤트 등록  
         }
+
+        OnLevelButtonClicked(levelButton[0]);
     }
 
     //초기 레벨별 문제 인덱스 초기화
@@ -137,9 +137,23 @@ public class RandomQuest : MonoBehaviour
 
         BtnSoundManager.Instance.PlayButtonSound();
 
+        string clickedLevel = clickedButton.name;
+        if (!availableIndicesByLevel.ContainsKey(clickedLevel))
+        {
+            Debug.LogError($"Level {clickedLevel} does not exist in availableIndicesByLevel.");
+            return;
+        }
+
+        availableIndices = availableIndicesByLevel[clickedLevel];
+        if (availableIndices == null || availableIndices.Count == 0)
+        {
+            Debug.LogError($"No available indices for level {clickedLevel}.");
+            return;
+        }
+
         //레벨별 문제 인덱스 리스트 선택
         int selectedLevel = System.Array.IndexOf(levelButton, clickedButton);
-        availableIndices = availableIndicesByLevel[clickbtn.name];
+        //availableIndices = availableIndicesByLevel[clickbtn.name];
 
         //선택된 버튼만 비활성화
         for (int i = 0; i < levelButton.Length; i++)
@@ -181,8 +195,19 @@ public class RandomQuest : MonoBehaviour
     // 난이도에 따른 문제 및 객관식 선택지 텍스트 변환
     public void SetRandomQuest()
     {
-        if (!questCanvas.enabled || availableIndices.Count == 0)
+        if (!questCanvas.enabled || availableIndices == null || availableIndices.Count == 0)
         {
+            return;
+        }
+
+        if (currentIndex == -1 && availableIndices.Count > 0)
+        {
+            currentIndex = availableIndices[UnityEngine.Random.Range(0, availableIndices.Count)];
+        }
+
+        if (currentIndex < 0 || currentIndex >= usersDB.Count)
+        {
+            Debug.LogError($"currentIndex({currentIndex}) is out of bounds of usersDB({usersDB.Count}).");
             return;
         }
 
@@ -385,6 +410,7 @@ public class RandomQuest : MonoBehaviour
         //클릭된 버튼의 쿨타임 패널만 활성화
         if (cooldownTimers[currentLevel] > 0)
         {
+            Debug.Log($"퀴즈 쿨타임 남은 시간: {currentLevel}: {cooldownTimers[currentLevel]}");
             ShowCooltimePanel(currentLevel);
         }
         else

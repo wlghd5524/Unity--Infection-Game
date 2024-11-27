@@ -91,7 +91,7 @@ public class MainMenuController : MonoBehaviour
         //Debug.Log("Settings Clicked");
         BtnSoundManager.Instance.PlayButtonSound();
         settingWindow.SetActive(true);// 설정 창 실행
-        isPopupActive = true;
+        //isPopupActive = true;
     }
 
     // 게임종료 메뉴 클릭

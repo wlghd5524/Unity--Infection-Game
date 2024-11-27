@@ -27,7 +27,7 @@ public class AudioManager : MonoBehaviour
         // 초기 설정값 로드 및 적용
         masterVolume = PlayerPrefs.GetFloat("MasterVolume", 0.5f);
         musicVolume = PlayerPrefs.GetFloat("BGMVolume", 0.3f);
-        sfxVolume = PlayerPrefs.GetFloat("SfxVolume", 0.6f);
+        sfxVolume = PlayerPrefs.GetFloat("SfxVolume", 0.5f);
 
         ApplyVolumes();
 
