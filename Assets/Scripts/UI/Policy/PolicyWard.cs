@@ -129,7 +129,6 @@ public class PolicyWard : MonoBehaviour
         {
             quarantineWardButton.gameObject.SetActive(true);
             closeWardButton.gameObject.SetActive(true);
-            normalWardButton.gameObject.SetActive(true);
         }
     }
 
@@ -164,6 +163,9 @@ public class PolicyWard : MonoBehaviour
 
     public void ChangeWardToQuarantine()
     {
+        closeWardButton.gameObject.SetActive(false);
+        quarantineWardButton.gameObject.SetActive(false);
+        normalWardButton.gameObject.SetActive(true);
         selectWard.QuarantineWard();
 
         //격리 병동으로 전환된 병동 정보 업데이트
@@ -178,19 +180,25 @@ public class PolicyWard : MonoBehaviour
 
     public void ChangeWardToOpen()
     {
+        quarantineWardButton.gameObject.SetActive(true);
+        closeWardButton.gameObject.SetActive(true);
+        normalWardButton.gameObject.SetActive(false);
         selectWard.OpenWard();
         //일반 병동으로 전환된 병동 정보 업데이트
         int index = 1;
         foreach (string ward in wardNames)
         {
             if (ward == selectWard.WardName)
-                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 0);
+                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 3);
             index++;
         }
     }
 
     public void ChangeWardToClose()
     {
+        quarantineWardButton.gameObject.SetActive(false);
+        closeWardButton.gameObject.SetActive(false);
+        normalWardButton.gameObject.SetActive(true);
         selectWard.CloseWard();
         //폐쇄 병동으로 전환된 병동 정보 업데이트
         int index = 1;
