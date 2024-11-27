@@ -21,6 +21,7 @@ public class Ward : MonoBehaviour
     public List<PatientController> outpatients = new List<PatientController>();
     public List<PatientController> emergencyPatients = new List<PatientController>();
     public List<PatientController> icuPatients = new List<PatientController>();
+    public List<PatientController> quarantinedPatients = new List<PatientController>();
     public List<BedWaypoint> beds = new List<BedWaypoint>();
     public float totalOfNPC = 0;
     public float infectedNPC = 0;
@@ -124,6 +125,10 @@ public class Ward : MonoBehaviour
         {
             patient.wardComponent.icuPatients.Remove(patient);
         }
+        else if (patient.personComponent.role == Role.QuarantinedPatient && patient.wardComponent.quarantinedPatients.Contains(patient))
+        {
+            patient.wardComponent.quarantinedPatients.Remove(patient);
+        }
     }
     public void CloseWard()
     {
@@ -173,7 +178,7 @@ public class Ward : MonoBehaviour
             if (nextBed != null)
             {
                 nextBed.patient = inpatient.gameObject;
-                if(inpatient.prevCoroutine != null)
+                if (inpatient.prevCoroutine != null)
                 {
                     inpatient.StopCoroutine(inpatient.prevCoroutine);
                 }
@@ -276,7 +281,7 @@ public class Ward : MonoBehaviour
         }
         else if (4 <= num && num <= 7)
         {
-            for (int i = (num-4) * 12; i < ((num-4) * 12) + 12; i++)
+            for (int i = (num - 4) * 12; i < ((num - 4) * 12) + 12; i++)
             {
                 GameObject nurse = GameObject.Find($"InpatientWardNurse {i}");
                 Managers.ObjectPooling.ActivateNurse(nurse);

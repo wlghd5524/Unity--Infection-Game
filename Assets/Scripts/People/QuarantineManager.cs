@@ -71,10 +71,6 @@ public class QuarantineManager : MonoBehaviour
                 {
                     yield break;
                 }
-                if (patientController.personComponent.role == Role.EmergencyPatient)
-                {
-                    DoctorController.ERWaitingList.Remove(patientController);
-                }
 
                 Transform parentTransform = Managers.NPCManager.waypointDictionary[(9, "NurseWaypoints")];
 
@@ -149,9 +145,9 @@ public class QuarantineManager : MonoBehaviour
     }
     private void CancelQuarantine(PatientController patientController, BedWaypoint prevBed)
     {
-        patientController.bedWaypoint.isEmpty = true;
         if(patientController.bedWaypoint.patient == patientController.gameObject)
         {
+            patientController.bedWaypoint.isEmpty = true;
             patientController.bedWaypoint.patient = null;
         }
         if (prevBed != null)

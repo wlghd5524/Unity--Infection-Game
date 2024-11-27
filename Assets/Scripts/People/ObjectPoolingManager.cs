@@ -290,6 +290,7 @@ public class ObjectPoolingManager
             {
                 patientController.bedWaypoint.patient = null;
             }
+            patientController.bedWaypoint.isEmpty = true;
             patientController.bedWaypoint = null;
         }
         patientController.prevWaypointIndex = -1;
@@ -309,6 +310,9 @@ public class ObjectPoolingManager
         outpatientPerson.isImmune = false;
         //outpatientController.wardComponent.outpatients.Remove(outpatientController);
         patientController.wardComponent = null;
+        patientController.StopAllCoroutines();
+        patientController.moveCoroutine = null;
+        patientController.prevCoroutine = null;
         patientQueue.Enqueue(patient); // 큐에 추가
         patient.SetActive(false); // 비활성화
     }
