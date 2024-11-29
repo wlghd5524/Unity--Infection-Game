@@ -43,7 +43,7 @@ public class Managers : MonoBehaviour
     void FixedUpdate()
     {
         Infection.UpdateInfectionProbability();
-        if(QuarantineManager.quarantineStep == -1)
+        if(QuarantineManager.quarantineStep == 0)
         {
             PatientCreator.spawnDelay = 0.5f;
         }

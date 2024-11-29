@@ -6,7 +6,7 @@ using UnityEngine;
 // QuarantineManager 클래스는 NPC(여기서는 간호사)를 검색하고, 격리하는 등의 작업을 수행합니다.
 public class QuarantineManager : MonoBehaviour
 {
-    public static int quarantineStep = -1;
+    public static int quarantineStep = 0;
     // 박스캐스트의 거리 설정
     public float boxCastDistance = 100f;  // 박스캐스트 거리
     // 박스캐스트의 크기 설정
