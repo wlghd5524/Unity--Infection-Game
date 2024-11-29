@@ -86,7 +86,7 @@ public class QuarantineManager : MonoBehaviour
                 }
                 else
                 {
-                    PolicyWard.Instance.startLevel2.gameObject.SetActive(true);
+                    PolicyWard.Instance.qtStartButton_3.gameObject.SetActive(true);
                     // 격리 병동에서 빈 병상 찾기
                     BedWaypoint nextBed = Ward.wards
                         .Where(ward => ward.status == Ward.WardStatus.Quarantined && ward.num >= 4 && ward.num <= 7)

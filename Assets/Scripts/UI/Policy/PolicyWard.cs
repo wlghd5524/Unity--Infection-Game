@@ -26,15 +26,19 @@ public class PolicyWard : MonoBehaviour
     public Button closeWardButton;
     public Button normalWardButton;
 
-    public Button startLevel1;
-    public Button startLevel2;
-    public GameObject isolation1Text;
-    public GameObject isolation2Text;
+    public Button qtStartButton_1;
+    public Button qtStartButton_2;
+    public Button qtStartButton_3;
+
+    public GameObject qtOutline_1;
+    public GameObject qtOutline_2;
+    public GameObject qtOutline_3;
 
     public Ward selectWard;
 
-    public bool isIsolation_1 = false; // 격리 1단계 활성화 여부
-    public bool isIsolation_2 = false; // 격리 2단계 활성화 여부
+    public bool isQuarantineLevel_1 = false; // 격리 1단계 활성화 여부
+    public bool isQuarantineLevel_2 = false; // 격리 2단계 활성화 여부
+    public bool isQuarantineLevel_3 = false; // 격리 3단계 활성화 여부
 
 
     public string[] wardNames = {
@@ -63,8 +67,9 @@ public class PolicyWard : MonoBehaviour
         quarantineWardButton.onClick.AddListener(ChangeWardToQuarantine);
         closeWardButton.onClick.AddListener(ChangeWardToClose);
         normalWardButton.onClick.AddListener(ChangeWardToOpen);
-        startLevel1.onClick.AddListener(GoLevel1);
-        startLevel2.onClick.AddListener(GoLevel2);
+        qtStartButton_1.onClick.AddListener(GoLevel1);
+        qtStartButton_2.onClick.AddListener(GoLevel2);
+        qtStartButton_3.onClick.AddListener(GoLevel3);
     }
 
     private void Update()
@@ -135,28 +140,42 @@ public class PolicyWard : MonoBehaviour
     public void CheckIsolationStatus()
     {
         // 격리 1단계 발령 조건
-        if (isIsolation_1)
+        if (isQuarantineLevel_1)
         {
-            isolation1Text.SetActive(true);
-            startLevel1.gameObject.SetActive(false);
+            qtOutline_1.SetActive(true);
+            qtStartButton_1.gameObject.SetActive(false);
+            QuarantineManager.quarantineStep = 1;
+        }
+        // 격리 1단계 발령 조건
+        if (isQuarantineLevel_2)
+        {
+            qtOutline_1.SetActive(false);
+            qtOutline_2.SetActive(true);
+            qtStartButton_2.gameObject.SetActive(false);
         }
 
         // 격리 2단계 발령 조건
-        if (isIsolation_2)
+        if (isQuarantineLevel_3)
         {
             infoPanel.SetActive(false);
         }
     }
 
+
     public void GoLevel1()
     {
-        isIsolation_1 = true;
+        isQuarantineLevel_1 = true;
+        //ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 0);
+    }
+    public void GoLevel2()
+    {
+        isQuarantineLevel_2 = true;
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 0);
     }
 
-    public void GoLevel2()
+    public void GoLevel3()
     {
-        isIsolation_2 = true;
+        isQuarantineLevel_3 = true;
         UpdateWardInfomation(0);
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 2, 0);
     }
