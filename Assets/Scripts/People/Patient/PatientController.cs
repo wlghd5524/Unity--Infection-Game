@@ -835,17 +835,31 @@ public class PatientController : NPCController
         isQuarantined = false;
         Managers.NPCManager.PlayWakeUpAnimation(this);
         yield return YieldInstructionCache.WaitForSeconds(5.0f);
-        AutoDoorWaypoint[] inFrontOfAutoDoor = bedWaypoint.transform.GetComponentsInChildren<AutoDoorWaypoint>();
-        if(inFrontOfAutoDoor.Length > 0)
+        AutoDoorWaypoint[] autoDoors = bedWaypoint.transform.GetComponentsInChildren<AutoDoorWaypoint>();
+        if(autoDoors.Length > 0)
         {
-            agent.SetDestination(inFrontOfAutoDoor[1].GetMiddlePointInRange());
+            // 자동문 나가기
+            Animator autoDoorsAnimator = autoDoors[0].quarantineRoom.GetComponent<Animator>();
+
+            agent.SetDestination(autoDoors[2].GetMiddlePointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
+
+            autoDoorsAnimator.SetBool("IsInternalDoorOpened", true);
             yield return YieldInstructionCache.WaitForSeconds(1.0f);
 
-            agent.SetDestination(inFrontOfAutoDoor[0].GetMiddlePointInRange());
+            agent.SetDestination(autoDoors[1].GetMiddlePointInRange());
             yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-            inFrontOfAutoDoor[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
+
+            autoDoorsAnimator.SetBool("IsInternalDoorOpened", false);
+            yield return YieldInstructionCache.WaitForSeconds(1.0f);
+
+            autoDoorsAnimator.SetBool("IsExternalDoorOpened", true);
+            yield return YieldInstructionCache.WaitForSeconds(1.0f);
+
+            agent.SetDestination(autoDoors[0].GetMiddlePointInRange());
+            yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+
+            autoDoorsAnimator.SetBool("IsExternalDoorOpened", false);
         }
         if(bedWaypoint.patient == gameObject)
         {

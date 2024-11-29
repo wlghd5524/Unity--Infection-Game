@@ -86,7 +86,7 @@ public class MoneyManager : MonoBehaviour
             return false;
         }
 
-        monthlyReportUI.AddExpenseDetail("백신", amount);
+        monthlyReportUI.AddExpenseDetail("치료제 사용", amount);
         currentMoneyManager.CurrentMoneyGetter -= amount;
 
         return true;

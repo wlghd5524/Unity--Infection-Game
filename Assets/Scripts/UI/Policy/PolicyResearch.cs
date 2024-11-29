@@ -65,7 +65,7 @@ public class PolicyResearch : MonoBehaviour
     private int vaccineCount = 0;
     private Ward vaccineWard;
 
-    private const int medicinePrice = 100; // 치료제 한 개당 가격
+    private const int medicinePrice = 200; // 치료제 한 개당 가격
     private const int vaccinePrice = 80; // 백신 한 개당 가격
 
     private Coroutine researchCoroutine;
@@ -211,13 +211,13 @@ public class PolicyResearch : MonoBehaviour
             StartCoroutine(DeactivateResearchCompleteAfterDelay());
         }
 
-        StartCoroutine(UnlockVaccine());
+        StartCoroutine(UnlockMedicine());
     }
 
     private IEnumerator UnlockVaccine()
     {
 
-        int remainingTime = 80; // 연구 시간 10초
+        int remainingTime = 100;
         while (remainingTime > 0)
         {
             vaccineTimeText.text = $"백신 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
@@ -231,13 +231,12 @@ public class PolicyResearch : MonoBehaviour
                 vaccineLockPanel.SetActive(false);
         }
 
-        // 10초 후 치료제 해금을 위해 UnlockMedicine 코루틴 시작
-        StartCoroutine(UnlockMedicine());
+        UpdateTabUI();
     }
 
     private IEnumerator UnlockMedicine()
     {
-        int remainingTime = 100; // 연구 시간 10초
+        int remainingTime = 80;
         while (remainingTime > 0)
         {
             medicineTimeText.text = $"치료제 연구 중입니다...\n남은 연구 시간 : {remainingTime}초";
@@ -250,7 +249,7 @@ public class PolicyResearch : MonoBehaviour
             if (medicineLockPanel != null)
                 medicineLockPanel.SetActive(false);
         }
-        UpdateTabUI();
+        StartCoroutine(UnlockVaccine());
     }
 
     private IEnumerator DeactivateResearchCompleteAfterDelay()
@@ -383,6 +382,7 @@ public class PolicyResearch : MonoBehaviour
         medicineUsePanel.SetActive(false);
         UpdateMedicineCountUI();
         UpdateTabUI();
+        PopulateMedicineWard();
         Debug.Log($"Medicine applied. Total cost: {totalCost}");
     }
 
@@ -466,13 +466,13 @@ public class PolicyResearch : MonoBehaviour
         int resistanceIncrease = 40; // 저항 증가값
 
         // 재화 확인 및 차감
-        if (!MoneyManager.Instance.DeductMoney(vaccineCount * MoneyManager.VaccinePrice))
-        {
-            Debug.LogWarning("Not enough money for vaccines.");
-            return;
-        }
+        //if (!MoneyManager.Instance.DeductMoney(vaccineCount * MoneyManager.VaccinePrice))
+        //{
+            //Debug.LogWarning("Not enough money for vaccines.");
+            //return;
+        //}
 
-        int remainingCount = vaccineCount;
+        //int remainingCount = vaccineCount;
 
         foreach (var npc in vaccineWard.doctors.Concat<NPCController>(vaccineWard.inpatients)
                                                .Concat(vaccineWard.nurses)
@@ -482,14 +482,14 @@ public class PolicyResearch : MonoBehaviour
                                                .Concat(vaccineWard.quarantinedPatients)
                                                )
         {
-            if (remainingCount <= 0) break;
+            //if (remainingCount <= 0) break;
 
             // 감염되지 않은 NPC에게만 백신 적용
             if (!npc.infectionController.isInfected && npc.personComponent.vaccineResist < 40)
             {
                 npc.personComponent.vaccineResist = resistanceIncrease;
                 npc.personComponent.UpdateInfectionResistance();
-                remainingCount--;
+                //remainingCount--;
             }
         }
 
@@ -501,6 +501,7 @@ public class PolicyResearch : MonoBehaviour
         UpdateVaccineCountUI();
         UpdateTabUI();
         vaccineUsePanel.SetActive(false);
+        PopulateVaccineWard();
     }
 
 
@@ -655,11 +656,11 @@ public class PolicyResearch : MonoBehaviour
         // MedicineWard 스크롤뷰 업데이트 - 탭이 2번일 때만 호출
         if (currentTabIndex == 2)
         {
-            PopulateVaccineWard();
+            PopulateMedicineWard();
         }
         if (currentTabIndex == 3)
         {
-            PopulateMedicineWard();
+            PopulateVaccineWard();
         }
     }
 

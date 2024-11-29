@@ -73,7 +73,7 @@ public class NewsController : MonoBehaviour
         {
             EnqueueNews("국내 최초 감염자 발생! 각 병원은 감염병을 주의하시기 바랍니다!");
             policyResearch.FirstInfectedAppear();
-            PolicyWard.Instance.startLevel1.gameObject.SetActive(true);
+            PolicyWard.Instance.qtStartButton_2.gameObject.SetActive(true);
             startNewsTriggered = true;
         }
     }

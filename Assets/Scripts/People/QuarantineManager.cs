@@ -6,6 +6,7 @@ using UnityEngine;
 // QuarantineManager 클래스는 NPC(여기서는 간호사)를 검색하고, 격리하는 등의 작업을 수행합니다.
 public class QuarantineManager : MonoBehaviour
 {
+    public static int quarantineStep = 0;
     // 박스캐스트의 거리 설정
     public float boxCastDistance = 100f;  // 박스캐스트 거리
     // 박스캐스트의 크기 설정
@@ -85,7 +86,7 @@ public class QuarantineManager : MonoBehaviour
                 }
                 else
                 {
-                    PolicyWard.Instance.startLevel2.gameObject.SetActive(true);
+                    PolicyWard.Instance.qtStartButton_3.gameObject.SetActive(true);
                     // 격리 병동에서 빈 병상 찾기
                     BedWaypoint nextBed = Ward.wards
                         .Where(ward => ward.status == Ward.WardStatus.Quarantined && ward.num >= 4 && ward.num <= 7)
@@ -128,7 +129,14 @@ public class QuarantineManager : MonoBehaviour
             CancelQuarantine(patientController, prevBed);
             return;
         }
-
+        if(prevBed != null)
+        {
+            prevBed.isEmpty = true;
+            if(prevBed.patient == patientController.gameObject)
+            {
+                prevBed.patient = null;
+            }
+        }
         AssignNurseToQuarantine(patientController, closestNurse);
     }
 

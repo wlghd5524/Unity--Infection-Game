@@ -405,7 +405,7 @@ public class GameDataManager : MonoBehaviour
         //string[] patientTarget = { "내과1", "내과2", "외과1", "외과2", "입원병동1", "입원병동2", "입원병동3", "입원병동4" };
         string[] patientItems = { "1단계", "2단계" };
         string[] patientTarget = PolicyWard.Instance.wardNames;
-        string[] state = { "격리병동", "폐쇄병동", "일반병동"};
+        string[] state = { "격리병동", "폐쇄병동", "일반병동" };
 
         if (btnNum <= patientItems.Length && target <= patientTarget.Length && toggleState <= state.Length)
         {
