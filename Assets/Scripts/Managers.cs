@@ -43,6 +43,14 @@ public class Managers : MonoBehaviour
     void FixedUpdate()
     {
         Infection.UpdateInfectionProbability();
+        if(QuarantineManager.quarantineStep == -1)
+        {
+            PatientCreator.spawnDelay = 0.5f;
+        }
+        else
+        {
+            PatientCreator.spawnDelay = 1.0f;
+        }
         // 대기 중이 아니고, 환자 수가 최대치보다 적을 때 환자 생성
         if (!PatientCreator.outpatientWaiting && PatientCreator.numberOfOutpatient < ObjectPooling.maxOfOutpatient)
         {
