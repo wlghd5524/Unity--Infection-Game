@@ -184,7 +184,7 @@ public class PolicyWard : MonoBehaviour
         foreach (string ward in wardNames)
         {
             if (ward == selectWard.WardName)
-                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 0);
+                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 3);
             index++;
         }
     }
