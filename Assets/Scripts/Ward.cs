@@ -170,6 +170,12 @@ public class Ward : MonoBehaviour
             PatientController inpatient = inpatients[i];
             if (inpatient == null || inpatient.isExiting) continue;
 
+            //격리 병동으로 전환 시 감염된 환자는 병동을 옮기지 않음
+            if(inpatient.personComponent.infectionStatus != InfectionStatus.Normal && status == WardStatus.Quarantined)
+            {
+                continue;
+            }
+
             BedWaypoint nextBed = wards
                 .Where(ward => ward.num >= 4 && ward.num <= 7 && ward.status == WardStatus.Normal)
                 .SelectMany(ward => ward.beds)

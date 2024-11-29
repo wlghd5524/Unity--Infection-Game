@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 public enum NurseRole
@@ -421,7 +422,7 @@ public class NurseController : NPCController
         patient.StartCoroutine(patient.FollowNurse(gameObject));
 
 
-        AutoDoorWaypoint[] inFrontOfAutoDoor = patient.bedWaypoint.transform.GetComponentsInChildren<AutoDoorWaypoint>();
+        AutoDoorWaypoint[] inFrontOfAutoDoors = patient.bedWaypoint.transform.GetComponentsInChildren<AutoDoorWaypoint>();
 
         if (patient.hospitalizationCoroutine != null)
         {
@@ -429,9 +430,9 @@ public class NurseController : NPCController
         }
 
         // 격리 프로세스 시작
-        if (inFrontOfAutoDoor.Length > 0)
+        if (inFrontOfAutoDoors.Length > 0)
         {
-            yield return MoveToQuarantineRoom(inFrontOfAutoDoor[0], patient);
+            yield return MoveToQuarantineRoom(inFrontOfAutoDoors, patient);
         }
         else
         {
@@ -443,9 +444,9 @@ public class NurseController : NPCController
         transform.LookAt(patient.transform.position);
 
         // 격리 후 이동 처리
-        if (inFrontOfAutoDoor.Length > 0)
+        if (inFrontOfAutoDoors.Length > 0)
         {
-            yield return CompleteQuarantineProcess(inFrontOfAutoDoor);
+            yield return CompleteQuarantineProcess(inFrontOfAutoDoors);
         }
         else
         {
@@ -460,9 +461,9 @@ public class NurseController : NPCController
         StartCoroutine(FinalizeReturn(agent));
     }
 
-    private IEnumerator MoveToQuarantineRoom(AutoDoorWaypoint autoDoor, PatientController patient)
+    private IEnumerator MoveToQuarantineRoom(AutoDoorWaypoint[] autoDoors, PatientController patient)
     {
-        agent.SetDestination(autoDoor.GetMiddlePointInRange()); // 자동문 앞으로 이동
+        agent.SetDestination(autoDoors[0].GetMiddlePointInRange()); // 자동문 앞으로 이동
 
         while (!Managers.NPCManager.isArrived(agent))
         {
@@ -478,17 +479,25 @@ public class NurseController : NPCController
             }
         }
         agent.isStopped = false;
-        autoDoor.quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
-        yield return YieldInstructionCache.WaitForSeconds(2.0f);
+        Animator autoDoorAnimator = autoDoors[0].quarantineRoom.GetComponent<Animator>();
+        autoDoorAnimator.SetBool("IsExternalDoorOpened", true);
+        yield return YieldInstructionCache.WaitForSeconds(1.0f);
+
+        agent.SetDestination(autoDoors[1].GetMiddlePointInRange());
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        yield return YieldInstructionCache.WaitForSeconds(1.0f);
+        autoDoorAnimator.SetBool("IsExternalDoorOpened", false);
+        yield return YieldInstructionCache.WaitForSeconds(1.0f);
+        autoDoorAnimator.SetBool("IsInternalDoorOpened", true);
+        yield return YieldInstructionCache.WaitForSeconds(1.0f);
 
         if (patient.bedWaypoint == null)
         {
             Debug.Log("격리실 null");
         }
-
         agent.SetDestination(patient.bedWaypoint.GetRandomPointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        autoDoor.quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
+        autoDoorAnimator.SetBool("IsInternalDoorOpened", false);
     }
     private IEnumerator MoveToQuarantinedWard(PatientController patient)
     {
@@ -541,14 +550,21 @@ public class NurseController : NPCController
     }
     private IEnumerator CompleteQuarantineProcess(AutoDoorWaypoint[] autoDoors)
     {
+        Animator autoDoorAnimator = autoDoors[0].quarantineRoom.GetComponent<Animator>();
         yield return YieldInstructionCache.WaitForSeconds(2.0f);
         agent.speed += 1.0f;
 
         // 자동문 나가기
-        agent.SetDestination(autoDoors[1].GetMiddlePointInRange());
+        agent.SetDestination(autoDoors[2].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
-        autoDoors[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", true);
+        autoDoorAnimator.SetBool("IsInternalDoorOpened", true);
+        yield return YieldInstructionCache.WaitForSeconds(1.0f);
+
+        agent.SetDestination(autoDoors[1].GetMiddlePointInRange());
+        yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
+        
+        autoDoorAnimator.SetBool("IsInternalDoorOpened", false);
         yield return YieldInstructionCache.WaitForSeconds(1.0f);
 
         //4종 보호구 벗기
@@ -556,10 +572,12 @@ public class NurseController : NPCController
         meshRenderer.enabled = true;
         protectedGear.meshRenderer.enabled = false;
 
+        autoDoorAnimator.SetBool("IsExternalDoorOpened", true);
+        yield return YieldInstructionCache.WaitForSeconds(1.0f);
+
         agent.SetDestination(autoDoors[0].GetMiddlePointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
-        autoDoors[0].quarantineRoom.GetComponent<Animator>().SetBool("IsOpened", false);
-
+        autoDoorAnimator.SetBool("IsExternalDoorOpened", false);
     }
 
     private IEnumerator ExitQuarantinedWard()
