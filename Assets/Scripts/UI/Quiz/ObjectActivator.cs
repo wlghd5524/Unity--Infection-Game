@@ -46,7 +46,7 @@ public class ObjectActivator : MonoBehaviour
         SetQuestCanvasVisible(false);
 
         // 카운트다운 타이머 멈추기
-        QuizTimer.Instance.ResetTimerText();
+        QuizTimer.Instance.ResetTimerText("LevelButton1");
     }
 
     private void SetQuestCanvasVisible(bool isVisible)

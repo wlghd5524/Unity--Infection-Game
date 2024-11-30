@@ -58,6 +58,7 @@ public class QuizCooltime : MonoBehaviour
         QuizManager.Instance.coolTimePanel.SetActive(false);
         QuizManager.Instance.questCount[levelName].Clear();
         activeCoroutines.Remove(levelName);
+        QuizManager.Instance.OnLevelButtonClicked(QuizManager.Instance.clickbtn);
     }
 
     void UpdateCooltimeUI()

@@ -54,16 +54,17 @@ public class QuizTimer : MonoBehaviour
     }
 
     // 타이머 시간을 고정시킨은 함수(코루틴 진행될 때)
-    public void ResetTimerText()
+    public void ResetTimerText(string currentLevel)
     {
         isTiming = false;
-        timerText.text = LevelByTimerDuration(currentLevelName).ToString();
+        timeRemaining = LevelByTimerDuration(currentLevel);
+        UpdateTimerUI();
     }
 
     // 레벨별 타이머 시간
     float LevelByTimerDuration(string levelName)
     {
-        switch (currentLevelName)
+        switch (levelName)
         {
             case "LevelButton1":
                 return 10f;

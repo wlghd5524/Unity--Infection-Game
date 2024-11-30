@@ -35,7 +35,7 @@ public class QuizManager : MonoBehaviour
     Dictionary<string, bool> firstTry = new Dictionary<string, bool>();     // 레벨별 오답 재도전 여부
     public Dictionary<string, List<int>> questCount = new Dictionary<string, List<int>>();     // 레벨별 푼 문제
 
-    int clickbtn;     // 현재 선택한 레벨별 메뉴 버튼 인덱스
+    public int clickbtn;     // 현재 선택한 레벨별 메뉴 버튼 인덱스
     string levelname;
     int currentIndex = -1;
 
@@ -107,13 +107,11 @@ public class QuizManager : MonoBehaviour
             availableIndicesByLevel["LevelButton1"] = Enumerable.Range(0, 20).ToList();     //0~19
             availableIndicesByLevel["LevelButton2"] = Enumerable.Range(20, 20).ToList();    //20~39
             availableIndicesByLevel["LevelButton3"] = Enumerable.Range(40, 60).ToList();    //40~99
-            //Debug.Log($"Quiz: LevelButton1번 {availableIndicesByLevel["LevelButton1"].Count}개, {availableIndicesByLevel["LevelButton2"].Count}, {availableIndicesByLevel["LevelButton3"].Count}");
         }
         else
         {
             int value = num * 20;
             availableIndicesByLevel[levelButtons[num].name] = Enumerable.Range(value - 20, value).ToList();
-            Debug.Log($"Quiz: 문제 개수 {levelButtons[num].name}것만 초기화 완료.");
         }
     }
 
@@ -123,10 +121,10 @@ public class QuizManager : MonoBehaviour
         moneyText.text = $"{currentMoney.CurrentMoneyGetter:N0}Sch";  // 천단위 콤마 추가
     }
 
-    // 메뉴 버튼을 누를 때마다 호출되는 함수
+    // 메뉴 버튼을 누를 때마다 호출되는 함수 (0~2)
     public void OnLevelButtonClicked(int menuIndex)
     {
-        clickbtn = menuIndex;    // 선택한 버튼 저장 (0~2)
+        clickbtn = menuIndex;    // 선택한 버튼 저장 
         levelname = levelButtons[clickbtn].name;
 
         // 안 풀고 넘어갔다면 다시 도전
@@ -145,7 +143,7 @@ public class QuizManager : MonoBehaviour
         }
 
         // 쿨타임 패널 or 문제 출력 결정
-        Debug.Log($"Quiz, {levelname}, 쿨타임 남은 시간: {cooldownTimers[levelname]}");
+        //Debug.Log($"Quiz, {levelname}, 쿨타임 남은 시간: {cooldownTimers[levelname]}");
         if (cooldownTimers[levelname] > 0)
             ManagerCooltimer();
         else
@@ -158,7 +156,7 @@ public class QuizManager : MonoBehaviour
     // 쿨타임 패널이 뜰 때 호출되는 함수
     void ManagerCooltimer()
     {
-        QuizTimer.Instance.ResetTimerText();  // 문제 카운트다운 시간 초기화
+        QuizTimer.Instance.ResetTimerText(levelname);  // 문제 카운트다운 시간 초기화
         coolTimePanel.SetActive(true);
         QuizCooltime.Instance.currentName = levelname;
         QuizCooltime.Instance.ShowCooltimePanel(levelname);
@@ -168,6 +166,8 @@ public class QuizManager : MonoBehaviour
     public void SetRandomQuest()
     {
         if (!questCanvas.enabled) return;   // 퀘스트 창이 안 보일 경우
+
+        string levelname = levelButtons[clickbtn].name;
 
         // 해당 레벨의 문제 리스트가 비었을 경우 초기화
         if (availableIndicesByLevel[levelname].Count <= 0)
@@ -182,11 +182,11 @@ public class QuizManager : MonoBehaviour
         }
 
         // 새로운 문제 설정
-        if (questCount[levelname].Count > 0 && questCount[levelname][questCount[levelname].Count - 1] == -1
-            || questCount[levelname].Count == 0)
+        if(currentIndex == -1)
         {
             currentIndex = availableIndicesByLevel[levelname][UnityEngine.Random.Range(0, availableIndicesByLevel[levelname].Count)];
             questCount[levelname].Add(currentIndex);
+            //Debug.Log($"Quiz, {levelname} 새로운 문제: {currentIndex}");
 
             if (currentIndex >= usersDB.Count)
             {
@@ -214,9 +214,7 @@ public class QuizManager : MonoBehaviour
             AddMoney();
         }
         else
-        {
             StartCoroutine(ShowWrongPanel());
-        }
     }
 
     // 정답 패널 생성하는 함수
@@ -236,7 +234,10 @@ public class QuizManager : MonoBehaviour
         wrongPanel.SetActive(false);
 
         if (firstTry[levelname])
+        {
+            QuizTimer.Instance.StartQuizTimer(levelname);
             firstTry[levelname] = false;
+        }
         else
             NextQuestionDelay();    // 두 번째 시도
     }
@@ -268,6 +269,7 @@ public class QuizManager : MonoBehaviour
         firstTry[levelname] = true;
         questCount[levelname][questCount[levelname].Count - 1] = -1;
         availableIndicesByLevel[levelname].Remove(currentIndex);  // 사용한 문제는 삭제
+        currentIndex = -1;
         SetRandomQuest();                       
     }
 }
