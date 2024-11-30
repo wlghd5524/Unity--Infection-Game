@@ -165,19 +165,19 @@ public class PolicyWard : MonoBehaviour
     public void GoLevel1()
     {
         isQuarantineLevel_1 = true;
-        //ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 0);
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 1);
     }
     public void GoLevel2()
     {
         isQuarantineLevel_2 = true;
-        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 0);
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 2, 1);
     }
 
     public void GoLevel3()
     {
         isQuarantineLevel_3 = true;
         UpdateWardInfomation(0);
-        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 2, 0);
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 3, 1);
     }
 
     public void ChangeWardToQuarantine()

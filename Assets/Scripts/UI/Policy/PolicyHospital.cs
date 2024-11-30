@@ -38,7 +38,7 @@ public class PolicyHospital : MonoBehaviour
     int nowIndex;
 
     // 퀴즈 질문
-    string[] questions = {
+    public static string[] questions = {
         "병원체와 세균을 효과적으로 제거하기 위해 가장 많이 사용되는 소독제는 무엇인가요?",
         "손 소독에 적합한 알코올의 농도는 얼마인가요?",
         "세균 소독 시 가장 효과적인 소독 시간과 방법은 무엇인가요?",
@@ -52,7 +52,7 @@ public class PolicyHospital : MonoBehaviour
     };
 
     // 각 질문에 대한 선택지
-    string[,] choices = {
+    public static string[,] choices = {
         { "알코올 70%", "식염수", "증류수", "글리세린" },
         { "30%", "50%", "70%", "100%" },
         { "10초 동안 소독제 뿌리기", "30초 동안 문지르기", "1분 동안 자연 건조", "5분 동안 젖은 상태 유지" },
@@ -66,7 +66,7 @@ public class PolicyHospital : MonoBehaviour
     };
 
     // 정답 배열 
-    int[] correctAnswers = { 0, 2, 1, 1, 0, 2, 1, 3, 1, 2 };
+    public static int[] correctAnswers = { 0, 2, 1, 1, 0, 2, 1, 3, 1, 2 };
 
     void Start()
     {
@@ -124,7 +124,7 @@ public class PolicyHospital : MonoBehaviour
             disinfectionButton[index].onClick.AddListener(() =>
             {
                 ToggleDisinfection(index);
-                nowIndex = index;
+                nowIndex = index;       //소독 버튼 개수에 대해 순서대로 처리하는 인덱스(0~9)
                 BtnSoundManager.Instance.PlayButtonSound();
             });
         }
