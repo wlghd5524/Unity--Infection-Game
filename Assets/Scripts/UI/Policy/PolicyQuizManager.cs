@@ -154,5 +154,6 @@ public class PolicyQuizManager : MonoBehaviour
         yield return YieldInstructionCache.WaitForSecondsRealtime(1.3f);
         disWrongPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
+        Debug.Log($"병합 커밋 테스트");
     }
 }
