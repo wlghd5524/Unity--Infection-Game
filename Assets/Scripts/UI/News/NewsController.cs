@@ -19,6 +19,7 @@ public class NewsController : MonoBehaviour
     public PolicyResearch policyResearch;
 
     private bool virusOutbreakNewsTriggered = false;    // 감염병 발생 뉴스
+    private bool worldFirstInfectionTriggered = false;
 
     private void Awake()
     {
@@ -47,7 +48,7 @@ public class NewsController : MonoBehaviour
         }
     }
 
-    // 병원체 발생 뉴스
+    // 병원체 발생 뉴스 (튜토리얼 전용)
     public void TriggerVirusOutbreakNews()
     {
         if (!virusOutbreakNewsTriggered)
@@ -84,11 +85,21 @@ public class NewsController : MonoBehaviour
         CheckWardClosedNews(allWards);
     }
 
+    public void CheckWorldFirstInfectionNews()
+    {
+        if (!worldFirstInfectionTriggered)
+        {
+            PolicyWard.Instance.qtStartButton_1.gameObject.SetActive(true);
+            EnqueueNews("국내 최초 감염자 발생! 각 병원은 감염병을 주의하시기 바랍니다!");
+            worldFirstInfectionTriggered = true;
+        }
+    }
+
     private void CheckFirstInfectionNews(List<Ward> wards)
     {
         if (!startNewsTriggered && InfectionManager.Instance.GetOverallInfectionRate(wards) > 0)
         {
-            EnqueueNews("국내 최초 감염자 발생! 각 병원은 감염병을 주의하시기 바랍니다!");
+            EnqueueNews("병원 내 감염자가 발생하였습니다!");
             policyResearch.FirstInfectedAppear();
             PolicyWard.Instance.qtStartButton_2.gameObject.SetActive(true);
             startNewsTriggered = true;
@@ -112,7 +123,7 @@ public class NewsController : MonoBehaviour
         foreach (Ward ward in wards)
         {
             UpdateNewsTrigger(ward.num, wardClosedNewsTriggered, ward.status,
-                $"<color=#FF0000>경고!!</color> {ward.WardName} 병동의 감염률이 <color=#FF0000>50%</color>를 초과하였습니다!");
+                           $"<color=#FF0000>경고!!</color> {ward.WardName} 병동이 폐쇄되었습니다!");
         }
     }
 
