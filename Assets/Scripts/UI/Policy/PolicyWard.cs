@@ -292,6 +292,8 @@ public class PolicyWard : MonoBehaviour
 
             Debug.Log($"병동 {selectWard.WardName} 소독 시작...");
             // #######여기다가 병동 퀴즈 로직 작성########
+            PolicyQuizManager.Instance.ClearVirusesInWard(selectWard.WardName);
+            Debug.Log($"PlicyQuiz, {selectWard.WardName} 소독");
 
             // 버튼의 interactable을 false로 설정하고 텍스트 업데이트
             disInfectWardButton.interactable = false;
@@ -373,17 +375,20 @@ public class PolicyWard : MonoBehaviour
     public void GoLevel1()
     {
         isQuarantineLevel_1 = true;
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 1, 1);
     }
 
     public void GoLevel2()
     {
         isQuarantineLevel_2 = true;
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 2, 1);
     }
 
     public void GoLevel3()
     {
         isQuarantineLevel_3 = true;
         UpdateWardInfomation(0);
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 3, 1);
     }
 }
 
