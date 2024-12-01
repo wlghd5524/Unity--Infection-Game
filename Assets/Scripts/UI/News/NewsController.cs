@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class NewsController : MonoBehaviour
@@ -56,6 +55,24 @@ public class NewsController : MonoBehaviour
             EnqueueNews("원인불명의 병원체가 발생했습니다.");
             virusOutbreakNewsTriggered = true;
         }
+    }
+
+    // 병원체 연구가 완료되었을 때 뉴스 발생
+    public void TriggerPathogenResearchCompleteNews(string pathogenName)
+    {
+        EnqueueNews($"연구가 완료되었습니다! 원인불명의 병원체는 '{pathogenName}'으로 밝혀졌습니다.", true);
+    }
+
+    // 치료제 연구가 완료되었을 때 뉴스 발생
+    public void TriggerCureResearchCompleteNews(string cureName)
+    {
+        EnqueueNews($"좋은 소식입니다! '{cureName}' 치료제가 성공적으로 개발되었습니다.", true);
+    }
+
+    // 백신 연구가 완료되었을 때 뉴스 발생
+    public void TriggerVaccineResearchCompleteNews(string vaccineName)
+    {
+        EnqueueNews($"기쁜 소식입니다! '{vaccineName}' 백신이 성공적으로 개발되었습니다.", true);
     }
 
     private void CheckNewsRequirements()
@@ -132,8 +149,15 @@ public class NewsController : MonoBehaviour
         };
     }
 
-    private void EnqueueNews(string mainNews)
+    private void EnqueueNews(string mainNews, bool isPositive = false)
     {
-        moveTextController.EnqueueNews(mainNews);
+        if (isPositive)
+        {
+            moveTextController.EnqueuePositiveNews(mainNews);
+        }
+        else
+        {
+            moveTextController.EnqueueNews(mainNews);
+        }
     }
 }
