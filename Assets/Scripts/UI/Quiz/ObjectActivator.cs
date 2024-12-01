@@ -16,7 +16,7 @@ public class ObjectActivator : MonoBehaviour
         questCanvas = questParentCanvas.GetComponent<Canvas>();
         activateButton = GameObject.Find("QuizStartButton").GetComponent<Button>();
         activateButton = gameObject.GetComponent<Button>();
-        quizCloseButton = GameObject.Find("XButton").GetComponent <Button>();
+        quizCloseButton = GameObject.Find("XButton").GetComponent<Button>();
 
         // 초기 상태 설정: 퀴즈창을 보이지 않게 설정
         SetQuestCanvasVisible(false);

@@ -12,7 +12,7 @@ using Unity.VisualScripting;
 
 public class QuizManager : MonoBehaviour
 {
-    public static QuizManager Instance {  get; private set; }
+    public static QuizManager Instance { get; private set; }
     // UI
     public Button[] levelButtons;    // 메뉴 버튼
     public Button[] answerButtons;
@@ -21,7 +21,7 @@ public class QuizManager : MonoBehaviour
     public GameObject wrongPanel;
     public GameObject rightPanel;
     public GameObject coolTimePanel;
-    public TextMeshProUGUI rightText; 
+    public TextMeshProUGUI rightText;
     public TextMeshProUGUI moneyText;
     public TextMeshProUGUI timerText;
     CurrentMoney currentMoney;
@@ -41,7 +41,7 @@ public class QuizManager : MonoBehaviour
 
     void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
@@ -73,7 +73,7 @@ public class QuizManager : MonoBehaviour
         }
 
         questCanvas = gameObject.GetComponent<Canvas>();
-        quest = GameObject.Find("Quest").GetComponent< TextMeshProUGUI>();
+        quest = GameObject.Find("Quest").GetComponent<TextMeshProUGUI>();
         wrongPanel = GameObject.Find("WrongPanel");
         rightPanel = GameObject.Find("RightPanel");
         coolTimePanel = GameObject.Find("CoolTimePanel");
@@ -104,9 +104,9 @@ public class QuizManager : MonoBehaviour
         if (num == -1)
         {
             availableIndicesByLevel.Clear();
-            availableIndicesByLevel["LevelButton1"] = Enumerable.Range(0, 20).ToList();     //0~19
-            availableIndicesByLevel["LevelButton2"] = Enumerable.Range(20, 20).ToList();    //20~39
-            availableIndicesByLevel["LevelButton3"] = Enumerable.Range(40, 60).ToList();    //40~99
+            availableIndicesByLevel["LevelButton1"] = Enumerable.Range(0, 31).ToList();     //0~30
+            availableIndicesByLevel["LevelButton2"] = Enumerable.Range(31, 30).ToList();    //31~61
+            availableIndicesByLevel["LevelButton3"] = Enumerable.Range(61, 20).ToList();    //61~81
         }
         else
         {
@@ -128,7 +128,7 @@ public class QuizManager : MonoBehaviour
         levelname = levelButtons[clickbtn].name;
 
         // 안 풀고 넘어갔다면 다시 도전
-        if (questCount[levelname].Count > 0 && questCount[levelname][questCount[levelname].Count-1] != -1)
+        if (questCount[levelname].Count > 0 && questCount[levelname][questCount[levelname].Count - 1] != -1)
             currentIndex = questCount[levelname][questCount[levelname].Count - 1];
         else
             currentIndex = -1;
@@ -182,11 +182,12 @@ public class QuizManager : MonoBehaviour
         }
 
         // 새로운 문제 설정
-        if(currentIndex == -1)
+        if (currentIndex == -1)
         {
             currentIndex = availableIndicesByLevel[levelname][UnityEngine.Random.Range(0, availableIndicesByLevel[levelname].Count)];
             questCount[levelname].Add(currentIndex);
             //Debug.Log($"Quiz, {levelname} 새로운 문제: {currentIndex}");
+            Debug.Log($"Quiz, {currentIndex} 정답: {answersDB[currentIndex].right}");
 
             if (currentIndex >= usersDB.Count)
             {
@@ -194,13 +195,13 @@ public class QuizManager : MonoBehaviour
                 return;
             }
         }
-        
+
         // 해당 레벨의 문제 카운트다운 시작 (1레벨-10초, 2레벨-20초, 3레벨-30초)
         QuizTimer.Instance.StartQuizTimer(levelname);
-        
+
         // 문제 출력
         quest.text = usersDB[currentIndex].quest;
-        string[] answerArray = new string[]{ usersDB[currentIndex].answer1, usersDB[currentIndex].answer2, usersDB[currentIndex].answer3, usersDB[currentIndex].answer4 };
+        string[] answerArray = new string[] { usersDB[currentIndex].answer1, usersDB[currentIndex].answer2, usersDB[currentIndex].answer3, usersDB[currentIndex].answer4 };
         for (int i = 0; i < answerButtons.Length; i++)
             answerButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = answerArray[i];
     }
@@ -256,6 +257,7 @@ public class QuizManager : MonoBehaviour
     int GetMoneyByLevelButton()
     {
         if (clickbtn == 0)
+
             return 500;
         else if (clickbtn == 1)
             return 1000;
@@ -270,6 +272,6 @@ public class QuizManager : MonoBehaviour
         questCount[levelname][questCount[levelname].Count - 1] = -1;
         availableIndicesByLevel[levelname].Remove(currentIndex);  // 사용한 문제는 삭제
         currentIndex = -1;
-        SetRandomQuest();                       
+        SetRandomQuest();
     }
 }

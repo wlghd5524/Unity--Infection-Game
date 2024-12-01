@@ -6,22 +6,22 @@ using UnityEngine.UI;
 
 public class QuizTimer : MonoBehaviour
 {
-    public static QuizTimer Instance {  get; private set; }
+    public static QuizTimer Instance { get; private set; }
     public TextMeshProUGUI timerText;
     public Image shadowImage;
 
     float timeRemaining;
-    bool isTiming;            
+    bool isTiming;
     string currentLevelName;
 
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else 
+        else
             Destroy(gameObject);
 
         timerText = GameObject.Find("TimerText").GetComponent<TextMeshProUGUI>();

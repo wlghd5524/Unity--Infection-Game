@@ -16,7 +16,7 @@ public class QuizCooltime : MonoBehaviour
 
     void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
@@ -25,7 +25,7 @@ public class QuizCooltime : MonoBehaviour
             Destroy(gameObject);
 
         cooltimeText = GameObject.Find("TextCoolTime").GetComponent<TextMeshProUGUI>();
-        fillImage = GameObject.Find("Shadow").GetComponent <Image>();
+        fillImage = GameObject.Find("Shadow").GetComponent<Image>();
     }
 
 
