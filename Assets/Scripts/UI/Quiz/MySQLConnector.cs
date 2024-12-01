@@ -25,11 +25,25 @@ namespace MyApp.DataAccess
 
     public class MySQLConnector : MonoBehaviour
     {
+        public static MySQLConnector Instance { get; private set; }
         private string url1 = "http://220.69.209.164:3333/get_levels"; // Flask 서버의 로컬 IP 주소로 변경
         private string url2 = "http://220.69.209.164:3333/get_answers"; // Flask 서버의 로컬 IP 주소로 변경
 
         private List<User> users;
         private List<User> answers;
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
 
         public void Start()
         {
