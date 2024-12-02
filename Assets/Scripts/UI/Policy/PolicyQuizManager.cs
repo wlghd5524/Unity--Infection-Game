@@ -16,6 +16,8 @@ public class PolicyQuizManager : MonoBehaviour
     public Button disinfectXButton;
     //public Button mm;
 
+    public MonthlyReportUI monthlyReportUI;
+
     int randomIndex;
     string currentWard;
     string[] wardNames;
@@ -170,6 +172,13 @@ public class PolicyQuizManager : MonoBehaviour
                 Debug.Log($"PolicyQuiz, {virus.gameObject.name}  바이러스 지워짐. {layerName}");
             }
         }
+
+        // 버튼의 interactable을 false로 설정하고 텍스트 업데이트
+        PolicyWard.Instance.disInfectWardButton.interactable = false;
+        PolicyWard.Instance.normalWardButton.interactable = false;
+        monthlyReportUI.AddExpenseDetail("소독", 500);
+
+        PolicyWard.Instance.disInfectButtonText.text = $"소독 중: {Mathf.CeilToInt(PolicyWard.disinfectCooldownTime)}초 남음";
     }
 
     //오답 패널 생성
@@ -179,5 +188,12 @@ public class PolicyQuizManager : MonoBehaviour
         yield return YieldInstructionCache.WaitForSecondsRealtime(1.3f);
         disWrongPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
+
+        // 버튼의 interactable을 false로 설정하고 텍스트 업데이트
+        PolicyWard.Instance.disInfectWardButton.interactable = false;
+        PolicyWard.Instance.normalWardButton.interactable = false;
+        monthlyReportUI.AddExpenseDetail("소독", 500);
+
+        PolicyWard.Instance.disInfectButtonText.text = $"소독 재시도까지 {Mathf.CeilToInt(PolicyWard.disinfectCooldownTime)}초 남음";
     }
 }
