@@ -117,21 +117,21 @@ public class PolicyQuizManager : MonoBehaviour
     public void ClearVirusesInWard(string ward)
     {
         currentWard = ward;
+
         if (!wardLayerMapping.ContainsKey(currentWard))
         {
             Debug.LogError($"PolicyQuiz, {currentWard} 레이어에 해당하는 병동 이름이 없음");
             return;
         }
 
-        //소독 퀴즈 시작
         questDisfectCanvas.SetActive(true);
 
         // 랜덤 문제 생성
         randomIndex = UnityEngine.Random.Range(0, questions.Length);
-        Debug.Log($"PolicyQuiz, {randomIndex}의 정답은 {correctAnswers[randomIndex]}");
         disinfectQuest.text = questions[randomIndex];
         for (int i = 0; i < disinfectAnswers.Length; i++)
             disinfectAnswers[i].GetComponentInChildren<TextMeshProUGUI>().text = choices[randomIndex, i];
+        Debug.Log($"PolicyQuiz, {randomIndex}의 정답은 {correctAnswers[randomIndex]}");
     }
 
     //정답 체크

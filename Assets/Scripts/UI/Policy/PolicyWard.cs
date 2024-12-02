@@ -283,6 +283,8 @@ public class PolicyWard : MonoBehaviour
     public void DisinfectWard()
     {
         int wardId = selectWard.num;
+        //var wardCounts = GetStaffAndOutpatientCounts(); //d
+        //var wardInfo = wardCounts[wardNames[wardId]];   //d
         WardState state = wardStates[wardId];
 
         if (!state.IsDisinfecting)
@@ -302,6 +304,11 @@ public class PolicyWard : MonoBehaviour
 
             // UI 업데이트
             UpdateWardInfomation(wardId);
+            //인원이 다 빠지면 소독 시작
+            //if (wardInfo.doctorCount == 0 && wardInfo.nurseCount == 0 && wardInfo.outpatientCount == 0 && wardInfo.inpatientCount == 0)
+            {
+                
+            }
         }
     }
 
@@ -389,6 +396,28 @@ public class PolicyWard : MonoBehaviour
         isQuarantineLevel_3 = true;
         UpdateWardInfomation(0);
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 3, 1);
+    }
+
+    // 병동별 의사, 간호사, 외래환자 데이터 수집
+    public Dictionary<string, (int doctorCount, int nurseCount, int outpatientCount, int inpatientCount)> GetStaffAndOutpatientCounts()
+    {
+        Dictionary<string, (int doctorCount, int nurseCount, int outpatientCount, int inpatientCount)> wardCounts = new Dictionary<string, (int, int, int, int)>();
+
+        foreach (Ward ward in Ward.wards)
+        {
+            if (ward.num >= 0 && ward.num <= 7)
+            {
+                int doctorCount = ward.doctors.Count;
+                int nurseCount = ward.nurses.Count;
+                int outpatientCount = ward.outpatients.Count;
+                int inpatientCount = ward.inpatients.Count;
+
+                //Debug.Log($"Ward: {ward.WardName}, Doctors: {doctorCount}, Nurses: {nurseCount}, Outpatients: {outpatientCount}");
+                wardCounts.Add(ward.WardName, (doctorCount, nurseCount, outpatientCount, inpatientCount));
+            }
+        }
+
+        return wardCounts;
     }
 }
 
