@@ -21,6 +21,7 @@ public class PolicyQuizManager : MonoBehaviour
     string[] wardNames;
     string[] layerNames;
     Dictionary<string, List<string>> wardLayerMapping = new Dictionary<string, List<string>>();
+    public static bool isCorrect = false;
 
     // 퀴즈 질문
     public static string[] questions = {
@@ -131,16 +132,22 @@ public class PolicyQuizManager : MonoBehaviour
         disinfectQuest.text = questions[randomIndex];
         for (int i = 0; i < disinfectAnswers.Length; i++)
             disinfectAnswers[i].GetComponentInChildren<TextMeshProUGUI>().text = choices[randomIndex, i];
-        Debug.Log($"PolicyQuiz, {randomIndex}의 정답은 {correctAnswers[randomIndex]}");
+        Debug.Log($"PolicyQuiz, {randomIndex}의 정답은 {correctAnswers[randomIndex]+1}");
     }
 
     //정답 체크
     void OnAnswerSelected(int selectedAnswerIndex)
     {
-        if (selectedAnswerIndex == correctAnswers[randomIndex])
+        if (selectedAnswerIndex == correctAnswers[randomIndex]+1)
+        {
+            isCorrect = true;
             StartCoroutine(ShowCorrectPanel());
+        }
         else
+        {
+            isCorrect = false;
             StartCoroutine(ShowDisWrongPanel());
+        }
     }
 
     //정답 패널 생성

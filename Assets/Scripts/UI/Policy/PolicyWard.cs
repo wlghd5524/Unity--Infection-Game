@@ -206,15 +206,7 @@ public class PolicyWard : MonoBehaviour
         selectWard.QuarantineWard();
 
         // 격리 병동으로 전환된 병동 정보 업데이트
-        int index = 1;
-        foreach (string ward in wardNames)
-        {
-            if (ward == selectWard.WardName)
-            {
-                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 1);
-            }
-            index++;
-        }
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, wardId, 1);
 
         // UI 업데이트
         UpdateWardInfomation(wardId);
@@ -237,15 +229,8 @@ public class PolicyWard : MonoBehaviour
         selectWard.CloseWard();
 
         // 폐쇄 병동 정보 업데이트
-        int index = 1;
-        foreach (string ward in wardNames)
-        {
-            if (ward == selectWard.WardName)
-            {
-                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 2);
-            }
-            index++;
-        }
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, wardId, 2);
+
 
         UpdateWardInfomation(wardId);
     }
@@ -267,15 +252,7 @@ public class PolicyWard : MonoBehaviour
         selectWard.OpenWard();
 
         // 일반 병동 정보 업데이트
-        int index = 1;
-        foreach (string ward in wardNames)
-        {
-            if (ward == selectWard.WardName)
-            {
-                ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, index, 3);
-            }
-            index++;
-        }
+        ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 2, wardId, 3);
 
         UpdateWardInfomation(wardId);
     }
@@ -283,35 +260,38 @@ public class PolicyWard : MonoBehaviour
     public void DisinfectWard()
     {
         int wardId = selectWard.num;
-        //var wardCounts = GetStaffAndOutpatientCounts(); //d
-        //var wardInfo = wardCounts[wardNames[wardId]];   //d
         WardState state = wardStates[wardId];
 
         if (!state.IsDisinfecting)
         {
             state.IsDisinfecting = true;
-            state.DisinfectEndTime = Time.time + disinfectCooldownTime;
-
-            Debug.Log($"병동 {selectWard.WardName} 소독 시작...");
-            // #######여기다가 병동 퀴즈 로직 작성########
             PolicyQuizManager.Instance.ClearVirusesInWard(selectWard.WardName);
-            Debug.Log($"PlicyQuiz, {selectWard.WardName} 소독");
+
+            ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 3, wardId, 1);
+            state.DisinfectEndTime = Time.time + disinfectCooldownTime;
 
             // 버튼의 interactable을 false로 설정하고 텍스트 업데이트
             disInfectWardButton.interactable = false;
             normalWardButton.interactable = false;
+
             disInfectButtonText.text = $"소독 중: {Mathf.CeilToInt(disinfectCooldownTime)}초 남음";
+            //if (PolicyQuizManager.isCorrect)
+            //{
+            //    Debug.Log($"병동 소독 {selectWard.WardName} 시작...");
+            //    disInfectButtonText.text = $"소독 중: {Mathf.CeilToInt(disinfectCooldownTime)}초 남음";
+            //}
+            //else
+            //{
+            //    Debug.Log($"병동 소독 {selectWard.WardName} 실패");
+            //    disInfectButtonText.text = $"소독 재시도: {Mathf.CeilToInt(disinfectCooldownTime)}초 남음";
+            //}
+
+            //Debug.Log($"병동 소독 텍스트: {disInfectButtonText.text}");
 
             // UI 업데이트
             UpdateWardInfomation(wardId);
-            //인원이 다 빠지면 소독 시작
-            //if (wardInfo.doctorCount == 0 && wardInfo.nurseCount == 0 && wardInfo.outpatientCount == 0 && wardInfo.inpatientCount == 0)
-            {
-                
-            }
         }
     }
-
 
     private void UpdateDisinfectCooldowns()
     {
@@ -396,28 +376,6 @@ public class PolicyWard : MonoBehaviour
         isQuarantineLevel_3 = true;
         UpdateWardInfomation(0);
         ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 1, 3, 1);
-    }
-
-    // 병동별 의사, 간호사, 외래환자 데이터 수집
-    public Dictionary<string, (int doctorCount, int nurseCount, int outpatientCount, int inpatientCount)> GetStaffAndOutpatientCounts()
-    {
-        Dictionary<string, (int doctorCount, int nurseCount, int outpatientCount, int inpatientCount)> wardCounts = new Dictionary<string, (int, int, int, int)>();
-
-        foreach (Ward ward in Ward.wards)
-        {
-            if (ward.num >= 0 && ward.num <= 7)
-            {
-                int doctorCount = ward.doctors.Count;
-                int nurseCount = ward.nurses.Count;
-                int outpatientCount = ward.outpatients.Count;
-                int inpatientCount = ward.inpatients.Count;
-
-                //Debug.Log($"Ward: {ward.WardName}, Doctors: {doctorCount}, Nurses: {nurseCount}, Outpatients: {outpatientCount}");
-                wardCounts.Add(ward.WardName, (doctorCount, nurseCount, outpatientCount, inpatientCount));
-            }
-        }
-
-        return wardCounts;
     }
 }
 
