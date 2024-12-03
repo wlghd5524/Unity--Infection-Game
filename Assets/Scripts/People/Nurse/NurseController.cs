@@ -501,6 +501,8 @@ public class NurseController : NPCController
         if (patient.bedWaypoint == null)
         {
             Debug.Log("격리실 null");
+            autoDoorAnimator.SetBool("IsInternalDoorOpened", false);
+            yield break;
         }
         agent.SetDestination(patient.bedWaypoint.GetRandomPointInRange());
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));

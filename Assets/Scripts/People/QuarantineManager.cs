@@ -128,14 +128,7 @@ public class QuarantineManager : MonoBehaviour
             CancelQuarantine(patientController);
             return;
         }
-        if(patientController.prevBed != null)
-        {
-            patientController.prevBed.isEmpty = true;
-            if(patientController.prevBed.patient == patientController.gameObject)
-            {
-                patientController.prevBed.patient = null;
-            }
-        }
+        
         AssignNurseToQuarantine(patientController, closestNurse);
     }
 
