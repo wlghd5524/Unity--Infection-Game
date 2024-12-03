@@ -38,6 +38,8 @@ public class PatientController : NPCController
     public Coroutine prevCoroutine;
     public Coroutine moveCoroutine;
     public Coroutine hospitalizationCoroutine;
+
+    public BedWaypoint prevBed;
     public void Activate()
     {
         do

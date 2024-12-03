@@ -112,11 +112,10 @@ public class QuarantineManager : MonoBehaviour
 
     private void AssignQuarantineRoom(PatientController patientController, BedWaypoint quarantineRoom)
     {
-        BedWaypoint prevBed = null;
         // 현재 입원 중인 병상이 있을 때
         if (patientController.bedWaypoint != null)
         {
-            prevBed = patientController.bedWaypoint;
+            patientController.prevBed = patientController.bedWaypoint;
         }
         patientController.bedWaypoint = quarantineRoom;
         patientController.bedWaypoint.isEmpty = false;
@@ -126,15 +125,15 @@ public class QuarantineManager : MonoBehaviour
 
         if (closestNurse == null || !IsValidForQuarantine(patientController, closestNurse))
         {
-            CancelQuarantine(patientController, prevBed);
+            CancelQuarantine(patientController);
             return;
         }
-        if(prevBed != null)
+        if(patientController.prevBed != null)
         {
-            prevBed.isEmpty = true;
-            if(prevBed.patient == patientController.gameObject)
+            patientController.prevBed.isEmpty = true;
+            if(patientController.prevBed.patient == patientController.gameObject)
             {
-                prevBed.patient = null;
+                patientController.prevBed.patient = null;
             }
         }
         AssignNurseToQuarantine(patientController, closestNurse);
@@ -151,16 +150,16 @@ public class QuarantineManager : MonoBehaviour
                !(patientController.personComponent.role == Role.Outpatient && patientController.waypointIndex == 3) &&
                PolicyItem.Instance.isAllItemsEquipped;
     }
-    private void CancelQuarantine(PatientController patientController, BedWaypoint prevBed)
+    private void CancelQuarantine(PatientController patientController)
     {
         if(patientController.bedWaypoint.patient == patientController.gameObject)
         {
             patientController.bedWaypoint.isEmpty = true;
             patientController.bedWaypoint.patient = null;
         }
-        if (prevBed != null)
+        if (patientController.prevBed != null)
         {
-            patientController.bedWaypoint = prevBed;
+            patientController.bedWaypoint = patientController.prevBed;
         }
         else
         {

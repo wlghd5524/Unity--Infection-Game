@@ -421,7 +421,14 @@ public class NurseController : NPCController
         patient.agent.stoppingDistance = 1.0f;
         patient.StartCoroutine(patient.FollowNurse(gameObject));
 
-
+        if (patient.prevBed != null)
+        {
+            patient.prevBed.isEmpty = true;
+            if (patient.prevBed.patient == patient.gameObject)
+            {
+                patient.prevBed.patient = null;
+            }
+        }
         AutoDoorWaypoint[] inFrontOfAutoDoors = patient.bedWaypoint.transform.GetComponentsInChildren<AutoDoorWaypoint>();
 
         if (patient.hospitalizationCoroutine != null)
