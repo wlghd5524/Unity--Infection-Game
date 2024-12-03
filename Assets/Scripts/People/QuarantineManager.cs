@@ -154,10 +154,6 @@ public class QuarantineManager : MonoBehaviour
         {
             patientController.bedWaypoint = patientController.prevBed;
         }
-        else
-        {
-            patientController.bedWaypoint = null;
-        }
     }
 
     private void AssignNurseToQuarantine(PatientController patientController, GameObject nurse)

@@ -16,7 +16,6 @@ public class NurseController : NPCController
     public bool isWorking = false; // 간호사가 일하는 중인지 여부
     public bool isRest = false;
     public bool isWaitingAtDoctorOffice = false;
-    public bool isReturning = false;
     public bool isQuarantineNurse = false;
     public DoctorController doctor;
 
@@ -602,7 +601,6 @@ public class NurseController : NPCController
     private IEnumerator FinalizeReturn(NavMeshAgent agent)
     {
         agent.SetDestination(waypoints[0].GetSampledPosition());
-        isReturning = true;
         agent.stoppingDistance = 0f;
         if (wardComponent.status == Ward.WardStatus.Closed)
         {
@@ -612,7 +610,6 @@ public class NurseController : NPCController
         yield return new WaitUntil(() => Managers.NPCManager.isArrived(agent));
 
         agent.avoidancePriority = 50;
-        isReturning = false;
         isWorking = false;
         if (wardComponent.status == Ward.WardStatus.Closed)
         {
