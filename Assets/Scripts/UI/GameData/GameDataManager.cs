@@ -347,7 +347,7 @@ public class GameDataManager : MonoBehaviour
                     feedbackContent[index - 1] += $"{feedback}\n";
                 }
             }
-            Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
+            //Debug.Log($"{index}로그: {feedbackContent[index - 1]}");
         }
     }
 

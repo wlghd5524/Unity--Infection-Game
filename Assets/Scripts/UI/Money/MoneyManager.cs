@@ -193,7 +193,7 @@ public class MoneyManager : MonoBehaviour
         // 총 일일 비용 차감
         currentMoneyManager.CurrentMoneyGetter -= totalDailyExpense;
 
-        Debug.Log($"총 일일 비용: {totalDailyExpense}");
+        //Debug.Log($"총 일일 비용: {totalDailyExpense}");
     }
 
     public int CalculateQuarantineNurseExpense()
@@ -269,7 +269,7 @@ public class MoneyManager : MonoBehaviour
             //Debug.Log($"격리 간호사 비용 {quarantineNurseCost} 차감 완료.");
 
             // 월 정산 UI 업데이트
-            monthlyReportUI.AddExpenseDetail("격리 간호사 비용", quarantineNurseCost);
+            monthlyReportUI.AddExpenseDetail("격리병동간호사 비용", quarantineNurseCost);
         }
         else
         {

@@ -267,7 +267,7 @@ public class PolicyWard : MonoBehaviour
         {
             state.IsDisinfecting = true;    // 소독 시작
             state.DisinfectEndTime = Time.time + disinfectCooldownTime;
-            //PolicyQuizManager.Instance.ClearVirusesInWard(selectWard.WardName, wardId);     // 소독 시작(소독 퀴즈)_ 병동이름, state.DisinfectEndTime
+            PolicyQuizManager.Instance.ClearVirusesInWard(selectWard.WardName, wardId);     // 소독 시작(소독 퀴즈)_ 병동이름, state.DisinfectEndTime
             ResearchDBManager.Instance.AddResearchData(ResearchDBManager.ResearchMode.patient, 3, wardId, 1);   // DB 저장
             UpdateWardInfomation(wardId);   // UI 업데이트
         }

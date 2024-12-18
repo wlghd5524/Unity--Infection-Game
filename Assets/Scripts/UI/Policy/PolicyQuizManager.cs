@@ -127,14 +127,29 @@ public class PolicyQuizManager : MonoBehaviour
             return;
         }
 
-        questDisfectCanvas.SetActive(true);
+        //questDisfectCanvas.SetActive(true);
 
-        // 랜덤 문제 생성
-        randomIndex = UnityEngine.Random.Range(0, questions.Length);
-        disinfectQuest.text = questions[randomIndex];
-        for (int i = 0; i < disinfectAnswers.Length; i++)
-            disinfectAnswers[i].GetComponentInChildren<TextMeshProUGUI>().text = choices[randomIndex, i];
-        Debug.Log($"PolicyQuiz, {randomIndex}의 정답은 {correctAnswers[randomIndex] + 1}");
+        //// 랜덤 문제 생성
+        //randomIndex = UnityEngine.Random.Range(0, questions.Length);
+        //disinfectQuest.text = questions[randomIndex];
+        //for (int i = 0; i < disinfectAnswers.Length; i++)
+        //    disinfectAnswers[i].GetComponentInChildren<TextMeshProUGUI>().text = choices[randomIndex, i];
+        //Debug.Log($"PolicyQuiz, {randomIndex}의 정답은 {correctAnswers[randomIndex] + 1}");
+
+        //소독 실행
+        Virus[] viruses = FindObjectsOfType<Virus>();
+        foreach (Virus virus in viruses)
+        {
+            string[] targetLayers = wardLayerMapping[currentWard].ToArray();
+            string layerName = LayerMask.LayerToName(virus.gameObject.layer);
+            if (targetLayers.Contains(layerName))
+            {
+                Destroy(virus.gameObject);
+                Debug.Log($"PolicyQuiz, {virus.gameObject.name}  바이러스 지워짐. {layerName}");
+            }
+        }
+
+        //isCorrect[wardIndex] = !isCorrect[wardIndex];
     }
 
     //정답 체크
@@ -161,18 +176,6 @@ public class PolicyQuizManager : MonoBehaviour
         disCorrectPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
 
-        // PolicyWard.disinfectCooldownTime 후에 소독 실행됨
-        //float elapsedTime = 0f;
-        //float maxTime = PolicyWard.disinfectCooldownTime;
-
-        //while (elapsedTime < maxTime)
-        //{
-        //    elapsedTime += Time.unscaledDeltaTime;
-        //    wardState.DisinfectEndTime = Mathf.Ceil(maxTime - elapsedTime);
-        //PolicyWard.Instance.disInfectButtonText.text = $"소독 중: {wardState.DisinfectEndTime}초 남음";
-        //    yield return null;
-        //}
-
         //소독 실행
         Virus[] viruses = FindObjectsOfType<Virus>();
         foreach (Virus virus in viruses)
@@ -186,7 +189,6 @@ public class PolicyQuizManager : MonoBehaviour
             }
         }
 
-        //wardState.IsDisinfecting = false;
         isCorrect[wardIndex] = !isCorrect[wardIndex];
     }
 
@@ -197,20 +199,6 @@ public class PolicyQuizManager : MonoBehaviour
         yield return YieldInstructionCache.WaitForSecondsRealtime(1.3f);
         disWrongPanel.SetActive(false);
         questDisfectCanvas.SetActive(false);
-
-        // PolicyWard.disinfectFalseTime만큼 카운트다운
-        //float elapsedTime = 0f;
-        //float maxTime = PolicyWard.disinfectFalseTime;
-        //while (elapsedTime < maxTime)
-        //{
-        //    elapsedTime += Time.unscaledDeltaTime;
-        //    wardState.DisinfectEndTime = Mathf.Ceil(maxTime - elapsedTime);
-        //    //PolicyWard.Instance.disInfectButtonText.text = $"소독 재시도: {wardState.DisinfectEndTime}초 남음";
-        //    yield return null;
-        //}
-
-        // 소독 버튼 대기 끝
-        //wardState.IsDisinfecting = false;
         isCorrect[wardIndex] = !isCorrect[wardIndex];
     }
 }

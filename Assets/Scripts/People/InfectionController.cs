@@ -114,7 +114,7 @@ public class InfectionController : MonoBehaviour
         //감염되는 사람의 감염 저항성을 고려하여 감염 확률 계산
         if (random + GetFinalProtectionRate(otherPerson) <= Managers.Infection.infectionProbability)
         {
-            Debug.Log(random + " || "+ GetFinalProtectionRate(otherPerson)+ "||"+ Managers.Infection.infectionProbability);
+            //Debug.Log(random + " || "+ GetFinalProtectionRate(otherPerson)+ "||"+ Managers.Infection.infectionProbability);
             //other.GetComponent<NPCController>().wardComponent.infectedNPC++;
             otherPerson.ChangeStatus(thisPersonStatus);
         }
